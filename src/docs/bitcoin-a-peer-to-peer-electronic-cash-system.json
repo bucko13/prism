@@ -1,0 +1,2678 @@
+{
+  "title": "Bitcoin: A Peer-to-Peer Electronic Cash System",
+  "text": [
+    {
+      "type": "paragraph",
+      "text": "Satoshi Nakamoto  \nsatoshin@gmx.com "
+    },
+    {
+      "type": "paragraph",
+      "text": "\nwww.bitcoin.org"
+    },
+    {
+      "type": "paragraph",
+      "text": "**Abstract.** A purely peer-to-peer version"
+    },
+    {
+      "type": "paragraph",
+      "text": "of electronic cash would allow"
+    },
+    {
+      "type": "paragraph",
+      "text": "online payments to be sent"
+    },
+    {
+      "type": "paragraph",
+      "text": "directly from one party to"
+    },
+    {
+      "type": "paragraph",
+      "text": "another without going through a"
+    },
+    {
+      "type": "paragraph",
+      "text": "financial institution. Digital signatures provide"
+    },
+    {
+      "type": "paragraph",
+      "text": "part of the solution, but"
+    },
+    {
+      "type": "paragraph",
+      "text": "the main benefits are lost"
+    },
+    {
+      "type": "paragraph",
+      "text": "if a trusted third party"
+    },
+    {
+      "type": "paragraph",
+      "text": "is still required to prevent"
+    },
+    {
+      "type": "paragraph",
+      "text": "double-spending. We propose a solution"
+    },
+    {
+      "type": "paragraph",
+      "text": "to the double-spending problem using"
+    },
+    {
+      "type": "paragraph",
+      "text": "a peer-to-peer network. The network"
+    },
+    {
+      "type": "paragraph",
+      "text": "timestamps transactions by hashing them"
+    },
+    {
+      "type": "paragraph",
+      "text": "into an ongoing chain of"
+    },
+    {
+      "type": "paragraph",
+      "text": "hash-based proof-of-work, forming a record"
+    },
+    {
+      "type": "paragraph",
+      "text": "that cannot be changed without"
+    },
+    {
+      "type": "paragraph",
+      "text": "redoing the proof-of-work. The longest"
+    },
+    {
+      "type": "paragraph",
+      "text": "chain not only serves as"
+    },
+    {
+      "type": "paragraph",
+      "text": "proof of the sequence of"
+    },
+    {
+      "type": "paragraph",
+      "text": "events witnessed, but proof that"
+    },
+    {
+      "type": "paragraph",
+      "text": "it came from the largest"
+    },
+    {
+      "type": "paragraph",
+      "text": "pool of CPU power. As"
+    },
+    {
+      "type": "paragraph",
+      "text": "long as a majority of"
+    },
+    {
+      "type": "paragraph",
+      "text": "CPU power is controlled by"
+    },
+    {
+      "type": "paragraph",
+      "text": "nodes that are not cooperating"
+    },
+    {
+      "type": "paragraph",
+      "text": "to attack the network, they'll"
+    },
+    {
+      "type": "paragraph",
+      "text": "generate the longest chain and"
+    },
+    {
+      "type": "paragraph",
+      "text": "outpace attackers. The network itself"
+    },
+    {
+      "type": "paragraph",
+      "text": "requires minimal structure. Messages are"
+    },
+    {
+      "type": "paragraph",
+      "text": "broadcast on a best effort"
+    },
+    {
+      "type": "paragraph",
+      "text": "basis, and nodes can leave"
+    },
+    {
+      "type": "paragraph",
+      "text": "and rejoin the network at"
+    },
+    {
+      "type": "paragraph",
+      "text": "will, accepting the longest proof-of-work"
+    },
+    {
+      "type": "paragraph",
+      "text": "chain as proof of what"
+    },
+    {
+      "type": "paragraph",
+      "text": "happened while they were gone."
+    },
+    {
+      "type": "heading",
+      "depth": 2,
+      "text": "Introduction"
+    },
+    {
+      "type": "paragraph",
+      "text": "Introduction"
+    },
+    {
+      "type": "paragraph",
+      "text": "Commerce on the Internet has"
+    },
+    {
+      "type": "paragraph",
+      "text": "come to rely almost exclusively"
+    },
+    {
+      "type": "paragraph",
+      "text": "on financial institutions serving as"
+    },
+    {
+      "type": "paragraph",
+      "text": "trusted third parties to process"
+    },
+    {
+      "type": "paragraph",
+      "text": "electronic payments. While the system"
+    },
+    {
+      "type": "paragraph",
+      "text": "works well enough for most"
+    },
+    {
+      "type": "paragraph",
+      "text": "transactions, it still suffers from"
+    },
+    {
+      "type": "paragraph",
+      "text": "the inherent weaknesses of the"
+    },
+    {
+      "type": "paragraph",
+      "text": "trust based model. Completely non-reversible"
+    },
+    {
+      "type": "paragraph",
+      "text": "transactions are not really possible,"
+    },
+    {
+      "type": "paragraph",
+      "text": "since financial institutions cannot avoid"
+    },
+    {
+      "type": "paragraph",
+      "text": "mediating disputes. The cost of"
+    },
+    {
+      "type": "paragraph",
+      "text": "mediation increases transaction costs, limiting"
+    },
+    {
+      "type": "paragraph",
+      "text": "the minimum practical transaction size"
+    },
+    {
+      "type": "paragraph",
+      "text": "and cutting off the possibility"
+    },
+    {
+      "type": "paragraph",
+      "text": "for small casual transactions, and"
+    },
+    {
+      "type": "paragraph",
+      "text": "there is a broader cost"
+    },
+    {
+      "type": "paragraph",
+      "text": "in the loss of ability"
+    },
+    {
+      "type": "paragraph",
+      "text": "to make non-reversible payments for"
+    },
+    {
+      "type": "paragraph",
+      "text": "nonreversible services. With the possibility"
+    },
+    {
+      "type": "paragraph",
+      "text": "of reversal, the need for"
+    },
+    {
+      "type": "paragraph",
+      "text": "trust spreads. Merchants must be"
+    },
+    {
+      "type": "paragraph",
+      "text": "wary of their customers, hassling"
+    },
+    {
+      "type": "paragraph",
+      "text": "them for more information than"
+    },
+    {
+      "type": "paragraph",
+      "text": "they would otherwise need. A"
+    },
+    {
+      "type": "paragraph",
+      "text": "certain percentage of fraud is"
+    },
+    {
+      "type": "paragraph",
+      "text": "accepted as unavoidable. These costs"
+    },
+    {
+      "type": "paragraph",
+      "text": "and payment uncertainties can be"
+    },
+    {
+      "type": "paragraph",
+      "text": "avoided in person by using"
+    },
+    {
+      "type": "paragraph",
+      "text": "physical currency, but no mechanism"
+    },
+    {
+      "type": "paragraph",
+      "text": "exists to make payments over"
+    },
+    {
+      "type": "paragraph",
+      "text": "a communications channel without a"
+    },
+    {
+      "type": "paragraph",
+      "text": "trusted party."
+    },
+    {
+      "type": "paragraph",
+      "text": "What is needed is an"
+    },
+    {
+      "type": "paragraph",
+      "text": "electronic payment system based on"
+    },
+    {
+      "type": "paragraph",
+      "text": "cryptographic proof instead of trust,"
+    },
+    {
+      "type": "paragraph",
+      "text": "allowing any two willing parties"
+    },
+    {
+      "type": "paragraph",
+      "text": "to transact directly with each"
+    },
+    {
+      "type": "paragraph",
+      "text": "other without the need for"
+    },
+    {
+      "type": "paragraph",
+      "text": "a trusted third party. Transactions"
+    },
+    {
+      "type": "paragraph",
+      "text": "that are computationally impractical to"
+    },
+    {
+      "type": "paragraph",
+      "text": "reverse would protect sellers from"
+    },
+    {
+      "type": "paragraph",
+      "text": "fraud, and routine escrow mechanisms"
+    },
+    {
+      "type": "paragraph",
+      "text": "could easily be implemented to"
+    },
+    {
+      "type": "paragraph",
+      "text": "protect buyers. In this paper,"
+    },
+    {
+      "type": "paragraph",
+      "text": "we propose a solution to"
+    },
+    {
+      "type": "paragraph",
+      "text": "the double-spending problem using a"
+    },
+    {
+      "type": "paragraph",
+      "text": "peer-to-peer distributed timestamp server to"
+    },
+    {
+      "type": "paragraph",
+      "text": "generate computational proof of the"
+    },
+    {
+      "type": "paragraph",
+      "text": "chronological order of transactions. The"
+    },
+    {
+      "type": "paragraph",
+      "text": "system is secure as long"
+    },
+    {
+      "type": "paragraph",
+      "text": "as honest nodes collectively control"
+    },
+    {
+      "type": "paragraph",
+      "text": "more CPU power than any"
+    },
+    {
+      "type": "paragraph",
+      "text": "cooperating group of attacker nodes."
+    },
+    {
+      "type": "heading",
+      "depth": 2,
+      "text": "Transactions"
+    },
+    {
+      "type": "paragraph",
+      "text": "Transactions"
+    },
+    {
+      "type": "paragraph",
+      "text": "We define an electronic coin"
+    },
+    {
+      "type": "paragraph",
+      "text": "as a chain of digital"
+    },
+    {
+      "type": "paragraph",
+      "text": "signatures. Each owner transfers the"
+    },
+    {
+      "type": "paragraph",
+      "text": "coin to the next by"
+    },
+    {
+      "type": "paragraph",
+      "text": "digitally signing a hash of"
+    },
+    {
+      "type": "paragraph",
+      "text": "the previous transaction and the"
+    },
+    {
+      "type": "paragraph",
+      "text": "public key of the next"
+    },
+    {
+      "type": "paragraph",
+      "text": "owner and adding these to"
+    },
+    {
+      "type": "paragraph",
+      "text": "the end of the coin."
+    },
+    {
+      "type": "paragraph",
+      "text": "A payee can verify the"
+    },
+    {
+      "type": "paragraph",
+      "text": "signatures to verify the chain"
+    },
+    {
+      "type": "paragraph",
+      "text": "of ownership."
+    },
+    {
+      "type": "paragraph",
+      "text": "![transactions](img/transactions.png)"
+    },
+    {
+      "type": "paragraph",
+      "text": "The problem of course is"
+    },
+    {
+      "type": "paragraph",
+      "text": "the payee can't verify that"
+    },
+    {
+      "type": "paragraph",
+      "text": "one of the owners did"
+    },
+    {
+      "type": "paragraph",
+      "text": "not double-spend the coin. A"
+    },
+    {
+      "type": "paragraph",
+      "text": "common solution is to introduce"
+    },
+    {
+      "type": "paragraph",
+      "text": "a trusted central authority, or"
+    },
+    {
+      "type": "paragraph",
+      "text": "mint, that checks every transaction"
+    },
+    {
+      "type": "paragraph",
+      "text": "for double spending. After each"
+    },
+    {
+      "type": "paragraph",
+      "text": "transaction, the coin must be"
+    },
+    {
+      "type": "paragraph",
+      "text": "returned to the mint to"
+    },
+    {
+      "type": "paragraph",
+      "text": "issue a new coin, and"
+    },
+    {
+      "type": "paragraph",
+      "text": "only coins issued directly from"
+    },
+    {
+      "type": "paragraph",
+      "text": "the mint are trusted not"
+    },
+    {
+      "type": "paragraph",
+      "text": "to be double-spent. The problem"
+    },
+    {
+      "type": "paragraph",
+      "text": "with this solution is that"
+    },
+    {
+      "type": "paragraph",
+      "text": "the fate of the entire"
+    },
+    {
+      "type": "paragraph",
+      "text": "money system depends on the"
+    },
+    {
+      "type": "paragraph",
+      "text": "company running the mint, with"
+    },
+    {
+      "type": "paragraph",
+      "text": "every transaction having to go"
+    },
+    {
+      "type": "paragraph",
+      "text": "through them, just like a"
+    },
+    {
+      "type": "paragraph",
+      "text": "bank. We need a way"
+    },
+    {
+      "type": "paragraph",
+      "text": "for the payee to know"
+    },
+    {
+      "type": "paragraph",
+      "text": "that the previous owners did"
+    },
+    {
+      "type": "paragraph",
+      "text": "not sign any earlier transactions."
+    },
+    {
+      "type": "paragraph",
+      "text": "For our purposes, the earliest"
+    },
+    {
+      "type": "paragraph",
+      "text": "transaction is the one that"
+    },
+    {
+      "type": "paragraph",
+      "text": "counts, so we don't care"
+    },
+    {
+      "type": "paragraph",
+      "text": "about later attempts to double-spend."
+    },
+    {
+      "type": "paragraph",
+      "text": "The only way to confirm"
+    },
+    {
+      "type": "paragraph",
+      "text": "the absence of a transaction"
+    },
+    {
+      "type": "paragraph",
+      "text": "is to be aware of"
+    },
+    {
+      "type": "paragraph",
+      "text": "all transactions. In the mint"
+    },
+    {
+      "type": "paragraph",
+      "text": "based model, the mint was"
+    },
+    {
+      "type": "paragraph",
+      "text": "aware of all transactions and"
+    },
+    {
+      "type": "paragraph",
+      "text": "decided which arrived first. To"
+    },
+    {
+      "type": "paragraph",
+      "text": "accomplish this without a trusted"
+    },
+    {
+      "type": "paragraph",
+      "text": "party, transactions must be publicly"
+    },
+    {
+      "type": "paragraph",
+      "text": "announced [1], and we need"
+    },
+    {
+      "type": "paragraph",
+      "text": "a system for participants to"
+    },
+    {
+      "type": "paragraph",
+      "text": "agree on a single history"
+    },
+    {
+      "type": "paragraph",
+      "text": "of the order in which"
+    },
+    {
+      "type": "paragraph",
+      "text": "they were received. The payee"
+    },
+    {
+      "type": "paragraph",
+      "text": "needs proof that at the"
+    },
+    {
+      "type": "paragraph",
+      "text": "time of each transaction, the"
+    },
+    {
+      "type": "paragraph",
+      "text": "majority of nodes agreed it"
+    },
+    {
+      "type": "paragraph",
+      "text": "was the first received."
+    },
+    {
+      "type": "heading",
+      "depth": 2,
+      "text": "Timestamp Server"
+    },
+    {
+      "type": "paragraph",
+      "text": "Timestamp Server"
+    },
+    {
+      "type": "paragraph",
+      "text": "The solution we propose begins"
+    },
+    {
+      "type": "paragraph",
+      "text": "with a timestamp server. A"
+    },
+    {
+      "type": "paragraph",
+      "text": "timestamp server works by taking"
+    },
+    {
+      "type": "paragraph",
+      "text": "a hash of a block"
+    },
+    {
+      "type": "paragraph",
+      "text": "of items to be timestamped"
+    },
+    {
+      "type": "paragraph",
+      "text": "and widely publishing the hash,"
+    },
+    {
+      "type": "paragraph",
+      "text": "such as in a newspaper"
+    },
+    {
+      "type": "paragraph",
+      "text": "or Usenet post [2-5]. The"
+    },
+    {
+      "type": "paragraph",
+      "text": "timestamp proves that the data"
+    },
+    {
+      "type": "paragraph",
+      "text": "must have existed at the"
+    },
+    {
+      "type": "paragraph",
+      "text": "time, obviously, in order to"
+    },
+    {
+      "type": "paragraph",
+      "text": "get into the hash. Each"
+    },
+    {
+      "type": "paragraph",
+      "text": "timestamp includes the previous timestamp"
+    },
+    {
+      "type": "paragraph",
+      "text": "in its hash, forming a"
+    },
+    {
+      "type": "paragraph",
+      "text": "chain, with each additional timestamp"
+    },
+    {
+      "type": "paragraph",
+      "text": "reinforcing the ones before it."
+    },
+    {
+      "type": "paragraph",
+      "text": "![timestamp server](img/timestamp.png)"
+    },
+    {
+      "type": "heading",
+      "depth": 2,
+      "text": "Proof-of-Work"
+    },
+    {
+      "type": "paragraph",
+      "text": "Proof-of-Work"
+    },
+    {
+      "type": "paragraph",
+      "text": "To implement a distributed timestamp"
+    },
+    {
+      "type": "paragraph",
+      "text": "server on a peer-to-peer basis,"
+    },
+    {
+      "type": "paragraph",
+      "text": "we will need to use"
+    },
+    {
+      "type": "paragraph",
+      "text": "a proof-of-work system similar to"
+    },
+    {
+      "type": "paragraph",
+      "text": "Adam Back's Hashcash [6], rather"
+    },
+    {
+      "type": "paragraph",
+      "text": "than newspaper or Usenet posts."
+    },
+    {
+      "type": "paragraph",
+      "text": "The proof-of-work involves scanning for"
+    },
+    {
+      "type": "paragraph",
+      "text": "a value that when hashed,"
+    },
+    {
+      "type": "paragraph",
+      "text": "such as with SHA-256, the"
+    },
+    {
+      "type": "paragraph",
+      "text": "hash begins with a number"
+    },
+    {
+      "type": "paragraph",
+      "text": "of zero bits. The average"
+    },
+    {
+      "type": "paragraph",
+      "text": "work required is exponential in"
+    },
+    {
+      "type": "paragraph",
+      "text": "the number of zero bits"
+    },
+    {
+      "type": "paragraph",
+      "text": "required and can be verified"
+    },
+    {
+      "type": "paragraph",
+      "text": "by executing a single hash."
+    },
+    {
+      "type": "paragraph",
+      "text": "For our timestamp network, we"
+    },
+    {
+      "type": "paragraph",
+      "text": "implement the proof-of-work by incrementing"
+    },
+    {
+      "type": "paragraph",
+      "text": "a nonce in the block"
+    },
+    {
+      "type": "paragraph",
+      "text": "until a value is found"
+    },
+    {
+      "type": "paragraph",
+      "text": "that gives the block's hash"
+    },
+    {
+      "type": "paragraph",
+      "text": "the required zero bits. Once"
+    },
+    {
+      "type": "paragraph",
+      "text": "the CPU effort has been"
+    },
+    {
+      "type": "paragraph",
+      "text": "expended to make it satisfy"
+    },
+    {
+      "type": "paragraph",
+      "text": "the proof-of-work, the block cannot"
+    },
+    {
+      "type": "paragraph",
+      "text": "be changed without redoing the"
+    },
+    {
+      "type": "paragraph",
+      "text": "work. As later blocks are"
+    },
+    {
+      "type": "paragraph",
+      "text": "chained after it, the work"
+    },
+    {
+      "type": "paragraph",
+      "text": "to change the block would"
+    },
+    {
+      "type": "paragraph",
+      "text": "include redoing all the blocks"
+    },
+    {
+      "type": "paragraph",
+      "text": "after it."
+    },
+    {
+      "type": "paragraph",
+      "text": "![pow](img/proof-of-work.png)"
+    },
+    {
+      "type": "paragraph",
+      "text": "The proof-of-work also solves the"
+    },
+    {
+      "type": "paragraph",
+      "text": "problem of determining representation in"
+    },
+    {
+      "type": "paragraph",
+      "text": "majority decision making. If the"
+    },
+    {
+      "type": "paragraph",
+      "text": "majority were based on one-IP-address-one-vote,"
+    },
+    {
+      "type": "paragraph",
+      "text": "it could be subverted by"
+    },
+    {
+      "type": "paragraph",
+      "text": "anyone able to allocate many"
+    },
+    {
+      "type": "paragraph",
+      "text": "IPs. Proof-of-work is essentially one-CPU-one-vote."
+    },
+    {
+      "type": "paragraph",
+      "text": "The majority decision is represented"
+    },
+    {
+      "type": "paragraph",
+      "text": "by the longest chain, which"
+    },
+    {
+      "type": "paragraph",
+      "text": "has the greatest proof-of-work effort"
+    },
+    {
+      "type": "paragraph",
+      "text": "invested in it. If a"
+    },
+    {
+      "type": "paragraph",
+      "text": "majority of CPU power is"
+    },
+    {
+      "type": "paragraph",
+      "text": "controlled by honest nodes, the"
+    },
+    {
+      "type": "paragraph",
+      "text": "honest chain will grow the"
+    },
+    {
+      "type": "paragraph",
+      "text": "fastest and outpace any competing"
+    },
+    {
+      "type": "paragraph",
+      "text": "chains. To modify a past"
+    },
+    {
+      "type": "paragraph",
+      "text": "block, an attacker would have"
+    },
+    {
+      "type": "paragraph",
+      "text": "to redo the proof-of-work of"
+    },
+    {
+      "type": "paragraph",
+      "text": "the block and all blocks"
+    },
+    {
+      "type": "paragraph",
+      "text": "after it and then catch"
+    },
+    {
+      "type": "paragraph",
+      "text": "up with and surpass the"
+    },
+    {
+      "type": "paragraph",
+      "text": "work of the honest nodes."
+    },
+    {
+      "type": "paragraph",
+      "text": "We will show later that"
+    },
+    {
+      "type": "paragraph",
+      "text": "the probability of a slower"
+    },
+    {
+      "type": "paragraph",
+      "text": "attacker catching up diminishes exponentially"
+    },
+    {
+      "type": "paragraph",
+      "text": "as subsequent blocks are added."
+    },
+    {
+      "type": "paragraph",
+      "text": "To compensate for increasing hardware"
+    },
+    {
+      "type": "paragraph",
+      "text": "speed and varying interest in"
+    },
+    {
+      "type": "paragraph",
+      "text": "running nodes over time, the"
+    },
+    {
+      "type": "paragraph",
+      "text": "proof-of-work difficulty is determined by"
+    },
+    {
+      "type": "paragraph",
+      "text": "a moving average targeting an"
+    },
+    {
+      "type": "paragraph",
+      "text": "average number of blocks per"
+    },
+    {
+      "type": "paragraph",
+      "text": "hour. If they're generated too"
+    },
+    {
+      "type": "paragraph",
+      "text": "fast, the difficulty increases."
+    },
+    {
+      "type": "heading",
+      "depth": 2,
+      "text": "Network"
+    },
+    {
+      "type": "paragraph",
+      "text": "Network"
+    },
+    {
+      "type": "paragraph",
+      "text": "The steps to run the"
+    },
+    {
+      "type": "paragraph",
+      "text": "network are as follows:"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nodes always consider the longest"
+    },
+    {
+      "type": "paragraph",
+      "text": "chain to be the correct"
+    },
+    {
+      "type": "paragraph",
+      "text": "one and will keep working"
+    },
+    {
+      "type": "paragraph",
+      "text": "on extending it. If two"
+    },
+    {
+      "type": "paragraph",
+      "text": "nodes broadcast different versions of"
+    },
+    {
+      "type": "paragraph",
+      "text": "the next block simultaneously, some"
+    },
+    {
+      "type": "paragraph",
+      "text": "nodes may receive one or"
+    },
+    {
+      "type": "paragraph",
+      "text": "the other first. In that"
+    },
+    {
+      "type": "paragraph",
+      "text": "case, they work on the"
+    },
+    {
+      "type": "paragraph",
+      "text": "first one they received, but"
+    },
+    {
+      "type": "paragraph",
+      "text": "save the other branch in"
+    },
+    {
+      "type": "paragraph",
+      "text": "case it becomes longer. The"
+    },
+    {
+      "type": "paragraph",
+      "text": "tie will be broken when"
+    },
+    {
+      "type": "paragraph",
+      "text": "the next proof-of-work is found"
+    },
+    {
+      "type": "paragraph",
+      "text": "and one branch becomes longer;"
+    },
+    {
+      "type": "paragraph",
+      "text": "the nodes that were working"
+    },
+    {
+      "type": "paragraph",
+      "text": "on the other branch will"
+    },
+    {
+      "type": "paragraph",
+      "text": "then switch to the longer"
+    },
+    {
+      "type": "paragraph",
+      "text": "one. New transaction broadcasts do"
+    },
+    {
+      "type": "paragraph",
+      "text": "not necessarily need to reach"
+    },
+    {
+      "type": "paragraph",
+      "text": "all nodes. As long as"
+    },
+    {
+      "type": "paragraph",
+      "text": "they reach many nodes, they"
+    },
+    {
+      "type": "paragraph",
+      "text": "will get into a block"
+    },
+    {
+      "type": "paragraph",
+      "text": "before long. Block broadcasts are"
+    },
+    {
+      "type": "paragraph",
+      "text": "also tolerant of dropped messages."
+    },
+    {
+      "type": "paragraph",
+      "text": "If a node does not"
+    },
+    {
+      "type": "paragraph",
+      "text": "receive a block, it will"
+    },
+    {
+      "type": "paragraph",
+      "text": "request it when it receives"
+    },
+    {
+      "type": "paragraph",
+      "text": "the next block and realizes"
+    },
+    {
+      "type": "paragraph",
+      "text": "it missed one."
+    },
+    {
+      "type": "heading",
+      "depth": 2,
+      "text": "Incentive"
+    },
+    {
+      "type": "paragraph",
+      "text": "Incentive"
+    },
+    {
+      "type": "paragraph",
+      "text": "By convention, the first transaction"
+    },
+    {
+      "type": "paragraph",
+      "text": "in a block is a"
+    },
+    {
+      "type": "paragraph",
+      "text": "special transaction that starts a"
+    },
+    {
+      "type": "paragraph",
+      "text": "new coin owned by the"
+    },
+    {
+      "type": "paragraph",
+      "text": "creator of the block. This"
+    },
+    {
+      "type": "paragraph",
+      "text": "adds an incentive for nodes"
+    },
+    {
+      "type": "paragraph",
+      "text": "to support the network, and"
+    },
+    {
+      "type": "paragraph",
+      "text": "provides a way to initially"
+    },
+    {
+      "type": "paragraph",
+      "text": "distribute coins into circulation, since"
+    },
+    {
+      "type": "paragraph",
+      "text": "there is no central authority"
+    },
+    {
+      "type": "paragraph",
+      "text": "to issue them. The steady"
+    },
+    {
+      "type": "paragraph",
+      "text": "addition of a constant of"
+    },
+    {
+      "type": "paragraph",
+      "text": "amount of new coins is"
+    },
+    {
+      "type": "paragraph",
+      "text": "analogous to gold miners expending"
+    },
+    {
+      "type": "paragraph",
+      "text": "resources to add gold to"
+    },
+    {
+      "type": "paragraph",
+      "text": "circulation. In our case, it"
+    },
+    {
+      "type": "paragraph",
+      "text": "is CPU time and electricity"
+    },
+    {
+      "type": "paragraph",
+      "text": "that is expended."
+    },
+    {
+      "type": "paragraph",
+      "text": "The incentive can also be"
+    },
+    {
+      "type": "paragraph",
+      "text": "funded with transaction fees. If"
+    },
+    {
+      "type": "paragraph",
+      "text": "the output value of a"
+    },
+    {
+      "type": "paragraph",
+      "text": "transaction is less than its"
+    },
+    {
+      "type": "paragraph",
+      "text": "input value, the difference is"
+    },
+    {
+      "type": "paragraph",
+      "text": "a transaction fee that is"
+    },
+    {
+      "type": "paragraph",
+      "text": "added to the incentive value"
+    },
+    {
+      "type": "paragraph",
+      "text": "of the block containing the"
+    },
+    {
+      "type": "paragraph",
+      "text": "transaction. Once a predetermined number"
+    },
+    {
+      "type": "paragraph",
+      "text": "of coins have entered circulation,"
+    },
+    {
+      "type": "paragraph",
+      "text": "the incentive can transition entirely"
+    },
+    {
+      "type": "paragraph",
+      "text": "to transaction fees and be"
+    },
+    {
+      "type": "paragraph",
+      "text": "completely inflation free."
+    },
+    {
+      "type": "paragraph",
+      "text": "The incentive may help encourage"
+    },
+    {
+      "type": "paragraph",
+      "text": "nodes to stay honest. If"
+    },
+    {
+      "type": "paragraph",
+      "text": "a greedy attacker is able"
+    },
+    {
+      "type": "paragraph",
+      "text": "to assemble more CPU power"
+    },
+    {
+      "type": "paragraph",
+      "text": "than all the honest nodes,"
+    },
+    {
+      "type": "paragraph",
+      "text": "he would have to choose"
+    },
+    {
+      "type": "paragraph",
+      "text": "between using it to defraud"
+    },
+    {
+      "type": "paragraph",
+      "text": "people by stealing back his"
+    },
+    {
+      "type": "paragraph",
+      "text": "payments, or using it to"
+    },
+    {
+      "type": "paragraph",
+      "text": "generate new coins. He ought"
+    },
+    {
+      "type": "paragraph",
+      "text": "to find it more profitable"
+    },
+    {
+      "type": "paragraph",
+      "text": "to play by the rules,"
+    },
+    {
+      "type": "paragraph",
+      "text": "such rules that favour him"
+    },
+    {
+      "type": "paragraph",
+      "text": "with more new coins than"
+    },
+    {
+      "type": "paragraph",
+      "text": "everyone else combined, than to"
+    },
+    {
+      "type": "paragraph",
+      "text": "undermine the system and the"
+    },
+    {
+      "type": "paragraph",
+      "text": "validity of his own wealth."
+    },
+    {
+      "type": "heading",
+      "depth": 2,
+      "text": "Reclaiming Disk Space"
+    },
+    {
+      "type": "paragraph",
+      "text": "Reclaiming Disk Space"
+    },
+    {
+      "type": "paragraph",
+      "text": "Once the latest transaction in"
+    },
+    {
+      "type": "paragraph",
+      "text": "a coin is buried under"
+    },
+    {
+      "type": "paragraph",
+      "text": "enough blocks, the spent transactions"
+    },
+    {
+      "type": "paragraph",
+      "text": "before it can be discarded"
+    },
+    {
+      "type": "paragraph",
+      "text": "to save disk space. To"
+    },
+    {
+      "type": "paragraph",
+      "text": "facilitate this without breaking the"
+    },
+    {
+      "type": "paragraph",
+      "text": "block's hash, transactions are hashed"
+    },
+    {
+      "type": "paragraph",
+      "text": "in a Merkle Tree [7][2][5],"
+    },
+    {
+      "type": "paragraph",
+      "text": "with only the root included"
+    },
+    {
+      "type": "paragraph",
+      "text": "in the block's hash. Old"
+    },
+    {
+      "type": "paragraph",
+      "text": "blocks can then be compacted"
+    },
+    {
+      "type": "paragraph",
+      "text": "by stubbing off branches of"
+    },
+    {
+      "type": "paragraph",
+      "text": "the tree. The interior hashes"
+    },
+    {
+      "type": "paragraph",
+      "text": "do not need to be"
+    },
+    {
+      "type": "paragraph",
+      "text": "stored."
+    },
+    {
+      "type": "paragraph",
+      "text": "![disk](img/reclaiming-disk.png)"
+    },
+    {
+      "type": "paragraph",
+      "text": "A block header with no"
+    },
+    {
+      "type": "paragraph",
+      "text": "transactions would be about 80"
+    },
+    {
+      "type": "paragraph",
+      "text": "bytes. If we suppose blocks"
+    },
+    {
+      "type": "paragraph",
+      "text": "are generated every 10 minutes,"
+    },
+    {
+      "type": "paragraph",
+      "text": "80 bytes * 6 *"
+    },
+    {
+      "type": "paragraph",
+      "text": "24 * 365 = 4.2MB"
+    },
+    {
+      "type": "paragraph",
+      "text": "per year. With computer systems"
+    },
+    {
+      "type": "paragraph",
+      "text": "typically selling with 2GB of"
+    },
+    {
+      "type": "paragraph",
+      "text": "RAM as of 2008, and"
+    },
+    {
+      "type": "paragraph",
+      "text": "Moore's Law predicting current growth"
+    },
+    {
+      "type": "paragraph",
+      "text": "of 1.2GB per year, storage"
+    },
+    {
+      "type": "paragraph",
+      "text": "should not be a problem"
+    },
+    {
+      "type": "paragraph",
+      "text": "even if the block headers"
+    },
+    {
+      "type": "paragraph",
+      "text": "must be kept in memory."
+    },
+    {
+      "type": "heading",
+      "depth": 2,
+      "text": "Simplified Payment Verification"
+    },
+    {
+      "type": "paragraph",
+      "text": "Simplified Payment Verification"
+    },
+    {
+      "type": "paragraph",
+      "text": "It is possible to verify"
+    },
+    {
+      "type": "paragraph",
+      "text": "payments without running a full"
+    },
+    {
+      "type": "paragraph",
+      "text": "network node. A user only"
+    },
+    {
+      "type": "paragraph",
+      "text": "needs to keep a copy"
+    },
+    {
+      "type": "paragraph",
+      "text": "of the block headers of"
+    },
+    {
+      "type": "paragraph",
+      "text": "the longest proof-of-work chain, which"
+    },
+    {
+      "type": "paragraph",
+      "text": "he can get by querying"
+    },
+    {
+      "type": "paragraph",
+      "text": "network nodes until he's convinced"
+    },
+    {
+      "type": "paragraph",
+      "text": "he has the longest chain,"
+    },
+    {
+      "type": "paragraph",
+      "text": "and obtain the Merkle branch"
+    },
+    {
+      "type": "paragraph",
+      "text": "linking the transaction to the"
+    },
+    {
+      "type": "paragraph",
+      "text": "block it's timestamped in. He"
+    },
+    {
+      "type": "paragraph",
+      "text": "can't check the transaction for"
+    },
+    {
+      "type": "paragraph",
+      "text": "himself, but by linking it"
+    },
+    {
+      "type": "paragraph",
+      "text": "to a place in the"
+    },
+    {
+      "type": "paragraph",
+      "text": "chain, he can see that"
+    },
+    {
+      "type": "paragraph",
+      "text": "a network node has accepted"
+    },
+    {
+      "type": "paragraph",
+      "text": "it, and blocks added after"
+    },
+    {
+      "type": "paragraph",
+      "text": "it further confirm the network"
+    },
+    {
+      "type": "paragraph",
+      "text": "has accepted it."
+    },
+    {
+      "type": "paragraph",
+      "text": "![spv](img/spv.png)"
+    },
+    {
+      "type": "paragraph",
+      "text": "As such, the verification is"
+    },
+    {
+      "type": "paragraph",
+      "text": "reliable as long as honest"
+    },
+    {
+      "type": "paragraph",
+      "text": "nodes control the network, but"
+    },
+    {
+      "type": "paragraph",
+      "text": "is more vulnerable if the"
+    },
+    {
+      "type": "paragraph",
+      "text": "network is overpowered by an"
+    },
+    {
+      "type": "paragraph",
+      "text": "attacker. While network nodes can"
+    },
+    {
+      "type": "paragraph",
+      "text": "verify transactions for themselves, the"
+    },
+    {
+      "type": "paragraph",
+      "text": "simplified method can be fooled"
+    },
+    {
+      "type": "paragraph",
+      "text": "by an attacker's fabricated transactions"
+    },
+    {
+      "type": "paragraph",
+      "text": "for as long as the"
+    },
+    {
+      "type": "paragraph",
+      "text": "attacker can continue to overpower"
+    },
+    {
+      "type": "paragraph",
+      "text": "the network. One strategy to"
+    },
+    {
+      "type": "paragraph",
+      "text": "protect against this would be"
+    },
+    {
+      "type": "paragraph",
+      "text": "to accept alerts from network"
+    },
+    {
+      "type": "paragraph",
+      "text": "nodes when they detect an"
+    },
+    {
+      "type": "paragraph",
+      "text": "invalid block, prompting the user's"
+    },
+    {
+      "type": "paragraph",
+      "text": "software to download the full"
+    },
+    {
+      "type": "paragraph",
+      "text": "block and alerted transactions to"
+    },
+    {
+      "type": "paragraph",
+      "text": "confirm the inconsistency. Businesses that"
+    },
+    {
+      "type": "paragraph",
+      "text": "receive frequent payments will probably"
+    },
+    {
+      "type": "paragraph",
+      "text": "still want to run their"
+    },
+    {
+      "type": "paragraph",
+      "text": "own nodes for more independent"
+    },
+    {
+      "type": "paragraph",
+      "text": "security and quicker verification."
+    },
+    {
+      "type": "heading",
+      "depth": 2,
+      "text": "Combining and Splitting Value"
+    },
+    {
+      "type": "paragraph",
+      "text": "Combining and Splitting Value"
+    },
+    {
+      "type": "paragraph",
+      "text": "Although it would be possible"
+    },
+    {
+      "type": "paragraph",
+      "text": "to handle coins individually, it"
+    },
+    {
+      "type": "paragraph",
+      "text": "would be unwieldy to make"
+    },
+    {
+      "type": "paragraph",
+      "text": "a separate transaction for every"
+    },
+    {
+      "type": "paragraph",
+      "text": "cent in a transfer. To"
+    },
+    {
+      "type": "paragraph",
+      "text": "allow value to be split"
+    },
+    {
+      "type": "paragraph",
+      "text": "and combined, transactions contain multiple"
+    },
+    {
+      "type": "paragraph",
+      "text": "inputs and outputs. Normally there"
+    },
+    {
+      "type": "paragraph",
+      "text": "will be either a single"
+    },
+    {
+      "type": "paragraph",
+      "text": "input from a larger previous"
+    },
+    {
+      "type": "paragraph",
+      "text": "transaction or multiple inputs combining"
+    },
+    {
+      "type": "paragraph",
+      "text": "smaller amounts, and at most"
+    },
+    {
+      "type": "paragraph",
+      "text": "two outputs: one for the"
+    },
+    {
+      "type": "paragraph",
+      "text": "payment, and one returning the"
+    },
+    {
+      "type": "paragraph",
+      "text": "change, if any, back to"
+    },
+    {
+      "type": "paragraph",
+      "text": "the sender."
+    },
+    {
+      "type": "paragraph",
+      "text": "![combining-splitting](img/combining-splitting.png)"
+    },
+    {
+      "type": "paragraph",
+      "text": "It should be noted that"
+    },
+    {
+      "type": "paragraph",
+      "text": "fan-out, where a transaction depends"
+    },
+    {
+      "type": "paragraph",
+      "text": "on several transactions, and those"
+    },
+    {
+      "type": "paragraph",
+      "text": "transactions depend on many more,"
+    },
+    {
+      "type": "paragraph",
+      "text": "is not a problem here."
+    },
+    {
+      "type": "paragraph",
+      "text": "There is never the need"
+    },
+    {
+      "type": "paragraph",
+      "text": "to extract a complete standalone"
+    },
+    {
+      "type": "paragraph",
+      "text": "copy of a transaction's history."
+    },
+    {
+      "type": "heading",
+      "depth": 2,
+      "text": "Privacy"
+    },
+    {
+      "type": "paragraph",
+      "text": "Privacy"
+    },
+    {
+      "type": "paragraph",
+      "text": "The traditional banking model achieves"
+    },
+    {
+      "type": "paragraph",
+      "text": "a level of privacy by"
+    },
+    {
+      "type": "paragraph",
+      "text": "limiting access to information to"
+    },
+    {
+      "type": "paragraph",
+      "text": "the parties involved and the"
+    },
+    {
+      "type": "paragraph",
+      "text": "trusted third party. The necessity"
+    },
+    {
+      "type": "paragraph",
+      "text": "to announce all transactions publicly"
+    },
+    {
+      "type": "paragraph",
+      "text": "precludes this method, but privacy"
+    },
+    {
+      "type": "paragraph",
+      "text": "can still be maintained by"
+    },
+    {
+      "type": "paragraph",
+      "text": "breaking the flow of information"
+    },
+    {
+      "type": "paragraph",
+      "text": "in another place: by keeping"
+    },
+    {
+      "type": "paragraph",
+      "text": "public keys anonymous. The public"
+    },
+    {
+      "type": "paragraph",
+      "text": "can see that someone is"
+    },
+    {
+      "type": "paragraph",
+      "text": "sending an amount to someone"
+    },
+    {
+      "type": "paragraph",
+      "text": "else, but without information linking"
+    },
+    {
+      "type": "paragraph",
+      "text": "the transaction to anyone. This"
+    },
+    {
+      "type": "paragraph",
+      "text": "is similar to the level"
+    },
+    {
+      "type": "paragraph",
+      "text": "of information released by stock"
+    },
+    {
+      "type": "paragraph",
+      "text": "exchanges, where the time and"
+    },
+    {
+      "type": "paragraph",
+      "text": "size of individual trades, the"
+    },
+    {
+      "type": "paragraph",
+      "text": "\"tape\", is made public, but"
+    },
+    {
+      "type": "paragraph",
+      "text": "without telling who the parties"
+    },
+    {
+      "type": "paragraph",
+      "text": "were."
+    },
+    {
+      "type": "paragraph",
+      "text": "![privacy](img/privacy.png)"
+    },
+    {
+      "type": "paragraph",
+      "text": "As an additional firewall, a"
+    },
+    {
+      "type": "paragraph",
+      "text": "new key pair should be"
+    },
+    {
+      "type": "paragraph",
+      "text": "used for each transaction to"
+    },
+    {
+      "type": "paragraph",
+      "text": "keep them from being linked"
+    },
+    {
+      "type": "paragraph",
+      "text": "to a common owner. Some"
+    },
+    {
+      "type": "paragraph",
+      "text": "linking is still unavoidable with"
+    },
+    {
+      "type": "paragraph",
+      "text": "multi-input transactions, which necessarily reveal"
+    },
+    {
+      "type": "paragraph",
+      "text": "that their inputs were owned"
+    },
+    {
+      "type": "paragraph",
+      "text": "by the same owner. The"
+    },
+    {
+      "type": "paragraph",
+      "text": "risk is that if the"
+    },
+    {
+      "type": "paragraph",
+      "text": "owner of a key is"
+    },
+    {
+      "type": "paragraph",
+      "text": "revealed, linking could reveal other"
+    },
+    {
+      "type": "paragraph",
+      "text": "transactions that belonged to the"
+    },
+    {
+      "type": "paragraph",
+      "text": "same owner."
+    },
+    {
+      "type": "heading",
+      "depth": 2,
+      "text": "Calculations"
+    },
+    {
+      "type": "paragraph",
+      "text": "Calculations"
+    },
+    {
+      "type": "paragraph",
+      "text": "We consider the scenario of"
+    },
+    {
+      "type": "paragraph",
+      "text": "an attacker trying to generate"
+    },
+    {
+      "type": "paragraph",
+      "text": "an alternate chain faster than"
+    },
+    {
+      "type": "paragraph",
+      "text": "the honest chain. Even if"
+    },
+    {
+      "type": "paragraph",
+      "text": "this is accomplished, it does"
+    },
+    {
+      "type": "paragraph",
+      "text": "not throw the system open"
+    },
+    {
+      "type": "paragraph",
+      "text": "to arbitrary changes, such as"
+    },
+    {
+      "type": "paragraph",
+      "text": "creating value out of thin"
+    },
+    {
+      "type": "paragraph",
+      "text": "air or taking money that"
+    },
+    {
+      "type": "paragraph",
+      "text": "never belonged to the attacker."
+    },
+    {
+      "type": "paragraph",
+      "text": "Nodes are not going to"
+    },
+    {
+      "type": "paragraph",
+      "text": "accept an invalid transaction as"
+    },
+    {
+      "type": "paragraph",
+      "text": "payment, and honest nodes will"
+    },
+    {
+      "type": "paragraph",
+      "text": "never accept a block containing"
+    },
+    {
+      "type": "paragraph",
+      "text": "them. An attacker can only"
+    },
+    {
+      "type": "paragraph",
+      "text": "try to change one of"
+    },
+    {
+      "type": "paragraph",
+      "text": "his own transactions to take"
+    },
+    {
+      "type": "paragraph",
+      "text": "back money he recently spent."
+    },
+    {
+      "type": "paragraph",
+      "text": "The race between the honest"
+    },
+    {
+      "type": "paragraph",
+      "text": "chain and an attacker chain"
+    },
+    {
+      "type": "paragraph",
+      "text": "can be characterized as a"
+    },
+    {
+      "type": "paragraph",
+      "text": "Binomial Random Walk. The success"
+    },
+    {
+      "type": "paragraph",
+      "text": "event is the honest chain"
+    },
+    {
+      "type": "paragraph",
+      "text": "being extended by one block,"
+    },
+    {
+      "type": "paragraph",
+      "text": "increasing its lead by +1,"
+    },
+    {
+      "type": "paragraph",
+      "text": "and the failure event is"
+    },
+    {
+      "type": "paragraph",
+      "text": "the attacker's chain being extended"
+    },
+    {
+      "type": "paragraph",
+      "text": "by one block, reducing the"
+    },
+    {
+      "type": "paragraph",
+      "text": "gap by -1."
+    },
+    {
+      "type": "paragraph",
+      "text": "The probability of an attacker"
+    },
+    {
+      "type": "paragraph",
+      "text": "catching up from a given"
+    },
+    {
+      "type": "paragraph",
+      "text": "deficit is analogous to a"
+    },
+    {
+      "type": "paragraph",
+      "text": "Gambler's Ruin problem. Suppose a"
+    },
+    {
+      "type": "paragraph",
+      "text": "gambler with unlimited credit starts"
+    },
+    {
+      "type": "paragraph",
+      "text": "at a deficit and plays"
+    },
+    {
+      "type": "paragraph",
+      "text": "potentially an infinite number of"
+    },
+    {
+      "type": "paragraph",
+      "text": "trials to try to reach"
+    },
+    {
+      "type": "paragraph",
+      "text": "breakeven. We can calculate the"
+    },
+    {
+      "type": "paragraph",
+      "text": "probability he ever reaches breakeven,"
+    },
+    {
+      "type": "paragraph",
+      "text": "or that an attacker ever"
+    },
+    {
+      "type": "paragraph",
+      "text": "catches up with the honest"
+    },
+    {
+      "type": "paragraph",
+      "text": "chain, as follows [8]:"
+    },
+    {
+      "type": "paragraph",
+      "text": "p = probability an honest"
+    },
+    {
+      "type": "paragraph",
+      "text": "node finds the next block"
+    },
+    {
+      "type": "paragraph",
+      "text": " \nq = probability the"
+    },
+    {
+      "type": "paragraph",
+      "text": "attacker finds the next block"
+    },
+    {
+      "type": "paragraph",
+      "text": " \nq<sub>z</sub> = probability the"
+    },
+    {
+      "type": "paragraph",
+      "text": "attacker will ever catch up"
+    },
+    {
+      "type": "paragraph",
+      "text": "from z blocks behind"
+    },
+    {
+      "type": "paragraph",
+      "text": "![eq1](img/eq1.png)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Given our assumption that p"
+    },
+    {
+      "type": "paragraph",
+      "text": "> q, the probability drops"
+    },
+    {
+      "type": "paragraph",
+      "text": "exponentially as the number of"
+    },
+    {
+      "type": "paragraph",
+      "text": "blocks the attacker has to"
+    },
+    {
+      "type": "paragraph",
+      "text": "catch up with increases. With"
+    },
+    {
+      "type": "paragraph",
+      "text": "the odds against him, if"
+    },
+    {
+      "type": "paragraph",
+      "text": "he doesn't make a lucky"
+    },
+    {
+      "type": "paragraph",
+      "text": "lunge forward early on, his"
+    },
+    {
+      "type": "paragraph",
+      "text": "chances become vanishingly small as"
+    },
+    {
+      "type": "paragraph",
+      "text": "he falls further behind."
+    },
+    {
+      "type": "paragraph",
+      "text": "We now consider how long"
+    },
+    {
+      "type": "paragraph",
+      "text": "the recipient of a new"
+    },
+    {
+      "type": "paragraph",
+      "text": "transaction needs to wait before"
+    },
+    {
+      "type": "paragraph",
+      "text": "being sufficiently certain the sender"
+    },
+    {
+      "type": "paragraph",
+      "text": "can't change the transaction. We"
+    },
+    {
+      "type": "paragraph",
+      "text": "assume the sender is an"
+    },
+    {
+      "type": "paragraph",
+      "text": "attacker who wants to make"
+    },
+    {
+      "type": "paragraph",
+      "text": "the recipient believe he paid"
+    },
+    {
+      "type": "paragraph",
+      "text": "him for a while, then"
+    },
+    {
+      "type": "paragraph",
+      "text": "switch it to pay back"
+    },
+    {
+      "type": "paragraph",
+      "text": "to himself after some time"
+    },
+    {
+      "type": "paragraph",
+      "text": "has passed. The receiver will"
+    },
+    {
+      "type": "paragraph",
+      "text": "be alerted when that happens,"
+    },
+    {
+      "type": "paragraph",
+      "text": "but the sender hopes it"
+    },
+    {
+      "type": "paragraph",
+      "text": "will be too late."
+    },
+    {
+      "type": "paragraph",
+      "text": "The receiver generates a new"
+    },
+    {
+      "type": "paragraph",
+      "text": "key pair and gives the"
+    },
+    {
+      "type": "paragraph",
+      "text": "public key to the sender"
+    },
+    {
+      "type": "paragraph",
+      "text": "shortly before signing. This prevents"
+    },
+    {
+      "type": "paragraph",
+      "text": "the sender from preparing a"
+    },
+    {
+      "type": "paragraph",
+      "text": "chain of blocks ahead of"
+    },
+    {
+      "type": "paragraph",
+      "text": "time by working on it"
+    },
+    {
+      "type": "paragraph",
+      "text": "continuously until he is lucky"
+    },
+    {
+      "type": "paragraph",
+      "text": "enough to get far enough"
+    },
+    {
+      "type": "paragraph",
+      "text": "ahead, then executing the transaction"
+    },
+    {
+      "type": "paragraph",
+      "text": "at that moment. Once the"
+    },
+    {
+      "type": "paragraph",
+      "text": "transaction is sent, the dishonest"
+    },
+    {
+      "type": "paragraph",
+      "text": "sender starts working in secret"
+    },
+    {
+      "type": "paragraph",
+      "text": "on a parallel chain containing"
+    },
+    {
+      "type": "paragraph",
+      "text": "an alternate version of his"
+    },
+    {
+      "type": "paragraph",
+      "text": "transaction."
+    },
+    {
+      "type": "paragraph",
+      "text": "The recipient waits until the"
+    },
+    {
+      "type": "paragraph",
+      "text": "transaction has been added to"
+    },
+    {
+      "type": "paragraph",
+      "text": "a block and z blocks"
+    },
+    {
+      "type": "paragraph",
+      "text": "have been linked after it."
+    },
+    {
+      "type": "paragraph",
+      "text": "He doesn't know the exact"
+    },
+    {
+      "type": "paragraph",
+      "text": "amount of progress the attacker"
+    },
+    {
+      "type": "paragraph",
+      "text": "has made, but assuming the"
+    },
+    {
+      "type": "paragraph",
+      "text": "honest blocks took the average"
+    },
+    {
+      "type": "paragraph",
+      "text": "expected time per block, the"
+    },
+    {
+      "type": "paragraph",
+      "text": "attacker's potential progress will be"
+    },
+    {
+      "type": "paragraph",
+      "text": "a Poisson distribution with expected"
+    },
+    {
+      "type": "paragraph",
+      "text": "value:"
+    },
+    {
+      "type": "paragraph",
+      "text": "![eq2](img/eq2.png)"
+    },
+    {
+      "type": "paragraph",
+      "text": "To get the probability the"
+    },
+    {
+      "type": "paragraph",
+      "text": "attacker could still catch up"
+    },
+    {
+      "type": "paragraph",
+      "text": "now, we multiply the Poisson"
+    },
+    {
+      "type": "paragraph",
+      "text": "density for each amount of"
+    },
+    {
+      "type": "paragraph",
+      "text": "progress he could have made"
+    },
+    {
+      "type": "paragraph",
+      "text": "by the probability he could"
+    },
+    {
+      "type": "paragraph",
+      "text": "catch up from that point:"
+    },
+    {
+      "type": "paragraph",
+      "text": "![eq3](img/eq3.png)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Rearranging to avoid summing the"
+    },
+    {
+      "type": "paragraph",
+      "text": "infinite tail of the distribution..."
+    },
+    {
+      "type": "paragraph",
+      "text": "![eq4](img/eq4.png)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Converting to C code..."
+    },
+    {
+      "type": "paragraph",
+      "text": "Running some results, we can"
+    },
+    {
+      "type": "paragraph",
+      "text": "see the probability drop off"
+    },
+    {
+      "type": "paragraph",
+      "text": "exponentially with z."
+    },
+    {
+      "type": "paragraph",
+      "text": "Solving for P less than"
+    },
+    {
+      "type": "paragraph",
+      "text": "0.1%..."
+    },
+    {
+      "type": "heading",
+      "depth": 2,
+      "text": "Conclusion"
+    },
+    {
+      "type": "paragraph",
+      "text": "Conclusion"
+    },
+    {
+      "type": "paragraph",
+      "text": "We have proposed a system"
+    },
+    {
+      "type": "paragraph",
+      "text": "for electronic transactions without relying"
+    },
+    {
+      "type": "paragraph",
+      "text": "on trust. We started with"
+    },
+    {
+      "type": "paragraph",
+      "text": "the usual framework of coins"
+    },
+    {
+      "type": "paragraph",
+      "text": "made from digital signatures, which"
+    },
+    {
+      "type": "paragraph",
+      "text": "provides strong control of ownership,"
+    },
+    {
+      "type": "paragraph",
+      "text": "but is incomplete without a"
+    },
+    {
+      "type": "paragraph",
+      "text": "way to prevent double-spending. To"
+    },
+    {
+      "type": "paragraph",
+      "text": "solve this, we proposed a"
+    },
+    {
+      "type": "paragraph",
+      "text": "peer-to-peer network using proof-of-work to"
+    },
+    {
+      "type": "paragraph",
+      "text": "record a public history of"
+    },
+    {
+      "type": "paragraph",
+      "text": "transactions that quickly becomes computationally"
+    },
+    {
+      "type": "paragraph",
+      "text": "impractical for an attacker to"
+    },
+    {
+      "type": "paragraph",
+      "text": "change if honest nodes control"
+    },
+    {
+      "type": "paragraph",
+      "text": "a majority of CPU power."
+    },
+    {
+      "type": "paragraph",
+      "text": "The network is robust in"
+    },
+    {
+      "type": "paragraph",
+      "text": "its unstructured simplicity. Nodes work"
+    },
+    {
+      "type": "paragraph",
+      "text": "all at once with little"
+    },
+    {
+      "type": "paragraph",
+      "text": "coordination. They do not need"
+    },
+    {
+      "type": "paragraph",
+      "text": "to be identified, since messages"
+    },
+    {
+      "type": "paragraph",
+      "text": "are not routed to any"
+    },
+    {
+      "type": "paragraph",
+      "text": "particular place and only need"
+    },
+    {
+      "type": "paragraph",
+      "text": "to be delivered on a"
+    },
+    {
+      "type": "paragraph",
+      "text": "best effort basis. Nodes can"
+    },
+    {
+      "type": "paragraph",
+      "text": "leave and rejoin the network"
+    },
+    {
+      "type": "paragraph",
+      "text": "at will, accepting the proof-of-work"
+    },
+    {
+      "type": "paragraph",
+      "text": "chain as proof of what"
+    },
+    {
+      "type": "paragraph",
+      "text": "happened while they were gone."
+    },
+    {
+      "type": "paragraph",
+      "text": "They vote with their CPU"
+    },
+    {
+      "type": "paragraph",
+      "text": "power, expressing their acceptance of"
+    },
+    {
+      "type": "paragraph",
+      "text": "valid blocks by working on"
+    },
+    {
+      "type": "paragraph",
+      "text": "extending them and rejecting invalid"
+    },
+    {
+      "type": "paragraph",
+      "text": "blocks by refusing to work"
+    },
+    {
+      "type": "paragraph",
+      "text": "on them. Any needed rules"
+    },
+    {
+      "type": "paragraph",
+      "text": "and incentives can be enforced"
+    },
+    {
+      "type": "paragraph",
+      "text": "with this consensus mechanism."
+    },
+    {
+      "type": "heading",
+      "depth": 2,
+      "text": "References"
+    },
+    {
+      "type": "paragraph",
+      "text": "References"
+    },
+    {
+      "type": "paragraph",
+      "text": "[1] W. Dai, \"b-money,\" http://www.weidai.com/bmoney.txt,"
+    },
+    {
+      "type": "paragraph",
+      "text": "1998.  \n[2] H. Massias,"
+    },
+    {
+      "type": "paragraph",
+      "text": "X.S. Avila, and J.-J. Quisquater,"
+    },
+    {
+      "type": "paragraph",
+      "text": "\"Design of a secure timestamping"
+    },
+    {
+      "type": "paragraph",
+      "text": "service with minimal trust requirements,\""
+    },
+    {
+      "type": "paragraph",
+      "text": "In *20th Symposium on Information"
+    },
+    {
+      "type": "paragraph",
+      "text": "Theory in the Benelux*, May"
+    },
+    {
+      "type": "paragraph",
+      "text": "1999.  \n[3] S. Haber,"
+    },
+    {
+      "type": "paragraph",
+      "text": "W.S. Stornetta, \"How to time-stamp"
+    },
+    {
+      "type": "paragraph",
+      "text": "a digital document,\" In *Journal"
+    },
+    {
+      "type": "paragraph",
+      "text": "of Cryptology*, vol 3, no"
+    },
+    {
+      "type": "paragraph",
+      "text": "2, pages 99-111, 1991. "
+    },
+    {
+      "type": "paragraph",
+      "text": "\n[4] D. Bayer, S. Haber,"
+    },
+    {
+      "type": "paragraph",
+      "text": "W.S. Stornetta, \"Improving the efficiency"
+    },
+    {
+      "type": "paragraph",
+      "text": "and reliability of digital time-stamping,\""
+    },
+    {
+      "type": "paragraph",
+      "text": "In *Sequences II: Methods in"
+    },
+    {
+      "type": "paragraph",
+      "text": "Communication, Security and Computer Science*,"
+    },
+    {
+      "type": "paragraph",
+      "text": "pages 329-334, 1993.  \n[5]"
+    },
+    {
+      "type": "paragraph",
+      "text": "S. Haber, W.S. Stornetta, \"Secure"
+    },
+    {
+      "type": "paragraph",
+      "text": "names for bit-strings,\" In *Proceedings"
+    },
+    {
+      "type": "paragraph",
+      "text": "of the 4th ACM Conference"
+    },
+    {
+      "type": "paragraph",
+      "text": "on Computer and Communications Security*,"
+    },
+    {
+      "type": "paragraph",
+      "text": "pages 28-35, April 1997. "
+    },
+    {
+      "type": "paragraph",
+      "text": "\n[6] A. Back, \"Hashcash -"
+    },
+    {
+      "type": "paragraph",
+      "text": "a denial of service counter-measure,\""
+    },
+    {
+      "type": "paragraph",
+      "text": " \nhttp://www.hashcash.org/papers/hashcash.pdf, 2002.  \n[7]"
+    },
+    {
+      "type": "paragraph",
+      "text": "R.C. Merkle, \"Protocols for public"
+    },
+    {
+      "type": "paragraph",
+      "text": "key cryptosystems,\" In *Proc. 1980"
+    },
+    {
+      "type": "paragraph",
+      "text": "Symposium on Security and Privacy*,"
+    },
+    {
+      "type": "paragraph",
+      "text": "IEEE Computer Society, pages 122-133,"
+    },
+    {
+      "type": "paragraph",
+      "text": "April 1980.  \n[8] W."
+    },
+    {
+      "type": "paragraph",
+      "text": "Feller, \"An introduction to probability"
+    },
+    {
+      "type": "paragraph",
+      "text": "theory and its applications,\" 1957."
+    }
+  ]
+}
