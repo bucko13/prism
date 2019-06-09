@@ -18,7 +18,8 @@ async function getEssay(maxLen = 5, _url) {
     process.exit(1)
   }
 
-  if (path.extname(url).includes('md')) md = page
+  if (path.extname(url).includes('md') || path.extname(url).includes('txt'))
+    md = page
   else if (path.extname(url).includes('html')) {
     const turndownService = new TurndownService()
     md = turndownService.turndown(page)
@@ -47,7 +48,7 @@ async function getEssay(maxLen = 5, _url) {
       case 'heading':
         acc.push(curr)
       case 'paragraph': {
-        const words = curr.text.split(' ')
+        const words = curr.text.split(/[\s\n]/g)
         while (words.length) {
           const text = words.splice(0, maxLen).join(' ')
           acc.push({ type: 'paragraph', text })

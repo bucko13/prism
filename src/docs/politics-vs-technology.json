@@ -3,183 +3,6 @@
   "text": [
     {
       "type": "paragraph",
-      "text": "[![Wayback Machine](/_static/images/toolbar/wayback-toolbar-logo.png)](/web/ \"Wayback Machine home"
-    },
-    {
-      "type": "paragraph",
-      "text": "page\")"
-    },
-    {
-      "type": "paragraph",
-      "text": "success"
-    },
-    {
-      "type": "paragraph",
-      "text": "fail"
-    },
-    {
-      "type": "paragraph",
-      "text": "[](# \"Share via My Web"
-    },
-    {
-      "type": "paragraph",
-      "text": "Archive\")[](https://archive.org/account/login.php \"Sign In\")[](http://faq.web.archive.org/ \"Get some"
-    },
-    {
-      "type": "paragraph",
-      "text": "help using the Wayback Machine\")[](#close"
-    },
-    {
-      "type": "paragraph",
-      "text": "\"Close the toolbar\")"
-    },
-    {
-      "type": "paragraph",
-      "text": "[**Feb**](http://web.archive.org/web/20120216180441/http://finney.org/~hal/pol_v_tech.html \"16 Feb 2012\")"
-    },
-    {
-      "type": "paragraph",
-      "text": "MAY"
-    },
-    {
-      "type": "paragraph",
-      "text": "Jun"
-    },
-    {
-      "type": "paragraph",
-      "text": "[![Previous capture](/_static/images/toolbar/wm_tb_prv_on.png)](http://web.archive.org/web/20120216180441/http://finney.org/~hal/pol_v_tech.html \"18:04:41 Feb 16,"
-    },
-    {
-      "type": "paragraph",
-      "text": "2012\")"
-    },
-    {
-      "type": "paragraph",
-      "text": "13"
-    },
-    {
-      "type": "paragraph",
-      "text": "![Next capture](/_static/images/toolbar/wm_tb_nxt_off.png)"
-    },
-    {
-      "type": "paragraph",
-      "text": "[**2012**](http://web.archive.org/web/20120216180441/http://finney.org/~hal/pol_v_tech.html \"16 Feb 2012\")"
-    },
-    {
-      "type": "paragraph",
-      "text": "2013"
-    },
-    {
-      "type": "paragraph",
-      "text": "2014"
-    },
-    {
-      "type": "paragraph",
-      "text": "[20 captures](/web/20130513043046*/http://finney.org/~hal/pol_v_tech.html \"See a list"
-    },
-    {
-      "type": "paragraph",
-      "text": "of every capture for this"
-    },
-    {
-      "type": "paragraph",
-      "text": "URL\")"
-    },
-    {
-      "type": "paragraph",
-      "text": "06 Dec 2004 - 13"
-    },
-    {
-      "type": "paragraph",
-      "text": "May 2013"
-    },
-    {
-      "type": "paragraph",
-      "text": "[About this capture](#expand)"
-    },
-    {
-      "type": "paragraph",
-      "text": "COLLECTED BY"
-    },
-    {
-      "type": "paragraph",
-      "text": "Organization: [Internet Archive](https://archive.org/details/webwidecrawl)"
-    },
-    {
-      "type": "paragraph",
-      "text": "The Internet Archive discovers and"
-    },
-    {
-      "type": "paragraph",
-      "text": "captures web pages through many"
-    },
-    {
-      "type": "paragraph",
-      "text": "different web crawls. At any"
-    },
-    {
-      "type": "paragraph",
-      "text": "given time several distinct crawls"
-    },
-    {
-      "type": "paragraph",
-      "text": "are running, some for months,"
-    },
-    {
-      "type": "paragraph",
-      "text": "and some every day or"
-    },
-    {
-      "type": "paragraph",
-      "text": "longer. View the web archive"
-    },
-    {
-      "type": "paragraph",
-      "text": "through the [Wayback Machine](http://archive.org/web/web.php)."
-    },
-    {
-      "type": "paragraph",
-      "text": "Collection: [Wide Crawl started April"
-    },
-    {
-      "type": "paragraph",
-      "text": "2013](https://archive.org/details/wide00008)"
-    },
-    {
-      "type": "paragraph",
-      "text": "Web wide crawl with initial"
-    },
-    {
-      "type": "paragraph",
-      "text": "seedlist and crawler configuration from"
-    },
-    {
-      "type": "paragraph",
-      "text": "April 2013."
-    },
-    {
-      "type": "paragraph",
-      "text": "TIMESTAMPS"
-    },
-    {
-      "type": "paragraph",
-      "text": "![loading](/_static/images/loading.gif)"
-    },
-    {
-      "type": "paragraph",
-      "text": "\\_\\_wm.bt(600,27,25,2,\"web\",\"http://finney.org/~hal/pol\\_v\\_tech.html\",\"2013-05-13\",1996,\"/\\_static/\",\\['css/banner-styles.css','css/iconochive.css'\\]);"
-    },
-    {
-      "type": "heading",
-      "depth": 1,
-      "text": "Politics vs Technology"
-    },
-    {
-      "type": "paragraph",
-      "text": "Politics vs Technology"
-    },
-    {
-      "type": "paragraph",
       "text": "2 Jan 94"
     },
     {
@@ -208,31 +31,35 @@
     },
     {
       "type": "paragraph",
-      "text": "computer. Technological\ngains are permanent. The"
+      "text": "computer. Technological gains are permanent."
     },
     {
       "type": "paragraph",
-      "text": "political approach is only useful"
+      "text": "The political approach is only"
     },
     {
       "type": "paragraph",
-      "text": "as a\ntactical weapon, to hold"
+      "text": "useful as a tactical weapon,"
     },
     {
       "type": "paragraph",
-      "text": "them off until technological solutions"
+      "text": "to hold them off until"
     },
     {
       "type": "paragraph",
-      "text": "are\nin place. If you want"
+      "text": "technological solutions are in place."
     },
     {
       "type": "paragraph",
-      "text": "to change the world, don't"
+      "text": "If you want to change"
     },
     {
       "type": "paragraph",
-      "text": "protest. Write code!"
+      "text": "the world, don't protest. Write"
+    },
+    {
+      "type": "paragraph",
+      "text": "code!"
     },
     {
       "type": "paragraph",
@@ -244,23 +71,23 @@
     },
     {
       "type": "paragraph",
-      "text": "I don't\nagree.  The notion"
+      "text": "I don't agree.  The"
     },
     {
       "type": "paragraph",
-      "text": "that we can just fade"
+      "text": "notion that we can just"
     },
     {
       "type": "paragraph",
-      "text": "into cypherspace and ignore\nthe unpleasant"
+      "text": "fade into cypherspace and ignore"
     },
     {
       "type": "paragraph",
-      "text": "political realities is unrealistic, in"
+      "text": "the unpleasant political realities is"
     },
     {
       "type": "paragraph",
-      "text": "my view."
+      "text": "unrealistic, in my view."
     },
     {
       "type": "paragraph",
@@ -272,23 +99,23 @@
     },
     {
       "type": "paragraph",
-      "text": "to\nmake non-Clipper encryption illegal? "
+      "text": "to make non-Clipper encryption illegal?"
     },
     {
       "type": "paragraph",
-      "text": "To the extent this proposal"
+      "text": " To the extent this"
     },
     {
       "type": "paragraph",
-      "text": "has been\nor will be defeated,"
+      "text": "proposal has been or will"
     },
     {
       "type": "paragraph",
-      "text": "it will happen through political"
+      "text": "be defeated, it will happen"
     },
     {
       "type": "paragraph",
-      "text": "maneuvering, not\ntechnology."
+      "text": "through political maneuvering, not technology."
     },
     {
       "type": "paragraph",
@@ -300,35 +127,39 @@
     },
     {
       "type": "paragraph",
-      "text": "hasn't.\nHe and others may be"
+      "text": "hasn't. He and others may"
     },
     {
       "type": "paragraph",
-      "text": "facing the prospect of ten"
+      "text": "be facing the prospect of"
     },
     {
       "type": "paragraph",
-      "text": "years in prison if they"
+      "text": "ten years in prison if"
     },
     {
       "type": "paragraph",
-      "text": "were\nfound guilty of illegal export."
+      "text": "they were found guilty of"
     },
     {
       "type": "paragraph",
-      "text": " If anyone has any"
+      "text": "illegal export.  If anyone"
     },
     {
       "type": "paragraph",
-      "text": "suggestions for how to\nescape from"
+      "text": "has any suggestions for how"
     },
     {
       "type": "paragraph",
-      "text": "jail into cyberspace I'd like"
+      "text": "to escape from jail into"
     },
     {
       "type": "paragraph",
-      "text": "to hear about them."
+      "text": "cyberspace I'd like to hear"
+    },
+    {
+      "type": "paragraph",
+      "text": "about them."
     },
     {
       "type": "paragraph",
@@ -340,39 +171,43 @@
     },
     {
       "type": "paragraph",
-      "text": "But\nif we want to keep"
+      "text": "But if we want to"
     },
     {
       "type": "paragraph",
-      "text": "keys secret from politically-motivated investigations,\nwe"
+      "text": "keep keys secret from politically-motivated"
     },
     {
       "type": "paragraph",
-      "text": "have to rely on the"
+      "text": "investigations, we have to rely"
     },
     {
       "type": "paragraph",
-      "text": "very political and non-technological Fifth"
+      "text": "on the very political and"
     },
     {
       "type": "paragraph",
-      "text": "Amendment\n(an amendment which Mike Godwin"
+      "text": "non-technological Fifth Amendment (an amendment"
     },
     {
       "type": "paragraph",
-      "text": "of EFF and others contend"
+      "text": "which Mike Godwin of EFF"
     },
     {
       "type": "paragraph",
-      "text": "does not actually\nprotect disclosure of"
+      "text": "and others contend does not"
     },
     {
       "type": "paragraph",
-      "text": "cryptographic keys).  Again, we"
+      "text": "actually protect disclosure of cryptographic"
     },
     {
       "type": "paragraph",
-      "text": "need to win political,\nnot technological,"
+      "text": "keys).  Again, we need"
+    },
+    {
+      "type": "paragraph",
+      "text": "to win political, not technological,"
     },
     {
       "type": "paragraph",
@@ -392,35 +227,39 @@
     },
     {
       "type": "paragraph",
-      "text": "ban books.\nLook at the difficulty"
+      "text": "ban books. Look at the"
     },
     {
       "type": "paragraph",
-      "text": "in keeping PGP available in"
+      "text": "difficulty in keeping PGP available"
     },
     {
       "type": "paragraph",
-      "text": "this country even though\nit is"
+      "text": "in this country even though"
     },
     {
       "type": "paragraph",
-      "text": "legal.  Not only have"
+      "text": "it is legal.  Not"
     },
     {
       "type": "paragraph",
-      "text": "FTP sites been steadily closed"
+      "text": "only have FTP sites been"
     },
     {
       "type": "paragraph",
-      "text": "down, even the\nkey servers have"
+      "text": "steadily closed down, even the"
     },
     {
       "type": "paragraph",
-      "text": "as well.  And this"
+      "text": "key servers have as well."
     },
     {
       "type": "paragraph",
-      "text": "is legal software.  "
+      "text": " And this is legal"
+    },
+    {
+      "type": "paragraph",
+      "text": "software.  "
     },
     {
       "type": "paragraph",
@@ -432,43 +271,47 @@
     },
     {
       "type": "paragraph",
-      "text": "because\nPGP's only legal limitations are"
+      "text": "because PGP's only legal limitations"
     },
     {
       "type": "paragraph",
-      "text": "the U.S. patent issues. "
+      "text": "are the U.S. patent issues."
     },
     {
       "type": "paragraph",
-      "text": "Imagine how much\nworse it would"
+      "text": " Imagine how much worse"
     },
     {
       "type": "paragraph",
-      "text": "be if non-escrowed encryption were"
+      "text": "it would be if non-escrowed"
     },
     {
       "type": "paragraph",
-      "text": "made illegal in a broad\nrange"
+      "text": "encryption were made illegal in"
     },
     {
       "type": "paragraph",
-      "text": "of countries, with stringent limits"
+      "text": "a broad range of countries,"
     },
     {
       "type": "paragraph",
-      "text": "on net access to countries"
+      "text": "with stringent limits on net"
     },
     {
       "type": "paragraph",
-      "text": "which\npromote illegal software?  Here"
+      "text": "access to countries which promote"
     },
     {
       "type": "paragraph",
-      "text": "again, these kinds of decisions"
+      "text": "illegal software?  Here again,"
     },
     {
       "type": "paragraph",
-      "text": "will be made\nin the political"
+      "text": "these kinds of decisions will"
+    },
+    {
+      "type": "paragraph",
+      "text": "be made in the political"
     },
     {
       "type": "paragraph",
@@ -484,47 +327,51 @@
     },
     {
       "type": "paragraph",
-      "text": "that most people\nwant.  If"
+      "text": "that most people want. "
     },
     {
       "type": "paragraph",
-      "text": "we want freedom and privacy,"
+      "text": "If we want freedom and"
     },
     {
       "type": "paragraph",
-      "text": "we must persuade others that"
+      "text": "privacy, we must persuade others"
     },
     {
       "type": "paragraph",
-      "text": "these\nare worth having.  There"
+      "text": "that these are worth having."
     },
     {
       "type": "paragraph",
-      "text": "are no shortcuts.  Withdrawing"
+      "text": " There are no shortcuts."
     },
     {
       "type": "paragraph",
-      "text": "into technology\nis like pulling the"
+      "text": " Withdrawing into technology is"
     },
     {
       "type": "paragraph",
-      "text": "blankets over your head. "
+      "text": "like pulling the blankets over"
     },
     {
       "type": "paragraph",
-      "text": "It feels good for a"
+      "text": "your head.  It feels"
     },
     {
       "type": "paragraph",
-      "text": "while, until\nreality catches up. "
+      "text": "good for a while, until"
     },
     {
       "type": "paragraph",
-      "text": "The next Clipper or Digital"
+      "text": "reality catches up.  The"
     },
     {
       "type": "paragraph",
-      "text": "Telephony proposal will\nprovide a rude"
+      "text": "next Clipper or Digital Telephony"
+    },
+    {
+      "type": "paragraph",
+      "text": "proposal will provide a rude"
     },
     {
       "type": "paragraph",
@@ -532,11 +379,11 @@
     },
     {
       "type": "paragraph",
-      "text": "Hal Finney  \nhal@rain.org "
+      "text": "Hal Finney   hal@rain.org"
     },
     {
       "type": "paragraph",
-      "text": ""
+      "text": " "
     },
     {
       "type": "paragraph",
