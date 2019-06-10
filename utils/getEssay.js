@@ -38,7 +38,7 @@ async function getEssay(maxLen = 5, _url) {
       : undefined
   if (title) tokens = tokens.slice(1)
   if (subtitle) tokens = tokens.slice(1)
-
+  let count = 0
   const text = tokens.reduce((acc, curr) => {
     switch (curr.type) {
       case 'space':
@@ -49,6 +49,7 @@ async function getEssay(maxLen = 5, _url) {
         acc.push(curr)
       case 'paragraph': {
         const words = curr.text.split(/[\s\n]/g)
+        count += words.length
         while (words.length) {
           const text = words.splice(0, maxLen).join(' ')
           acc.push({ type: 'paragraph', text })
@@ -64,12 +65,13 @@ async function getEssay(maxLen = 5, _url) {
     .replace(/\s/g, '-')
     .toLowerCase()
   fs.writeFileSync(
-    path.resolve(__dirname, '../src/docs', `${fileName}.json`),
+    path.resolve(__dirname, '../docs', `${fileName}.json`),
     JSON.stringify(
       {
         title,
         subtitle,
         text,
+        count,
       },
       null,
       2

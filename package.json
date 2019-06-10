@@ -21,6 +21,7 @@
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.4.5",
+    "@babel/plugin-transform-runtime": "^7.4.4",
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.6",
@@ -41,9 +42,21 @@
     "webpack-dev-server": "^3.7.1"
   },
   "dependencies": {
+    "@babel/runtime": "^7.4.5",
+    "@radar/lnrpc": "^0.6.0-beta.1",
     "blockstack": "^19.1.0",
-    "bootstrap": "^3.3.7",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4"
+    "body-parser": "^1.19.0",
+    "bootstrap": "^4.3.1",
+    "express": "^4.17.1",
+    "express-session": "^1.16.1",
+    "helmet": "^3.18.0",
+    "memorystore": "^1.6.1",
+    "prop-types": "^15.7.2",
+    "qrcode.react": "^0.9.3",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-router-dom": "^5.0.1",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.87.1"
   }
 }

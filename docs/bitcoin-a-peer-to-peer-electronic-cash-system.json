@@ -3,11 +3,11 @@
   "text": [
     {
       "type": "paragraph",
-      "text": "Satoshi Nakamoto  \nsatoshin@gmx.com "
+      "text": "Satoshi Nakamoto   satoshin@gmx.com"
     },
     {
       "type": "paragraph",
-      "text": "\nwww.bitcoin.org"
+      "text": "  www.bitcoin.org"
     },
     {
       "type": "paragraph",
@@ -2074,23 +2074,27 @@
     },
     {
       "type": "paragraph",
-      "text": " \nq = probability the"
+      "text": "  q = probability"
     },
     {
       "type": "paragraph",
-      "text": "attacker finds the next block"
+      "text": "the attacker finds the next"
     },
     {
       "type": "paragraph",
-      "text": " \nq<sub>z</sub> = probability the"
+      "text": "block   q<sub>z</sub> ="
     },
     {
       "type": "paragraph",
-      "text": "attacker will ever catch up"
+      "text": "probability the attacker will ever"
     },
     {
       "type": "paragraph",
-      "text": "from z blocks behind"
+      "text": "catch up from z blocks"
+    },
+    {
+      "type": "paragraph",
+      "text": "behind"
     },
     {
       "type": "paragraph",
@@ -2548,95 +2552,99 @@
     },
     {
       "type": "paragraph",
-      "text": "1998.  \n[2] H. Massias,"
+      "text": "1998.   [2] H."
     },
     {
       "type": "paragraph",
-      "text": "X.S. Avila, and J.-J. Quisquater,"
+      "text": "Massias, X.S. Avila, and J.-J."
     },
     {
       "type": "paragraph",
-      "text": "\"Design of a secure timestamping"
+      "text": "Quisquater, \"Design of a secure"
     },
     {
       "type": "paragraph",
-      "text": "service with minimal trust requirements,\""
+      "text": "timestamping service with minimal trust"
     },
     {
       "type": "paragraph",
-      "text": "In *20th Symposium on Information"
+      "text": "requirements,\" In *20th Symposium on"
     },
     {
       "type": "paragraph",
-      "text": "Theory in the Benelux*, May"
+      "text": "Information Theory in the Benelux*,"
     },
     {
       "type": "paragraph",
-      "text": "1999.  \n[3] S. Haber,"
+      "text": "May 1999.   [3]"
     },
     {
       "type": "paragraph",
-      "text": "W.S. Stornetta, \"How to time-stamp"
+      "text": "S. Haber, W.S. Stornetta, \"How"
     },
     {
       "type": "paragraph",
-      "text": "a digital document,\" In *Journal"
+      "text": "to time-stamp a digital document,\""
     },
     {
       "type": "paragraph",
-      "text": "of Cryptology*, vol 3, no"
+      "text": "In *Journal of Cryptology*, vol"
     },
     {
       "type": "paragraph",
-      "text": "2, pages 99-111, 1991. "
+      "text": "3, no 2, pages 99-111,"
     },
     {
       "type": "paragraph",
-      "text": "\n[4] D. Bayer, S. Haber,"
+      "text": "1991.   [4] D."
     },
     {
       "type": "paragraph",
-      "text": "W.S. Stornetta, \"Improving the efficiency"
+      "text": "Bayer, S. Haber, W.S. Stornetta,"
     },
     {
       "type": "paragraph",
-      "text": "and reliability of digital time-stamping,\""
+      "text": "\"Improving the efficiency and reliability"
     },
     {
       "type": "paragraph",
-      "text": "In *Sequences II: Methods in"
+      "text": "of digital time-stamping,\" In *Sequences"
     },
     {
       "type": "paragraph",
-      "text": "Communication, Security and Computer Science*,"
+      "text": "II: Methods in Communication, Security"
     },
     {
       "type": "paragraph",
-      "text": "pages 329-334, 1993.  \n[5]"
+      "text": "and Computer Science*, pages 329-334,"
     },
     {
       "type": "paragraph",
-      "text": "S. Haber, W.S. Stornetta, \"Secure"
+      "text": "1993.   [5] S."
     },
     {
       "type": "paragraph",
-      "text": "names for bit-strings,\" In *Proceedings"
+      "text": "Haber, W.S. Stornetta, \"Secure names"
     },
     {
       "type": "paragraph",
-      "text": "of the 4th ACM Conference"
+      "text": "for bit-strings,\" In *Proceedings of"
     },
     {
       "type": "paragraph",
-      "text": "on Computer and Communications Security*,"
+      "text": "the 4th ACM Conference on"
     },
     {
       "type": "paragraph",
-      "text": "pages 28-35, April 1997. "
+      "text": "Computer and Communications Security*, pages"
     },
     {
       "type": "paragraph",
-      "text": "\n[6] A. Back, \"Hashcash -"
+      "text": "28-35, April 1997.  "
+    },
+    {
+      "type": "paragraph",
+      "text": "[6] A. Back, \"Hashcash -"
     },
     {
       "type": "paragraph",
@@ -2644,35 +2652,40 @@
     },
     {
       "type": "paragraph",
-      "text": " \nhttp://www.hashcash.org/papers/hashcash.pdf, 2002.  \n[7]"
+      "text": "  http://www.hashcash.org/papers/hashcash.pdf, 2002. "
     },
     {
       "type": "paragraph",
-      "text": "R.C. Merkle, \"Protocols for public"
+      "text": " [7] R.C. Merkle, \"Protocols"
     },
     {
       "type": "paragraph",
-      "text": "key cryptosystems,\" In *Proc. 1980"
+      "text": "for public key cryptosystems,\" In"
     },
     {
       "type": "paragraph",
-      "text": "Symposium on Security and Privacy*,"
+      "text": "*Proc. 1980 Symposium on Security"
     },
     {
       "type": "paragraph",
-      "text": "IEEE Computer Society, pages 122-133,"
+      "text": "and Privacy*, IEEE Computer Society,"
     },
     {
       "type": "paragraph",
-      "text": "April 1980.  \n[8] W."
+      "text": "pages 122-133, April 1980. "
     },
     {
       "type": "paragraph",
-      "text": "Feller, \"An introduction to probability"
+      "text": " [8] W. Feller, \"An"
     },
     {
       "type": "paragraph",
-      "text": "theory and its applications,\" 1957."
+      "text": "introduction to probability theory and"
+    },
+    {
+      "type": "paragraph",
+      "text": "its applications,\" 1957."
     }
-  ]
+  ],
+  "count": 3124
 }

@@ -1,10 +1,17 @@
 import React, { Component } from 'react'
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom'
+import { BrowserRouter } from 'react-router-dom'
 
-import App from './components/App.jsx';
+import App from './components/App.jsx'
 
 // Require Sass file so webpack can build it
-import bootstrap from 'bootstrap/dist/css/bootstrap.css';
-import style from './styles/style.css';
+import 'semantic-ui-css/semantic.min.css'
+import bootstrap from 'bootstrap/dist/css/bootstrap-grid.css'
+import style from './styles/style.css'
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>,
+  document.getElementById('root')
+)
