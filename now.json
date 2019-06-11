@@ -3,14 +3,24 @@
   "name": "lightning-reader",
   "alias": "lightningreader.club",
   "builds": [
-    { "src": "api/**/*.js", "use": "@now/node" },
+    {
+      "src": "api/**/*.js",
+      "use": "@now/node@canary",
+      "env": {
+        "SESSION_SECRET": "@session-secret",
+        "OPEN_NODE_KEY": "@open-node-key"
+      }
+    },
     {
       "src": "package.json",
       "use": "@now/static-build",
-      "config": { "distDir": "public/build" }
+      "config": {
+        "distDir": "public/build"
+      }
     }
   ],
   "routes": [
+    { "src": "/(.*).((woff?2)|(tiff)|(eot))", "dest": "" },
     { "src": "/favicon.ico", "dest": "/favicon.ico" },
     { "src": "/asset-manifest.json", "dest": "/asset-manifest.json" },
     { "src": "/manifest.json", "dest": "/manifest.json" },

@@ -1,15 +1,15 @@
 import React, { PureComponent } from 'react'
-import QRCode from 'qrcode.react'
 import {
   Header,
   Button,
   Loader,
   Segment,
+  Label,
   Modal,
   Input,
+  Icon,
 } from 'semantic-ui-react'
-const invoice =
-  'lntb50n1pw0mh8ypp5dudm5deu35ln3j3ggmawdyhxkng8g9e0c85qfr692vsnen8kvf8sdqqcqzpgxqyz5vq923zggd6f0qswpmu6axjw4dy305k3vfcr23lc44j9s5alhc40v29f8zstxvs9543y3z2u05470gy9vnxdqlex63s0xdrmu0xea4rzxgq983r48'
+
 export default class Reader extends PureComponent {
   constructor(props) {
     super(props)
@@ -23,6 +23,8 @@ export default class Reader extends PureComponent {
       modalOpen: false,
       modal: {},
       seconds: 30,
+      invoice: '',
+      rate: null,
     }
   }
 
@@ -55,10 +57,17 @@ export default class Reader extends PureComponent {
 
   async setText(e) {
     if (e) e.preventDefault()
-    const { nextText, readIndex } = this.state
-
+    const { nextText, readIndex, text, readCount } = this.state
+    const newCount =
+      text && text.text ? readCount + text.text.split(' ').length : readCount
     this.setState(
-      { text: nextText, readIndex: readIndex + 1, modalOpen: false },
+      {
+        text: nextText,
+        readIndex: readIndex + 1,
+        readCount: newCount,
+        modalOpen: false,
+        invoice: '',
+      },
       () => this.getNextText()
     )
   }
@@ -76,36 +85,67 @@ export default class Reader extends PureComponent {
   async requestInvoice(e, doc) {
     const user = this.props.userSession.loadUserData()
     const body = JSON.stringify({ time: this.state.seconds, user })
-    const res = await fetch('/api/invoice/request', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body,
-    })
-    if (res.status >= 200 && res.status < 300) {
-      if (!this.state.nextText) {
-        const doc = await this.getDocument()
-        this.setState({ nextText: doc.text }, () => this.setText())
-      } else {
-        this.setText()
-      }
-    } else {
+    try {
+      const res = await fetch('/api/invoice', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body,
+      })
+      const invoice = await res.json()
+      this.setState({ invoice: invoice.lightning_invoice.payreq })
+      this.checkInvoiceStatus()
+    } catch (e) {
+      console.error('Problem getting invoice:', e.message)
       this.closeModal()
     }
   }
 
-  showModal(doc) {
-    this.setState({ modal: doc, modalOpen: true })
+  async checkInvoiceStatus() {
+    // invoice id is attached to the session cookie so we don't
+    // need to send any identifier
+    let count = 0
+    while (count < 50) {
+      await sleep(1000)
+      const resp = await fetch('/api/invoice')
+      if (resp.status === 200) {
+        console.log('done!')
+        return this.setText()
+      } else count++
+    }
+    this.closeModal()
+  }
+
+  async showModal(doc) {
+    try {
+      const res = await fetch('/api/exchange')
+      const { BTCUSD: rate } = await res.json()
+      this.setState({ modal: doc, modalOpen: true, rate })
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   closeModal() {
-    this.setState({ modalOpen: false })
+    this.setState({ modalOpen: false, invoice: '' })
   }
 
   render() {
-    const { doc, readIndex, text, seconds, modalOpen, modal } = this.state
-
+    const {
+      doc,
+      readIndex,
+      text,
+      seconds,
+      modalOpen,
+      modal,
+      invoice,
+      rate,
+      readCount,
+      wordCount,
+    } = this.state
+    console.log('readCount', readCount)
+    console.log('wordCount', wordCount)
     return (
       <div
         className="text-container row align-items-center justify-content-center"
@@ -121,22 +161,35 @@ export default class Reader extends PureComponent {
             </Button>
           </div>
         ) : text ? (
-          <Segment
-            size="massive"
-            className="col"
-            onClick={e => readIndex && this.setText(e)}
-          >
-            {text.text}
-          </Segment>
+          <div className="col">
+            <p>Click on the box below to get the next words</p>
+            <Segment
+              size="massive"
+              style={{ padding: '5rem' }}
+              className="col"
+              onClick={e => readIndex && this.setText(e)}
+            >
+              {text.text}
+            </Segment>
+            <Segment className="col">
+              <Header as="h4">Words left: {wordCount - readCount}</Header>
+              <Header as="h4">
+                Perfect left: {((readCount / wordCount) * 100).toFixed(2)}%
+              </Header>
+            </Segment>
+          </div>
         ) : (
           <Loader />
         )}
         <TimeModal
+          data={modal}
           requestInvoice={e => this.requestInvoice(e, modal)}
           changeSeconds={e => this.changeSeconds(e)}
-          data={modal}
-          modalOpen={modalOpen}
           seconds={seconds}
+          modalOpen={modalOpen}
+          closeModal={() => this.closeModal()}
+          invoice={invoice}
+          rate={rate}
         />
       </div>
     )
@@ -147,37 +200,73 @@ function TimeModal({
   data,
   requestInvoice,
   changeSeconds,
+  closeModal,
   seconds,
   modalOpen,
+  invoice = '',
+  rate,
 }) {
+  const cost = seconds * 0.00000001 * rate
   return (
     <Modal open={modalOpen} size="small">
       <Modal.Header>{data.title}</Modal.Header>
       <Modal.Content>
         <Modal.Description>
-          <Header as="h3">
-            How many seconds would you like to have access to the content for?
-          </Header>
-          <p></p>
-          <p>The rate is 1 sat/second</p>
-          <Input
-            placeholder="Time in seconds"
-            type="number"
-            value={seconds}
-            onChange={changeSeconds}
-          />
-          <QRCode
-            value="invoice"
-            size=200
-            renderAs="canvas"
-          />
+          {!invoice.length ? (
+            <React.Fragment>
+              <Header as="h3">
+                How many seconds would you like to have access to the content
+                for?
+              </Header>
+              <p></p>
+              <p>The rate is 1 sat/second</p>
+              <Input
+                placeholder="Time in seconds"
+                type="number"
+                value={seconds}
+                onChange={changeSeconds}
+              >
+                <input />
+                <Label>${cost.toFixed(3)}</Label>
+              </Input>
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              <Header as="h3">Please pay the invoice to continue:</Header>
+              <div className="row">
+                <Input type="text" placeholder="Amount" className="col">
+                  <Label as="a" href={`lightning:${invoice}`}>
+                    <Icon name="lightning" />
+                  </Label>
+                  <input
+                    value={invoice}
+                    style={{
+                      width: 'auto',
+                      textOverflow: 'ellipsis',
+                      borderRightColor: '',
+                    }}
+                  />
+                </Input>
+              </div>
+            </React.Fragment>
+          )}
         </Modal.Description>
       </Modal.Content>
       <Modal.Actions>
-        <Button color="green" onClick={e => requestInvoice(e, data)} inverted>
-          Get Invoice
-        </Button>
+        {invoice.length ? (
+          <Button color="red" onClick={closeModal} inverted>
+            Close
+          </Button>
+        ) : (
+          <Button color="green" onClick={e => requestInvoice(e, data)} inverted>
+            Get Invoice
+          </Button>
+        )}
       </Modal.Actions>
     </Modal>
   )
+}
+
+async function sleep(time = 500) {
+  return new Promise(resolve => setTimeout(resolve, time))
 }

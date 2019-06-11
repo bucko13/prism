@@ -7,8 +7,6 @@ const session = require('express-session')
 const bodyParser = require('body-parser')
 const MemoryStore = require('memorystore')(session)
 
-const createLnRpc = require('@radar/lnrpc')
-
 const app = express()
 
 const DOCS_DIR = path.resolve(__dirname, '../docs')
@@ -21,38 +19,101 @@ app.use(
   session({
     cookie: { maxAge: 86400000 },
     store: new MemoryStore({
-      checkPeriod: 86400000, // prune expired entries every 24h
+      checkPeriod: 21600000, // prune expired entries every 6h
     }),
     rolling: false,
     secret: process.env.SESSION_SECRET || 'i_am_satoshi_08',
   })
 )
 
-app.post('/api/invoice/request', async (req, res) => {
-  const { time, user } = req.body // time in seconds
+app.post('/api/invoice', async (req, res) => {
+  const { time } = req.body // time in seconds
   const { expiration } = req.session
+
+  const opennode = require('opennode')
+  opennode.setCredentials(process.env.OPEN_NODE_KEY, 'dev')
+
+  try {
+    const {
+      BTCUSD: { USD: rate },
+    } = await opennode.listRates()
+    console.log('creating invoice')
+    const invoice = await opennode.createCharge({
+      description: `${time} seconds in the lightning reader`,
+      amount: time,
+      auto_settle: false,
+    })
+
+    req.session.pendingTime = time
+    req.session.invoiceId = invoice.id
+    req.session.expiration = Date.now() // initializing the value on the session
+    res.status(200).json(invoice)
+  } catch (error) {
+    console.error(`${error.status} | ${error.message}`)
+    res.status(400).json()
+  }
+})
+
+app.get('/api/invoice', async (req, res) => {
+  const { invoiceId, pendingTime: time } = req.session
+  const opennode = require('opennode')
   const milli = time * 1000
 
-  const lnrpc = await createLnRpc({
-    server: process.env.LND_GRPC_URL,
-    cert: new Buffer(process.env.LND_TLS_CERT, 'base64').toString('ascii'),
-    macaroon: new Buffer(process.env.LND_MACAROON, 'base64').toString('hex'),
-  })
-  // const client = await initNode()
-  // console.log(await client.getInfo())
-  req.session.expiration = new Date(Date.now() + milli)
-  res.status(200).json({ expiration: req.session.expiration })
+  if (!invoiceId)
+    return res.status(404).json({ message: 'no invoice for that user' })
+
+  opennode.setCredentials(process.env.OPEN_NODE_KEY, 'dev')
+
+  try {
+    console.log('checking for invoiceId:', req.session.invoiceId)
+    const data = await opennode.chargeInfo(req.session.invoiceId)
+    const status = data.status
+    if (status === 'paid') {
+      req.session.pendingTime = null
+      // add 1 second of "free time" as a buffer
+      req.session.expiration = new Date(Date.now() + milli + 1000)
+      return res.status(200).json({ expiration: req.session.expiration })
+    } else if (status === 'processing' || status === 'unpaid') {
+      console.log('still processing...')
+      return res.status(202).json({ status })
+    } else {
+      return res
+        .status(400)
+        .json({ message: `unknown invoice status ${status}` })
+    }
+  } catch (error) {
+    console.error(`${error.status} | ${error.message}`)
+    res.status(400).json({ message: error.message })
+  }
+})
+
+app.get('/api/exchange', async (req, res) => {
+  const opennode = require('opennode')
+  opennode.setCredentials(process.env.OPEN_NODE_KEY, 'dev')
+  const {
+    BTCUSD: { USD },
+  } = await opennode.listRates()
+  res.status(200).json({ BTCUSD: USD })
 })
 
 app.get('/api/docs', async (req, res) => {
   const docs = await getDocTitles()
+  console.log('docs:', docs)
   res.status(200).json(docs)
+})
+
+app.get('/api/node', async (req, res) => {
+  res.status(200).json({
+    identityPubkey:
+      '02eadbd9e7557375161df8b646776a547c5cbc2e95b3071ec81553f8ec2cea3b8c@18.191.253.246:9735',
+  })
 })
 
 app.get('/api/doc/:filename', async (req, res, next) => {
   const filename = req.params.filename
   const { pages, expiration } = req.session
-  if (new Date(expiration) < Date.now() || !expiration) {
+
+  if (new Date(expiration) < Date.now() || (!expiration && !req.query.count)) {
     console.log('Session has expired for', req.sessionID)
     req.session.destroy()
     return res

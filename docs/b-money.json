@@ -1,0 +1,534 @@
+{
+  "title": "b-money",
+  "text": [
+    {
+      "type": "paragraph",
+      "text": "Until now it's not clear,"
+    },
+    {
+      "type": "paragraph",
+      "text": "even theoretically, how such a"
+    },
+    {
+      "type": "paragraph",
+      "text": "community could operate. A community"
+    },
+    {
+      "type": "paragraph",
+      "text": "is defined by the cooperation"
+    },
+    {
+      "type": "paragraph",
+      "text": "of its participants, and efficient"
+    },
+    {
+      "type": "paragraph",
+      "text": "cooperation requires a medium of"
+    },
+    {
+      "type": "paragraph",
+      "text": "exchange (money) and a way"
+    },
+    {
+      "type": "paragraph",
+      "text": "to enforce contracts. Traditionally these"
+    },
+    {
+      "type": "paragraph",
+      "text": "services have been provided by"
+    },
+    {
+      "type": "paragraph",
+      "text": "the government or government sponsored"
+    },
+    {
+      "type": "paragraph",
+      "text": "institutions and only to legal"
+    },
+    {
+      "type": "paragraph",
+      "text": "entities. In this article I"
+    },
+    {
+      "type": "paragraph",
+      "text": "describe a protocol by which"
+    },
+    {
+      "type": "paragraph",
+      "text": "these services can be provided"
+    },
+    {
+      "type": "paragraph",
+      "text": "to and by untraceable entities."
+    },
+    {
+      "type": "paragraph",
+      "text": "I will actually describe two"
+    },
+    {
+      "type": "paragraph",
+      "text": "protocols. The first one is"
+    },
+    {
+      "type": "paragraph",
+      "text": "impractical, because it makes heavy"
+    },
+    {
+      "type": "paragraph",
+      "text": "use of a synchronous and"
+    },
+    {
+      "type": "paragraph",
+      "text": "unjammable anonymous broadcast channel. However"
+    },
+    {
+      "type": "paragraph",
+      "text": "it will motivate the second,"
+    },
+    {
+      "type": "paragraph",
+      "text": "more practical protocol. In both"
+    },
+    {
+      "type": "paragraph",
+      "text": "cases I will assume the"
+    },
+    {
+      "type": "paragraph",
+      "text": "existence of an untraceable network,"
+    },
+    {
+      "type": "paragraph",
+      "text": "where senders and receivers are"
+    },
+    {
+      "type": "paragraph",
+      "text": "identified only by digital pseudonyms"
+    },
+    {
+      "type": "paragraph",
+      "text": "(i.e. public keys) and every"
+    },
+    {
+      "type": "paragraph",
+      "text": "messages is signed by its"
+    },
+    {
+      "type": "paragraph",
+      "text": "sender and encrypted to its"
+    },
+    {
+      "type": "paragraph",
+      "text": "receiver."
+    },
+    {
+      "type": "paragraph",
+      "text": "In the first protocol, every"
+    },
+    {
+      "type": "paragraph",
+      "text": "participant maintains a (seperate) database"
+    },
+    {
+      "type": "paragraph",
+      "text": "of how much money belongs"
+    },
+    {
+      "type": "paragraph",
+      "text": "to each pseudonym. These accounts"
+    },
+    {
+      "type": "paragraph",
+      "text": "collectively define the ownership of"
+    },
+    {
+      "type": "paragraph",
+      "text": "money, and how these accounts"
+    },
+    {
+      "type": "paragraph",
+      "text": "are updated is the subject"
+    },
+    {
+      "type": "paragraph",
+      "text": "of this protocol."
+    },
+    {
+      "type": "paragraph",
+      "text": "K_A agrees to send K_B"
+    },
+    {
+      "type": "paragraph",
+      "text": "the solution to problem P"
+    },
+    {
+      "type": "paragraph",
+      "text": "before 0:0:0 1/1/2000. K_B agrees"
+    },
+    {
+      "type": "paragraph",
+      "text": "to pay K_A 100 MU"
+    },
+    {
+      "type": "paragraph",
+      "text": "(monetary units) before 0:0:0 1/1/2000."
+    },
+    {
+      "type": "paragraph",
+      "text": "K_C agrees to perform arbitration"
+    },
+    {
+      "type": "paragraph",
+      "text": "in case of dispute. K_A"
+    },
+    {
+      "type": "paragraph",
+      "text": "agrees to pay a maximum"
+    },
+    {
+      "type": "paragraph",
+      "text": "of 1000 MU in case"
+    },
+    {
+      "type": "paragraph",
+      "text": "of default. K_B agrees to"
+    },
+    {
+      "type": "paragraph",
+      "text": "pay a maximum of 200"
+    },
+    {
+      "type": "paragraph",
+      "text": "MU in case of default."
+    },
+    {
+      "type": "paragraph",
+      "text": "K_C agrees to pay a"
+    },
+    {
+      "type": "paragraph",
+      "text": "maximum of 500 MU in"
+    },
+    {
+      "type": "paragraph",
+      "text": "case of default."
+    },
+    {
+      "type": "paragraph",
+      "text": "In the second protocol, the"
+    },
+    {
+      "type": "paragraph",
+      "text": "accounts of who has how"
+    },
+    {
+      "type": "paragraph",
+      "text": "much money are kept by"
+    },
+    {
+      "type": "paragraph",
+      "text": "a subset of the participants"
+    },
+    {
+      "type": "paragraph",
+      "text": "(called servers from now on)"
+    },
+    {
+      "type": "paragraph",
+      "text": "instead of everyone. These servers"
+    },
+    {
+      "type": "paragraph",
+      "text": "are linked by a Usenet-style"
+    },
+    {
+      "type": "paragraph",
+      "text": "broadcast channel. The format of"
+    },
+    {
+      "type": "paragraph",
+      "text": "transaction messages broadcasted on this"
+    },
+    {
+      "type": "paragraph",
+      "text": "channel remain the same as"
+    },
+    {
+      "type": "paragraph",
+      "text": "in the first protocol, but"
+    },
+    {
+      "type": "paragraph",
+      "text": "the affected participants of each"
+    },
+    {
+      "type": "paragraph",
+      "text": "transaction should verify that the"
+    },
+    {
+      "type": "paragraph",
+      "text": "message has been received and"
+    },
+    {
+      "type": "paragraph",
+      "text": "successfully processed by a randomly"
+    },
+    {
+      "type": "paragraph",
+      "text": "selected subset of the servers."
+    },
+    {
+      "type": "paragraph",
+      "text": "Since the servers must be"
+    },
+    {
+      "type": "paragraph",
+      "text": "trusted to a degree, some"
+    },
+    {
+      "type": "paragraph",
+      "text": "mechanism is needed to keep"
+    },
+    {
+      "type": "paragraph",
+      "text": "them honest. Each server is"
+    },
+    {
+      "type": "paragraph",
+      "text": "required to deposit a certain"
+    },
+    {
+      "type": "paragraph",
+      "text": "amount of money in a"
+    },
+    {
+      "type": "paragraph",
+      "text": "special account to be used"
+    },
+    {
+      "type": "paragraph",
+      "text": "as potential fines or rewards"
+    },
+    {
+      "type": "paragraph",
+      "text": "for proof of misconduct. Also,"
+    },
+    {
+      "type": "paragraph",
+      "text": "each server must periodically publish"
+    },
+    {
+      "type": "paragraph",
+      "text": "and commit to its current"
+    },
+    {
+      "type": "paragraph",
+      "text": "money creation and money ownership"
+    },
+    {
+      "type": "paragraph",
+      "text": "databases. Each participant should verify"
+    },
+    {
+      "type": "paragraph",
+      "text": "that his own account balances"
+    },
+    {
+      "type": "paragraph",
+      "text": "are correct and that the"
+    },
+    {
+      "type": "paragraph",
+      "text": "sum of the account balances"
+    },
+    {
+      "type": "paragraph",
+      "text": "is not greater than the"
+    },
+    {
+      "type": "paragraph",
+      "text": "total amount of money created."
+    },
+    {
+      "type": "paragraph",
+      "text": "This prevents the servers, even"
+    },
+    {
+      "type": "paragraph",
+      "text": "in total collusion, from permanently"
+    },
+    {
+      "type": "paragraph",
+      "text": "and costlessly expanding the money"
+    },
+    {
+      "type": "paragraph",
+      "text": "supply. New servers can also"
+    },
+    {
+      "type": "paragraph",
+      "text": "use the published databases to"
+    },
+    {
+      "type": "paragraph",
+      "text": "synchronize with existing servers."
+    },
+    {
+      "type": "paragraph",
+      "text": "The protocol proposed in this"
+    },
+    {
+      "type": "paragraph",
+      "text": "article allows untraceable pseudonymous entities"
+    },
+    {
+      "type": "paragraph",
+      "text": "to cooperate with each other"
+    },
+    {
+      "type": "paragraph",
+      "text": "more efficiently, by providing them"
+    },
+    {
+      "type": "paragraph",
+      "text": "with a medium of exchange"
+    },
+    {
+      "type": "paragraph",
+      "text": "and a method of enforcing"
+    },
+    {
+      "type": "paragraph",
+      "text": "contracts. The protocol can probably"
+    },
+    {
+      "type": "paragraph",
+      "text": "be made more efficient and"
+    },
+    {
+      "type": "paragraph",
+      "text": "secure, but I hope this"
+    },
+    {
+      "type": "paragraph",
+      "text": "is a step toward making"
+    },
+    {
+      "type": "paragraph",
+      "text": "crypto-anarchy a practical as well"
+    },
+    {
+      "type": "paragraph",
+      "text": "as theoretical possibility."
+    },
+    {
+      "type": "paragraph",
+      "text": "Appendix A: alternative b-money creation"
+    },
+    {
+      "type": "paragraph",
+      "text": "One of the more problematic"
+    },
+    {
+      "type": "paragraph",
+      "text": "parts in the b-money protocol"
+    },
+    {
+      "type": "paragraph",
+      "text": "is money creation. This part"
+    },
+    {
+      "type": "paragraph",
+      "text": "of the protocol requires that"
+    },
+    {
+      "type": "paragraph",
+      "text": "all of the account keepers"
+    },
+    {
+      "type": "paragraph",
+      "text": "decide and agree on the"
+    },
+    {
+      "type": "paragraph",
+      "text": "cost of particular computations. Unfortunately"
+    },
+    {
+      "type": "paragraph",
+      "text": "because computing technology tends to"
+    },
+    {
+      "type": "paragraph",
+      "text": "advance rapidly and not always"
+    },
+    {
+      "type": "paragraph",
+      "text": "publicly, this information may be"
+    },
+    {
+      "type": "paragraph",
+      "text": "unavailable, inaccurate, or outdated, all"
+    },
+    {
+      "type": "paragraph",
+      "text": "of which would cause serious"
+    },
+    {
+      "type": "paragraph",
+      "text": "problems for the protocol."
+    },
+    {
+      "type": "paragraph",
+      "text": "So I propose an alternative"
+    },
+    {
+      "type": "paragraph",
+      "text": "money creation subprotocol, in which"
+    },
+    {
+      "type": "paragraph",
+      "text": "account keepers (everyone in the"
+    },
+    {
+      "type": "paragraph",
+      "text": "first protocol, or the servers"
+    },
+    {
+      "type": "paragraph",
+      "text": "in the second protocol) instead"
+    },
+    {
+      "type": "paragraph",
+      "text": "decide and agree on the"
+    },
+    {
+      "type": "paragraph",
+      "text": "amount of b-money to be"
+    },
+    {
+      "type": "paragraph",
+      "text": "created each period, with the"
+    },
+    {
+      "type": "paragraph",
+      "text": "cost of creating that money"
+    },
+    {
+      "type": "paragraph",
+      "text": "determined by an auction. Each"
+    },
+    {
+      "type": "paragraph",
+      "text": "money creation period is divided"
+    },
+    {
+      "type": "paragraph",
+      "text": "up into four phases, as"
+    },
+    {
+      "type": "paragraph",
+      "text": "follows:"
+    }
+  ],
+  "count": 644
+}

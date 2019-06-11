@@ -1,9 +1,10 @@
-import React, { Component, Link } from 'react'
+import React, { Component } from 'react'
 import Profile from './Profile.jsx'
 import Reader from './Reader.jsx'
 import Signin from './Signin.jsx'
 import { UserSession, AppConfig } from 'blockstack'
-import { Switch, Route } from 'react-router-dom'
+import { Menu, Icon } from 'semantic-ui-react'
+import { Switch, Route, Link } from 'react-router-dom'
 
 const appConfig = new AppConfig()
 const userSession = new UserSession({ appConfig: appConfig })
@@ -26,6 +27,16 @@ export default class App extends Component {
   render() {
     return (
       <div className="site-wrapper">
+        <Menu inverted secondary>
+          <Link to="/">
+            <Icon
+              name="home"
+              size="big"
+              color="black"
+              style={{ padding: '1rem' }}
+            />
+          </Link>
+        </Menu>
         <div className="site-wrapper-inner">
           {!userSession.isUserSignedIn() ? (
             <Signin

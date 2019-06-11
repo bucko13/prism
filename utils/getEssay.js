@@ -30,8 +30,17 @@ async function getEssay(maxLen = 5, _url) {
 
   let tokens = marked.lexer(md)
   let title, subtitle
+
   title = tokens.find(token => token.type === 'heading' && token.depth === 1)
-    .text
+
+  if (title) title = title.text
+  else {
+    title = path.basename(url)
+    const extname = path.extname(url)
+    const index = title.indexOf(extname)
+    title = title.slice(0, index)
+  }
+
   subtitle =
     tokens[1].type === 'heading' && tokens[1].depth > 1
       ? tokens[1].text
@@ -45,8 +54,11 @@ async function getEssay(maxLen = 5, _url) {
       case 'code':
       case 'html':
         break
-      case 'heading':
+      case 'heading': {
+        const words = curr.text.split(/[\s\n]/g)
+        count += words.length
         acc.push(curr)
+      }
       case 'paragraph': {
         const words = curr.text.split(/[\s\n]/g)
         count += words.length

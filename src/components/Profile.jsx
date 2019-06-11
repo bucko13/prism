@@ -26,7 +26,15 @@ export default class Profile extends PureComponent {
   async componentDidMount() {
     const resp = await fetch('/api/docs')
     const docs = await resp.json()
-    this.setState({ docs })
+    let identityPubkey
+    try {
+      const info = await this.getNodeInfo()
+      identityPubkey = info.identityPubkey
+    } catch (e) {
+      console.error('Error getting node info:', e.message)
+    }
+
+    this.setState({ docs, identity: identityPubkey })
   }
 
   componentWillMount() {
@@ -36,9 +44,15 @@ export default class Profile extends PureComponent {
     })
   }
 
+  async getNodeInfo() {
+    const resp = await fetch('/api/node')
+    const info = await resp.json()
+    return info
+  }
+
   render() {
     const { handleSignOut, userSession } = this.props
-    const { person, docs } = this.state
+    const { person, docs, identity } = this.state
 
     return !userSession.isSignInPending() ? (
       <div className="panel-welcome" id="section-2">
@@ -66,6 +80,14 @@ export default class Profile extends PureComponent {
           </button>
         </p>
 
+        <p className="lead">
+          Don't have a testnet lightning wallet? Head on over to{' '}
+          <a href="https://htlc.me/" target="_blank">
+            htlc.me
+          </a>{' '}
+          to create one and test out the app
+        </p>
+
         <div className="docs-list" style={{ width: '50%', margin: 'auto' }}>
           {docs.length
             ? docs.map((doc, index) => (
@@ -85,6 +107,20 @@ export default class Profile extends PureComponent {
               ))
             : ''}
         </div>
+        {identity ? (
+          <div className="row justify-content-center">
+            <div className="col-6">
+              <Segment color="green">
+                Connect w/ our node:{' '}
+                <span className="enable-select" style={{ overflow: 'hidden' }}>
+                  {identity}
+                </span>
+              </Segment>
+            </div>
+          </div>
+        ) : (
+          ''
+        )}
       </div>
     ) : null
   }
