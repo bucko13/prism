@@ -2,14 +2,16 @@
   "version": 2,
   "name": "lightning-reader",
   "alias": "lightningreader.club",
+  "build": {
+    "env": {
+      "SESSION_SECRET": "@session-secret",
+      "OPEN_NODE_KEY": "@open-node-key"
+    }
+  },
   "builds": [
     {
       "src": "api/**/*.js",
-      "use": "@now/node@canary",
-      "env": {
-        "SESSION_SECRET": "@session-secret",
-        "OPEN_NODE_KEY": "@open-node-key"
-      }
+      "use": "@now/node@canary"
     },
     {
       "src": "package.json",

@@ -174,7 +174,7 @@ export default class Reader extends PureComponent {
             <Segment className="col">
               <Header as="h4">Words left: {wordCount - readCount}</Header>
               <Header as="h4">
-                Perfect left: {((readCount / wordCount) * 100).toFixed(2)}%
+                Percent left: {((readCount / wordCount) * 100).toFixed(2)}%
               </Header>
             </Segment>
           </div>
