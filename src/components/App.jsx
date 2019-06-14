@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Profile from './Profile.jsx'
-import Reader from './Reader.jsx'
+import { ReaderContainer } from '../containers'
 import Signin from './Signin.jsx'
 import { UserSession, AppConfig } from 'blockstack'
 import { Menu, Icon } from 'semantic-ui-react'
@@ -59,7 +59,7 @@ export default class App extends Component {
               <Route
                 path="/reader"
                 render={routeProps => (
-                  <Reader userSession={userSession} {...routeProps} />
+                  <ReaderContainer userSession={userSession} {...routeProps} />
                 )}
               />
             </Switch>

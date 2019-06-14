@@ -1,8 +1,8 @@
-const express = require('express')
-const helmet = require('helmet')
 const fs = require('fs')
 const path = require('path')
 const { promisify } = require('util')
+const express = require('express')
+const helmet = require('helmet')
 const session = require('express-session')
 const bodyParser = require('body-parser')
 const MemoryStore = require('memorystore')(session)
@@ -98,7 +98,6 @@ app.get('/api/exchange', async (req, res) => {
 
 app.get('/api/docs', async (req, res) => {
   const docs = await getDocTitles()
-  console.log('docs:', docs)
   res.status(200).json(docs)
 })
 

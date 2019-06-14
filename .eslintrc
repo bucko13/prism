@@ -1,0 +1,25 @@
+{
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  plugins: ["prettier", "react"],
+  "parser": "babel-eslint",
+  "rules": {
+    "class-methods-use-this": 0,
+    "import/no-named-as-default": 0,
+    "react/jsx-filename-extension": [
+      "error",
+      {
+        "extensions": [".js", ".jsx"]
+      }
+    ]
+  },
+  "extends": [
+    "prettier",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:import/errors"
+  ]
+}

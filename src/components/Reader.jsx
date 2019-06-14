@@ -9,6 +9,7 @@ import {
   Input,
   Icon,
 } from 'semantic-ui-react'
+import PropTypes from 'prop-types'
 
 export default class Reader extends PureComponent {
   constructor(props) {
@@ -28,11 +29,22 @@ export default class Reader extends PureComponent {
     }
   }
 
+  static get propTypes() {
+    return {
+      setWordCount: PropTypes.func.isRequired,
+      wordCount: PropTypes.number.isRequired,
+    }
+  }
+
   async componentDidMount() {
+    const { setWordCount } = this.props
     if (this.state.docs) return
     const doc = await this.getDocument()
-    if (doc) this.setState({ doc, wordCount: doc.count, nextText: doc.text })
-    else {
+
+    if (doc) {
+      setWordCount(doc.count)
+      this.setState({ doc, wordCount: doc.count, nextText: doc.text })
+    } else {
       const { search } = this.props.location
       let index = location.search.indexOf('=')
       const filename = location.search.slice(index + 1)
@@ -83,6 +95,7 @@ export default class Reader extends PureComponent {
   }
 
   async requestInvoice(e, doc) {
+    e.preventDefault()
     const user = this.props.userSession.loadUserData()
     const body = JSON.stringify({ time: this.state.seconds, user })
     try {
@@ -110,7 +123,6 @@ export default class Reader extends PureComponent {
       await sleep(1000)
       const resp = await fetch('/api/invoice')
       if (resp.status === 200) {
-        console.log('done!')
         return this.setText()
       } else count++
     }
@@ -144,8 +156,7 @@ export default class Reader extends PureComponent {
       readCount,
       wordCount,
     } = this.state
-    console.log('readCount', readCount)
-    console.log('wordCount', wordCount)
+
     return (
       <div
         className="text-container row align-items-center justify-content-center"
