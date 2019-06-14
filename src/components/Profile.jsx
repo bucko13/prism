@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react'
 import { Person } from 'blockstack'
-import { Redirect, Link } from 'react-router-dom'
-import { Segment, Button } from 'semantic-ui-react'
+import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
+import { Segment } from 'semantic-ui-react'
 
 const avatarFallbackImage =
   'https://s3.amazonaws.com/onename/avatar-placeholder.png'
@@ -23,7 +24,15 @@ export default class Profile extends PureComponent {
     }
   }
 
+  static get propTypes() {
+    return {
+      userSession: PropTypes.object,
+      handleSignOut: PropTypes.func.isRequired,
+    }
+  }
+
   async componentDidMount() {
+    const { userSession } = this.props
     const resp = await fetch('/api/docs')
     const docs = await resp.json()
     let identityPubkey
@@ -31,15 +40,13 @@ export default class Profile extends PureComponent {
       const info = await this.getNodeInfo()
       identityPubkey = info.identityPubkey
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error('Error getting node info:', e.message)
     }
 
-    this.setState({ docs, identity: identityPubkey })
-  }
-
-  componentWillMount() {
-    const { userSession } = this.props
     this.setState({
+      docs,
+      identity: identityPubkey,
       person: new Person(userSession.loadUserData().profile),
     })
   }
@@ -81,8 +88,8 @@ export default class Profile extends PureComponent {
         </p>
 
         <p className="lead">
-          Don't have a testnet lightning wallet? Head on over to{' '}
-          <a href="https://htlc.me/" target="_blank">
+          Don&apos;t have a testnet lightning wallet? Head on over to{' '}
+          <a href="https://htlc.me/" target="_blank" rel="noopener noreferrer">
             htlc.me
           </a>{' '}
           to create one and test out the app
