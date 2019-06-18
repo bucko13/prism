@@ -1,5 +1,4 @@
 const path = require('path')
-const webpack = require('webpack')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 // copy manifest.json to the path: 'public/build'
@@ -20,6 +19,8 @@ const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
 })
 
 module.exports = {
+  mode: 'development',
+  devtool: 'eval-source-map',
   entry: './src/index.js',
   target: 'web',
   output: {

@@ -1,0 +1,1146 @@
+{
+  "title": "b-money",
+  "text": [
+    {
+      "type": "paragraph",
+      "text": "Until now it's not clear,"
+    },
+    {
+      "type": "paragraph",
+      "text": "even theoretically, how such a"
+    },
+    {
+      "type": "paragraph",
+      "text": "community could operate. A community"
+    },
+    {
+      "type": "paragraph",
+      "text": "is defined by the cooperation"
+    },
+    {
+      "type": "paragraph",
+      "text": "of its participants, and efficient"
+    },
+    {
+      "type": "paragraph",
+      "text": "cooperation requires a medium of"
+    },
+    {
+      "type": "paragraph",
+      "text": "exchange (money) and a way"
+    },
+    {
+      "type": "paragraph",
+      "text": "to enforce contracts. Traditionally these"
+    },
+    {
+      "type": "paragraph",
+      "text": "services have been provided by"
+    },
+    {
+      "type": "paragraph",
+      "text": "the government or government sponsored"
+    },
+    {
+      "type": "paragraph",
+      "text": "institutions and only to legal"
+    },
+    {
+      "type": "paragraph",
+      "text": "entities. In this article I"
+    },
+    {
+      "type": "paragraph",
+      "text": "describe a protocol by which"
+    },
+    {
+      "type": "paragraph",
+      "text": "these services can be provided"
+    },
+    {
+      "type": "paragraph",
+      "text": "to and by untraceable entities."
+    },
+    {
+      "type": "paragraph",
+      "text": "I will actually describe two"
+    },
+    {
+      "type": "paragraph",
+      "text": "protocols. The first one is"
+    },
+    {
+      "type": "paragraph",
+      "text": "impractical, because it makes heavy"
+    },
+    {
+      "type": "paragraph",
+      "text": "use of a synchronous and"
+    },
+    {
+      "type": "paragraph",
+      "text": "unjammable anonymous broadcast channel. However"
+    },
+    {
+      "type": "paragraph",
+      "text": "it will motivate the second,"
+    },
+    {
+      "type": "paragraph",
+      "text": "more practical protocol. In both"
+    },
+    {
+      "type": "paragraph",
+      "text": "cases I will assume the"
+    },
+    {
+      "type": "paragraph",
+      "text": "existence of an untraceable network,"
+    },
+    {
+      "type": "paragraph",
+      "text": "where senders and receivers are"
+    },
+    {
+      "type": "paragraph",
+      "text": "identified only by digital pseudonyms"
+    },
+    {
+      "type": "paragraph",
+      "text": "(i.e. public keys) and every"
+    },
+    {
+      "type": "paragraph",
+      "text": "messages is signed by its"
+    },
+    {
+      "type": "paragraph",
+      "text": "sender and encrypted to its"
+    },
+    {
+      "type": "paragraph",
+      "text": "receiver."
+    },
+    {
+      "type": "paragraph",
+      "text": "In the first protocol, every"
+    },
+    {
+      "type": "paragraph",
+      "text": "participant maintains a (seperate) database"
+    },
+    {
+      "type": "paragraph",
+      "text": "of how much money belongs"
+    },
+    {
+      "type": "paragraph",
+      "text": "to each pseudonym. These accounts"
+    },
+    {
+      "type": "paragraph",
+      "text": "collectively define the ownership of"
+    },
+    {
+      "type": "paragraph",
+      "text": "money, and how these accounts"
+    },
+    {
+      "type": "paragraph",
+      "text": "are updated is the subject"
+    },
+    {
+      "type": "paragraph",
+      "text": "of this protocol."
+    },
+    {
+      "type": "paragraph",
+      "text": "The creation of money. Anyone"
+    },
+    {
+      "type": "paragraph",
+      "text": "can create money by broadcasting"
+    },
+    {
+      "type": "paragraph",
+      "text": "the"
+    },
+    {
+      "type": "paragraph",
+      "text": "solution to a previously unsolved"
+    },
+    {
+      "type": "paragraph",
+      "text": "computational problem. The only"
+    },
+    {
+      "type": "paragraph",
+      "text": "conditions are that it must"
+    },
+    {
+      "type": "paragraph",
+      "text": "be easy to determine how"
+    },
+    {
+      "type": "paragraph",
+      "text": "much computing effort"
+    },
+    {
+      "type": "paragraph",
+      "text": "it took to solve the"
+    },
+    {
+      "type": "paragraph",
+      "text": "problem and the solution must"
+    },
+    {
+      "type": "paragraph",
+      "text": "otherwise have no"
+    },
+    {
+      "type": "paragraph",
+      "text": "value, either practical or intellectual."
+    },
+    {
+      "type": "paragraph",
+      "text": "The number of monetary units"
+    },
+    {
+      "type": "paragraph",
+      "text": "created is equal to the"
+    },
+    {
+      "type": "paragraph",
+      "text": "cost of the computing effort"
+    },
+    {
+      "type": "paragraph",
+      "text": "in terms of a"
+    },
+    {
+      "type": "paragraph",
+      "text": "standard basket of commodities. For"
+    },
+    {
+      "type": "paragraph",
+      "text": "example if a problem takes"
+    },
+    {
+      "type": "paragraph",
+      "text": "100 hours"
+    },
+    {
+      "type": "paragraph",
+      "text": "to solve on the computer"
+    },
+    {
+      "type": "paragraph",
+      "text": "that solves it most economically,"
+    },
+    {
+      "type": "paragraph",
+      "text": "and it takes 3"
+    },
+    {
+      "type": "paragraph",
+      "text": "standard baskets to purchase 100"
+    },
+    {
+      "type": "paragraph",
+      "text": "hours of computing time on"
+    },
+    {
+      "type": "paragraph",
+      "text": "that computer"
+    },
+    {
+      "type": "paragraph",
+      "text": "on the open market, then"
+    },
+    {
+      "type": "paragraph",
+      "text": "upon the broadcast of the"
+    },
+    {
+      "type": "paragraph",
+      "text": "solution to that"
+    },
+    {
+      "type": "paragraph",
+      "text": "problem everyone credits the broadcaster's"
+    },
+    {
+      "type": "paragraph",
+      "text": "account by 3 units."
+    },
+    {
+      "type": "paragraph",
+      "text": "The transfer of money. If"
+    },
+    {
+      "type": "paragraph",
+      "text": "Alice (owner of pseudonym K_A)"
+    },
+    {
+      "type": "paragraph",
+      "text": "wishes to"
+    },
+    {
+      "type": "paragraph",
+      "text": "transfer X units of money"
+    },
+    {
+      "type": "paragraph",
+      "text": "to Bob (owner of pseudonym"
+    },
+    {
+      "type": "paragraph",
+      "text": "K_B), she broadcasts"
+    },
+    {
+      "type": "paragraph",
+      "text": "the message \"I give X"
+    },
+    {
+      "type": "paragraph",
+      "text": "units of money to K_B\""
+    },
+    {
+      "type": "paragraph",
+      "text": "signed by K_A. Upon the"
+    },
+    {
+      "type": "paragraph",
+      "text": "broadcast of this message, everyone"
+    },
+    {
+      "type": "paragraph",
+      "text": "debits K_A's account by X"
+    },
+    {
+      "type": "paragraph",
+      "text": "units and"
+    },
+    {
+      "type": "paragraph",
+      "text": "credits K_B's account by X"
+    },
+    {
+      "type": "paragraph",
+      "text": "units, unless this would create"
+    },
+    {
+      "type": "paragraph",
+      "text": "a negative"
+    },
+    {
+      "type": "paragraph",
+      "text": "balance in K_A's account in"
+    },
+    {
+      "type": "paragraph",
+      "text": "which case the message is"
+    },
+    {
+      "type": "paragraph",
+      "text": "ignored."
+    },
+    {
+      "type": "paragraph",
+      "text": "The effecting of contracts. A"
+    },
+    {
+      "type": "paragraph",
+      "text": "valid contract must include a"
+    },
+    {
+      "type": "paragraph",
+      "text": "maximum"
+    },
+    {
+      "type": "paragraph",
+      "text": "reparation in case of default"
+    },
+    {
+      "type": "paragraph",
+      "text": "for each participant party to"
+    },
+    {
+      "type": "paragraph",
+      "text": "it. It should"
+    },
+    {
+      "type": "paragraph",
+      "text": "also include a party who"
+    },
+    {
+      "type": "paragraph",
+      "text": "will perform arbitration should there"
+    },
+    {
+      "type": "paragraph",
+      "text": "be a"
+    },
+    {
+      "type": "paragraph",
+      "text": "dispute. All parties to a"
+    },
+    {
+      "type": "paragraph",
+      "text": "contract including the arbitrator must"
+    },
+    {
+      "type": "paragraph",
+      "text": "broadcast"
+    },
+    {
+      "type": "paragraph",
+      "text": "their signatures of it before"
+    },
+    {
+      "type": "paragraph",
+      "text": "it becomes effective. Upon the"
+    },
+    {
+      "type": "paragraph",
+      "text": "broadcast of"
+    },
+    {
+      "type": "paragraph",
+      "text": "the contract and all signatures,"
+    },
+    {
+      "type": "paragraph",
+      "text": "every participant debits the account"
+    },
+    {
+      "type": "paragraph",
+      "text": "of"
+    },
+    {
+      "type": "paragraph",
+      "text": "each party by the amount"
+    },
+    {
+      "type": "paragraph",
+      "text": "of his maximum reparation and"
+    },
+    {
+      "type": "paragraph",
+      "text": "credits a special"
+    },
+    {
+      "type": "paragraph",
+      "text": "account identified by a secure"
+    },
+    {
+      "type": "paragraph",
+      "text": "hash of the contract by"
+    },
+    {
+      "type": "paragraph",
+      "text": "the sum the maximum"
+    },
+    {
+      "type": "paragraph",
+      "text": "reparations. The contract becomes effective"
+    },
+    {
+      "type": "paragraph",
+      "text": "if the debits succeed for"
+    },
+    {
+      "type": "paragraph",
+      "text": "every party without producing a"
+    },
+    {
+      "type": "paragraph",
+      "text": "negative balance, otherwise the contract"
+    },
+    {
+      "type": "paragraph",
+      "text": "is ignored and the accounts"
+    },
+    {
+      "type": "paragraph",
+      "text": "are rolled back. A sample"
+    },
+    {
+      "type": "paragraph",
+      "text": "contract might look"
+    },
+    {
+      "type": "paragraph",
+      "text": "like this:"
+    },
+    {
+      "type": "paragraph",
+      "text": "K_A agrees to send K_B"
+    },
+    {
+      "type": "paragraph",
+      "text": "the solution to problem P"
+    },
+    {
+      "type": "paragraph",
+      "text": "before 0:0:0 1/1/2000. K_B agrees"
+    },
+    {
+      "type": "paragraph",
+      "text": "to pay K_A 100 MU"
+    },
+    {
+      "type": "paragraph",
+      "text": "(monetary units) before 0:0:0 1/1/2000."
+    },
+    {
+      "type": "paragraph",
+      "text": "K_C agrees to perform arbitration"
+    },
+    {
+      "type": "paragraph",
+      "text": "in case of dispute. K_A"
+    },
+    {
+      "type": "paragraph",
+      "text": "agrees to pay a maximum"
+    },
+    {
+      "type": "paragraph",
+      "text": "of 1000 MU in case"
+    },
+    {
+      "type": "paragraph",
+      "text": "of default. K_B agrees to"
+    },
+    {
+      "type": "paragraph",
+      "text": "pay a maximum of 200"
+    },
+    {
+      "type": "paragraph",
+      "text": "MU in case of default."
+    },
+    {
+      "type": "paragraph",
+      "text": "K_C agrees to pay a"
+    },
+    {
+      "type": "paragraph",
+      "text": "maximum of 500 MU in"
+    },
+    {
+      "type": "paragraph",
+      "text": "case of default."
+    },
+    {
+      "type": "paragraph",
+      "text": "The conclusion of contracts. If"
+    },
+    {
+      "type": "paragraph",
+      "text": "a contract concludes without dispute,"
+    },
+    {
+      "type": "paragraph",
+      "text": "each party broadcasts a signed"
+    },
+    {
+      "type": "paragraph",
+      "text": "message \"The contract with SHA-1"
+    },
+    {
+      "type": "paragraph",
+      "text": "hash H"
+    },
+    {
+      "type": "paragraph",
+      "text": "concludes without reparations.\" or possibly"
+    },
+    {
+      "type": "paragraph",
+      "text": "\"The contract with SHA-1 hash"
+    },
+    {
+      "type": "paragraph",
+      "text": "H concludes with the following"
+    },
+    {
+      "type": "paragraph",
+      "text": "reparations: ...\" Upon the broadcast"
+    },
+    {
+      "type": "paragraph",
+      "text": "of all"
+    },
+    {
+      "type": "paragraph",
+      "text": "signatures, every participant credits the"
+    },
+    {
+      "type": "paragraph",
+      "text": "account of each party by"
+    },
+    {
+      "type": "paragraph",
+      "text": "the"
+    },
+    {
+      "type": "paragraph",
+      "text": "amount of his maximum reparation,"
+    },
+    {
+      "type": "paragraph",
+      "text": "removes the contract account, then"
+    },
+    {
+      "type": "paragraph",
+      "text": "credits or debits the account"
+    },
+    {
+      "type": "paragraph",
+      "text": "of each party according to"
+    },
+    {
+      "type": "paragraph",
+      "text": "the reparation"
+    },
+    {
+      "type": "paragraph",
+      "text": "schedule if there is one."
+    },
+    {
+      "type": "paragraph",
+      "text": "The enforcement of contracts. If"
+    },
+    {
+      "type": "paragraph",
+      "text": "the parties to a contract"
+    },
+    {
+      "type": "paragraph",
+      "text": "cannot agree"
+    },
+    {
+      "type": "paragraph",
+      "text": "on an appropriate conclusion even"
+    },
+    {
+      "type": "paragraph",
+      "text": "with the help of the"
+    },
+    {
+      "type": "paragraph",
+      "text": "arbitrator, each"
+    },
+    {
+      "type": "paragraph",
+      "text": "party broadcasts a suggested reparation/fine"
+    },
+    {
+      "type": "paragraph",
+      "text": "schedule and any arguments or"
+    },
+    {
+      "type": "paragraph",
+      "text": "evidence in his favor. Each"
+    },
+    {
+      "type": "paragraph",
+      "text": "participant makes a determination as"
+    },
+    {
+      "type": "paragraph",
+      "text": "to the"
+    },
+    {
+      "type": "paragraph",
+      "text": "actual reparations and/or fines, and"
+    },
+    {
+      "type": "paragraph",
+      "text": "modifies his accounts accordingly."
+    },
+    {
+      "type": "paragraph",
+      "text": "In the second protocol, the"
+    },
+    {
+      "type": "paragraph",
+      "text": "accounts of who has how"
+    },
+    {
+      "type": "paragraph",
+      "text": "much money are kept by"
+    },
+    {
+      "type": "paragraph",
+      "text": "a subset of the participants"
+    },
+    {
+      "type": "paragraph",
+      "text": "(called servers from now on)"
+    },
+    {
+      "type": "paragraph",
+      "text": "instead of everyone. These servers"
+    },
+    {
+      "type": "paragraph",
+      "text": "are linked by a Usenet-style"
+    },
+    {
+      "type": "paragraph",
+      "text": "broadcast channel. The format of"
+    },
+    {
+      "type": "paragraph",
+      "text": "transaction messages broadcasted on this"
+    },
+    {
+      "type": "paragraph",
+      "text": "channel remain the same as"
+    },
+    {
+      "type": "paragraph",
+      "text": "in the first protocol, but"
+    },
+    {
+      "type": "paragraph",
+      "text": "the affected participants of each"
+    },
+    {
+      "type": "paragraph",
+      "text": "transaction should verify that the"
+    },
+    {
+      "type": "paragraph",
+      "text": "message has been received and"
+    },
+    {
+      "type": "paragraph",
+      "text": "successfully processed by a randomly"
+    },
+    {
+      "type": "paragraph",
+      "text": "selected subset of the servers."
+    },
+    {
+      "type": "paragraph",
+      "text": "Since the servers must be"
+    },
+    {
+      "type": "paragraph",
+      "text": "trusted to a degree, some"
+    },
+    {
+      "type": "paragraph",
+      "text": "mechanism is needed to keep"
+    },
+    {
+      "type": "paragraph",
+      "text": "them honest. Each server is"
+    },
+    {
+      "type": "paragraph",
+      "text": "required to deposit a certain"
+    },
+    {
+      "type": "paragraph",
+      "text": "amount of money in a"
+    },
+    {
+      "type": "paragraph",
+      "text": "special account to be used"
+    },
+    {
+      "type": "paragraph",
+      "text": "as potential fines or rewards"
+    },
+    {
+      "type": "paragraph",
+      "text": "for proof of misconduct. Also,"
+    },
+    {
+      "type": "paragraph",
+      "text": "each server must periodically publish"
+    },
+    {
+      "type": "paragraph",
+      "text": "and commit to its current"
+    },
+    {
+      "type": "paragraph",
+      "text": "money creation and money ownership"
+    },
+    {
+      "type": "paragraph",
+      "text": "databases. Each participant should verify"
+    },
+    {
+      "type": "paragraph",
+      "text": "that his own account balances"
+    },
+    {
+      "type": "paragraph",
+      "text": "are correct and that the"
+    },
+    {
+      "type": "paragraph",
+      "text": "sum of the account balances"
+    },
+    {
+      "type": "paragraph",
+      "text": "is not greater than the"
+    },
+    {
+      "type": "paragraph",
+      "text": "total amount of money created."
+    },
+    {
+      "type": "paragraph",
+      "text": "This prevents the servers, even"
+    },
+    {
+      "type": "paragraph",
+      "text": "in total collusion, from permanently"
+    },
+    {
+      "type": "paragraph",
+      "text": "and costlessly expanding the money"
+    },
+    {
+      "type": "paragraph",
+      "text": "supply. New servers can also"
+    },
+    {
+      "type": "paragraph",
+      "text": "use the published databases to"
+    },
+    {
+      "type": "paragraph",
+      "text": "synchronize with existing servers."
+    },
+    {
+      "type": "paragraph",
+      "text": "The protocol proposed in this"
+    },
+    {
+      "type": "paragraph",
+      "text": "article allows untraceable pseudonymous entities"
+    },
+    {
+      "type": "paragraph",
+      "text": "to cooperate with each other"
+    },
+    {
+      "type": "paragraph",
+      "text": "more efficiently, by providing them"
+    },
+    {
+      "type": "paragraph",
+      "text": "with a medium of exchange"
+    },
+    {
+      "type": "paragraph",
+      "text": "and a method of enforcing"
+    },
+    {
+      "type": "paragraph",
+      "text": "contracts. The protocol can probably"
+    },
+    {
+      "type": "paragraph",
+      "text": "be made more efficient and"
+    },
+    {
+      "type": "paragraph",
+      "text": "secure, but I hope this"
+    },
+    {
+      "type": "paragraph",
+      "text": "is a step toward making"
+    },
+    {
+      "type": "paragraph",
+      "text": "crypto-anarchy a practical as well"
+    },
+    {
+      "type": "paragraph",
+      "text": "as theoretical possibility."
+    },
+    {
+      "type": "paragraph",
+      "text": "Appendix A: alternative b-money creation"
+    },
+    {
+      "type": "paragraph",
+      "text": "One of the more problematic"
+    },
+    {
+      "type": "paragraph",
+      "text": "parts in the b-money protocol"
+    },
+    {
+      "type": "paragraph",
+      "text": "is money creation. This part"
+    },
+    {
+      "type": "paragraph",
+      "text": "of the protocol requires that"
+    },
+    {
+      "type": "paragraph",
+      "text": "all of the account keepers"
+    },
+    {
+      "type": "paragraph",
+      "text": "decide and agree on the"
+    },
+    {
+      "type": "paragraph",
+      "text": "cost of particular computations. Unfortunately"
+    },
+    {
+      "type": "paragraph",
+      "text": "because computing technology tends to"
+    },
+    {
+      "type": "paragraph",
+      "text": "advance rapidly and not always"
+    },
+    {
+      "type": "paragraph",
+      "text": "publicly, this information may be"
+    },
+    {
+      "type": "paragraph",
+      "text": "unavailable, inaccurate, or outdated, all"
+    },
+    {
+      "type": "paragraph",
+      "text": "of which would cause serious"
+    },
+    {
+      "type": "paragraph",
+      "text": "problems for the protocol."
+    },
+    {
+      "type": "paragraph",
+      "text": "So I propose an alternative"
+    },
+    {
+      "type": "paragraph",
+      "text": "money creation subprotocol, in which"
+    },
+    {
+      "type": "paragraph",
+      "text": "account keepers (everyone in the"
+    },
+    {
+      "type": "paragraph",
+      "text": "first protocol, or the servers"
+    },
+    {
+      "type": "paragraph",
+      "text": "in the second protocol) instead"
+    },
+    {
+      "type": "paragraph",
+      "text": "decide and agree on the"
+    },
+    {
+      "type": "paragraph",
+      "text": "amount of b-money to be"
+    },
+    {
+      "type": "paragraph",
+      "text": "created each period, with the"
+    },
+    {
+      "type": "paragraph",
+      "text": "cost of creating that money"
+    },
+    {
+      "type": "paragraph",
+      "text": "determined by an auction. Each"
+    },
+    {
+      "type": "paragraph",
+      "text": "money creation period is divided"
+    },
+    {
+      "type": "paragraph",
+      "text": "up into four phases, as"
+    },
+    {
+      "type": "paragraph",
+      "text": "follows:"
+    },
+    {
+      "type": "paragraph",
+      "text": "Planning. The account keepers compute"
+    },
+    {
+      "type": "paragraph",
+      "text": "and negotiate with each other"
+    },
+    {
+      "type": "paragraph",
+      "text": "to"
+    },
+    {
+      "type": "paragraph",
+      "text": "determine an optimal increase in"
+    },
+    {
+      "type": "paragraph",
+      "text": "the money supply for the"
+    },
+    {
+      "type": "paragraph",
+      "text": "next period. "
+    },
+    {
+      "type": "paragraph",
+      "text": "Whether or not the account"
+    },
+    {
+      "type": "paragraph",
+      "text": "keepers can reach a consensus,"
+    },
+    {
+      "type": "paragraph",
+      "text": "they each"
+    },
+    {
+      "type": "paragraph",
+      "text": "broadcast their money creation quota"
+    },
+    {
+      "type": "paragraph",
+      "text": "and any macroeconomic calculations"
+    },
+    {
+      "type": "paragraph",
+      "text": "done to support the figures."
+    },
+    {
+      "type": "paragraph",
+      "text": ""
+    },
+    {
+      "type": "paragraph",
+      "text": "Bidding. Anyone who wants to"
+    },
+    {
+      "type": "paragraph",
+      "text": "create b-money broadcasts a bid"
+    },
+    {
+      "type": "paragraph",
+      "text": "in the"
+    },
+    {
+      "type": "paragraph",
+      "text": "form of <x, y> where"
+    },
+    {
+      "type": "paragraph",
+      "text": "x is the amount of"
+    },
+    {
+      "type": "paragraph",
+      "text": "b-money he wants to create,"
+    },
+    {
+      "type": "paragraph",
+      "text": "and y"
+    },
+    {
+      "type": "paragraph",
+      "text": "is an unsolved problem from"
+    },
+    {
+      "type": "paragraph",
+      "text": "a predetermined problem class. Each"
+    },
+    {
+      "type": "paragraph",
+      "text": "problem in"
+    },
+    {
+      "type": "paragraph",
+      "text": "this class should have a"
+    },
+    {
+      "type": "paragraph",
+      "text": "nominal cost (in MIPS-years say)"
+    },
+    {
+      "type": "paragraph",
+      "text": "which is"
+    },
+    {
+      "type": "paragraph",
+      "text": "publicly agreed on."
+    },
+    {
+      "type": "paragraph",
+      "text": "Computation. After seeing the bids,"
+    },
+    {
+      "type": "paragraph",
+      "text": "the ones who placed bids"
+    },
+    {
+      "type": "paragraph",
+      "text": "in the"
+    },
+    {
+      "type": "paragraph",
+      "text": "bidding phase may now solve"
+    },
+    {
+      "type": "paragraph",
+      "text": "the problems in their bids"
+    },
+    {
+      "type": "paragraph",
+      "text": "and broadcast the"
+    },
+    {
+      "type": "paragraph",
+      "text": "solutions."
+    },
+    {
+      "type": "paragraph",
+      "text": "Money creation. Each account keeper"
+    },
+    {
+      "type": "paragraph",
+      "text": "accepts the highest bids (among"
+    },
+    {
+      "type": "paragraph",
+      "text": "those who actually broadcasted solutions)"
+    },
+    {
+      "type": "paragraph",
+      "text": "in terms of nominal cost"
+    },
+    {
+      "type": "paragraph",
+      "text": "per"
+    },
+    {
+      "type": "paragraph",
+      "text": "unit of b-money created and"
+    },
+    {
+      "type": "paragraph",
+      "text": "credits the bidders' accounts accordingly."
+    }
+  ],
+  "count": 1282
+}

@@ -340,10 +340,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Project Summary"
-    },
-    {
-      "type": "paragraph",
       "text": "Many understand the green lock"
     },
     {
@@ -1113,14 +1109,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Decentralized Certificate Authorities and the"
-    },
-    {
-      "type": "paragraph",
-      "text": "Blockchain"
-    },
-    {
-      "type": "paragraph",
       "text": "The resolution to the trilemma,"
     },
     {
@@ -1505,16 +1493,8 @@
       "text": "Consensus"
     },
     {
-      "type": "paragraph",
-      "text": "Consensus"
-    },
-    {
       "type": "heading",
       "depth": 2,
-      "text": "Proof of Work"
-    },
-    {
-      "type": "paragraph",
       "text": "Proof of Work"
     },
     {
@@ -1624,10 +1604,6 @@
     {
       "type": "heading",
       "depth": 3,
-      "text": "Proof of Work Functions"
-    },
-    {
-      "type": "paragraph",
       "text": "Proof of Work Functions"
     },
     {
@@ -2001,10 +1977,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Difficulty Adjustment"
-    },
-    {
-      "type": "paragraph",
       "text": "Given the prevalence of edge"
     },
     {
@@ -2126,10 +2098,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Unspent Transaction Outputs (UTXOs)"
-    },
-    {
-      "type": "paragraph",
       "text": "The UTXO-based blockchain, also introduced"
     },
     {
@@ -2223,10 +2191,6 @@
     {
       "type": "heading",
       "depth": 2,
-      "text": "Naming History"
-    },
-    {
-      "type": "paragraph",
       "text": "Naming History"
     },
     {
@@ -2660,10 +2624,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Provable Data Sets"
-    },
-    {
-      "type": "paragraph",
       "text": "In order to be free"
     },
     {
@@ -2897,10 +2857,6 @@
     {
       "type": "heading",
       "depth": 3,
-      "text": "FFMT (Flat-File Merkle Tree)"
-    },
-    {
-      "type": "paragraph",
       "text": "FFMT (Flat-File Merkle Tree)"
     },
     {
@@ -3186,10 +3142,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Description"
-    },
-    {
-      "type": "paragraph",
       "text": "Typical of any trie-like structure,"
     },
     {
@@ -3211,10 +3163,6 @@
     {
       "type": "heading",
       "depth": 5,
-      "text": "Insertion"
-    },
-    {
-      "type": "paragraph",
       "text": "Insertion"
     },
     {
@@ -3404,10 +3352,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Removal"
-    },
-    {
-      "type": "paragraph",
       "text": "Removal may seem non-intuitive when"
     },
     {
@@ -3493,10 +3437,6 @@
     {
       "type": "heading",
       "depth": 5,
-      "text": "Proofs"
-    },
-    {
-      "type": "paragraph",
       "text": "Proofs"
     },
     {
@@ -3898,10 +3838,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Disk Optimization"
-    },
-    {
-      "type": "paragraph",
       "text": "Due to the sheer number"
     },
     {
@@ -4071,10 +4007,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Compaction"
-    },
-    {
-      "type": "paragraph",
       "text": "The FFMT database can be"
     },
     {
@@ -4116,10 +4048,6 @@
     {
       "type": "heading",
       "depth": 5,
-      "text": "Collision Attacks"
-    },
-    {
-      "type": "paragraph",
       "text": "Collision Attacks"
     },
     {
@@ -4309,10 +4237,6 @@
     {
       "type": "heading",
       "depth": 2,
-      "text": "Naming Markets"
-    },
-    {
-      "type": "paragraph",
       "text": "Naming Markets"
     },
     {
@@ -4526,10 +4450,6 @@
     {
       "type": "heading",
       "depth": 2,
-      "text": "Covenants"
-    },
-    {
-      "type": "paragraph",
       "text": "Covenants"
     },
     {
@@ -4783,10 +4703,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Output Structuring"
-    },
-    {
-      "type": "paragraph",
       "text": "In a UTXO-based blockchain, the"
     },
     {
@@ -4888,10 +4804,6 @@
     {
       "type": "heading",
       "depth": 2,
-      "text": "Auction System"
-    },
-    {
-      "type": "paragraph",
       "text": "Auction System"
     },
     {
@@ -5741,10 +5653,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Commission"
-    },
-    {
-      "type": "paragraph",
       "text": "Name data is periodically committed"
     },
     {
@@ -5822,10 +5730,6 @@
     {
       "type": "heading",
       "depth": 2,
-      "text": "Context Optimizations"
-    },
-    {
-      "type": "paragraph",
       "text": "Context Optimizations"
     },
     {
@@ -6183,10 +6087,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Naming Architecture"
-    },
-    {
-      "type": "paragraph",
       "text": "The naming system of the"
     },
     {
@@ -6412,10 +6312,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Provability"
-    },
-    {
-      "type": "paragraph",
       "text": "The current method for proving"
     },
     {
@@ -6533,10 +6429,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Handshake Architecture"
-    },
-    {
-      "type": "paragraph",
       "text": "The Handshake naming protocol differs"
     },
     {
@@ -6639,14 +6531,6 @@
       "type": "heading",
       "depth": 3,
       "text": "Proof of Work as a Trust Anchor"
-    },
-    {
-      "type": "paragraph",
-      "text": "Proof of Work as a"
-    },
-    {
-      "type": "paragraph",
-      "text": "Trust Anchor"
     },
     {
       "type": "paragraph",
@@ -6799,10 +6683,6 @@
     {
       "type": "heading",
       "depth": 3,
-      "text": "Compatibility"
-    },
-    {
-      "type": "paragraph",
       "text": "Compatibility"
     },
     {
@@ -6972,10 +6852,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Implementation"
-    },
-    {
-      "type": "paragraph",
       "text": "Our consensus protocol is usable"
     },
     {
@@ -7085,10 +6961,6 @@
     {
       "type": "heading",
       "depth": 3,
-      "text": "Network Bootstrapping"
-    },
-    {
-      "type": "paragraph",
       "text": "Network Bootstrapping"
     },
     {
@@ -7230,10 +7102,6 @@
     {
       "type": "heading",
       "depth": 4,
-      "text": "DNSSEC Ownership Proofs"
-    },
-    {
-      "type": "paragraph",
       "text": "DNSSEC Ownership Proofs"
     },
     {
@@ -7431,10 +7299,6 @@
     {
       "type": "heading",
       "depth": 5,
-      "text": "Security Concerns"
-    },
-    {
-      "type": "paragraph",
       "text": "Security Concerns"
     },
     {
@@ -7972,10 +7836,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Economic Incentives for DNSSEC implementation"
-    },
-    {
-      "type": "paragraph",
       "text": "DNSSEC has rather sparse support,"
     },
     {
@@ -8097,15 +7957,119 @@
     },
     {
       "type": "paragraph",
-      "text": "SPV Name Resolution"
-    },
-    {
-      "type": "paragraph",
       "text": "Our SPV implementation's architecture consists"
     },
     {
       "type": "paragraph",
       "text": "of the following 4 components:"
+    },
+    {
+      "type": "paragraph",
+      "text": "A peer-to-peer layer for synchronizing"
+    },
+    {
+      "type": "paragraph",
+      "text": "block headers and verifying name"
+    },
+    {
+      "type": "paragraph",
+      "text": "tree"
+    },
+    {
+      "type": "paragraph",
+      "text": "proofs."
+    },
+    {
+      "type": "paragraph",
+      "text": "An authoritative nameserver which translates"
+    },
+    {
+      "type": "paragraph",
+      "text": "on-chain resources to DNS"
+    },
+    {
+      "type": "paragraph",
+      "text": "responses, depending on the request."
+    },
+    {
+      "type": "paragraph",
+      "text": "This nameserver behaves as if"
+    },
+    {
+      "type": "paragraph",
+      "text": "it were a"
+    },
+    {
+      "type": "paragraph",
+      "text": "root server, serving zone `.`."
+    },
+    {
+      "type": "paragraph",
+      "text": "A recursive server which sets"
+    },
+    {
+      "type": "paragraph",
+      "text": "its root hints and trust"
+    },
+    {
+      "type": "paragraph",
+      "text": "anchors to its own"
+    },
+    {
+      "type": "paragraph",
+      "text": "authoritative root server, rather than"
+    },
+    {
+      "type": "paragraph",
+      "text": "ICANN's."
+    },
+    {
+      "type": "paragraph",
+      "text": "A second non-recursive resolver which"
+    },
+    {
+      "type": "paragraph",
+      "text": "resides in the authoritative layer"
+    },
+    {
+      "type": "paragraph",
+      "text": "and"
+    },
+    {
+      "type": "paragraph",
+      "text": "acts as a fallback to"
+    },
+    {
+      "type": "paragraph",
+      "text": "ICANN's system. This is used"
+    },
+    {
+      "type": "paragraph",
+      "text": "in the event that a"
+    },
+    {
+      "type": "paragraph",
+      "text": "reserved top-level domain has not"
+    },
+    {
+      "type": "paragraph",
+      "text": "yet been claimed. Resolutions through"
+    },
+    {
+      "type": "paragraph",
+      "text": "ICANN's system only occur if"
+    },
+    {
+      "type": "paragraph",
+      "text": "a proper name absence proof"
+    },
+    {
+      "type": "paragraph",
+      "text": "was received from a"
+    },
+    {
+      "type": "paragraph",
+      "text": "peer."
     },
     {
       "type": "paragraph",
@@ -8482,10 +8446,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Root Zone Fallback"
-    },
-    {
-      "type": "paragraph",
       "text": "Due to the fact that"
     },
     {
@@ -8595,10 +8555,6 @@
     {
       "type": "heading",
       "depth": 4,
-      "text": "Library Integration"
-    },
-    {
-      "type": "paragraph",
       "text": "Library Integration"
     },
     {
@@ -8984,10 +8940,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Integration"
-    },
-    {
-      "type": "paragraph",
       "text": "We are convinced that, in"
     },
     {
@@ -9028,16 +8980,8 @@
       "text": "Future Directions"
     },
     {
-      "type": "paragraph",
-      "text": "Future Directions"
-    },
-    {
       "type": "heading",
       "depth": 4,
-      "text": "Proof of DNS iteration"
-    },
-    {
-      "type": "paragraph",
       "text": "Proof of DNS iteration"
     },
     {
@@ -9151,10 +9095,6 @@
     {
       "type": "heading",
       "depth": 4,
-      "text": "Zone Replication and DNSCurve"
-    },
-    {
-      "type": "paragraph",
       "text": "Zone Replication and DNSCurve"
     },
     {
@@ -9276,10 +9216,6 @@
     {
       "type": "heading",
       "depth": 4,
-      "text": "Plasma Child Zones"
-    },
-    {
-      "type": "paragraph",
       "text": "Plasma Child Zones"
     },
     {
@@ -9417,10 +9353,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Reorg Safety and Name Expiration"
-    },
-    {
-      "type": "paragraph",
       "text": "It is strongly recommended that"
     },
     {
@@ -9542,10 +9474,6 @@
     {
       "type": "heading",
       "depth": 1,
-      "text": "Stakeholders"
-    },
-    {
-      "type": "paragraph",
       "text": "Stakeholders"
     },
     {
@@ -9675,10 +9603,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Pre-Launch Blockchain Development - 7.5%"
-    },
-    {
-      "type": "paragraph",
       "text": "This allocation goes to fund"
     },
     {
@@ -9741,14 +9665,6 @@
       "type": "heading",
       "depth": 2,
       "text": "Financial Contributors and Pricing - 7.5%"
-    },
-    {
-      "type": "paragraph",
-      "text": "Financial Contributors and Pricing -"
-    },
-    {
-      "type": "paragraph",
-      "text": "7.5%"
     },
     {
       "type": "paragraph",
@@ -10025,14 +9941,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Free and Open Source Software"
-    },
-    {
-      "type": "paragraph",
-      "text": "Developers - 65.0%"
-    },
-    {
-      "type": "paragraph",
       "text": "The free and open source"
     },
     {
@@ -10114,10 +10022,6 @@
     {
       "type": "heading",
       "depth": 2,
-      "text": "Domain Name Holders - 7.5%"
-    },
-    {
-      "type": "paragraph",
       "text": "Domain Name Holders - 7.5%"
     },
     {
@@ -10288,14 +10192,6 @@
       "type": "heading",
       "depth": 2,
       "text": "CA/Naming Corporations and Other Blockchain Projects - 7.5%"
-    },
-    {
-      "type": "paragraph",
-      "text": "CA/Naming Corporations and Other Blockchain"
-    },
-    {
-      "type": "paragraph",
-      "text": "Projects - 7.5%"
     },
     {
       "type": "paragraph",
@@ -10780,14 +10676,6 @@
     },
     {
       "type": "paragraph",
-      "text": "Non-Profits and FOSS Projects -"
-    },
-    {
-      "type": "paragraph",
-      "text": "5%"
-    },
-    {
-      "type": "paragraph",
       "text": "Not to be confused with"
     },
     {
@@ -10813,10 +10701,6 @@
     {
       "type": "heading",
       "depth": 2,
-      "text": "Miners"
-    },
-    {
-      "type": "paragraph",
       "text": "Miners"
     },
     {
@@ -10898,10 +10782,6 @@
     {
       "type": "heading",
       "depth": 2,
-      "text": "Public Worldwide Distribution"
-    },
-    {
-      "type": "paragraph",
       "text": "Public Worldwide Distribution"
     },
     {
@@ -11039,10 +10919,6 @@
     {
       "type": "heading",
       "depth": 1,
-      "text": "Coordination"
-    },
-    {
-      "type": "paragraph",
       "text": "Coordination"
     },
     {
@@ -11396,10 +11272,6 @@
     {
       "type": "heading",
       "depth": 2,
-      "text": "Inability to Verify Actions"
-    },
-    {
-      "type": "paragraph",
       "text": "Inability to Verify Actions"
     },
     {
@@ -11766,14 +11638,6 @@
       "type": "heading",
       "depth": 2,
       "text": "Comparison with Traditional Capital Coordination Models"
-    },
-    {
-      "type": "paragraph",
-      "text": "Comparison with Traditional Capital Coordination"
-    },
-    {
-      "type": "paragraph",
-      "text": "Models"
     },
     {
       "type": "paragraph",
@@ -12162,10 +12026,6 @@
     {
       "type": "heading",
       "depth": 1,
-      "text": "Disclaimers"
-    },
-    {
-      "type": "paragraph",
       "text": "Disclaimers"
     },
     {
@@ -12572,5 +12432,6 @@
       "type": "paragraph",
       "text": "[primaveradefilippi] https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2725415"
     }
-  ]
+  ],
+  "count": 14687
 }

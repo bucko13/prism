@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Modal, Header, Input, Label, Icon, Button } from 'semantic-ui-react'
 
 export default function InvoiceModal({
-  data,
+  title,
   requestInvoice,
   changeSeconds,
   closeModal,
@@ -15,7 +15,7 @@ export default function InvoiceModal({
   const cost = seconds * 0.00000001 * rate
   return (
     <Modal open={modalOpen} size="small">
-      <Modal.Header>{data.title}</Modal.Header>
+      <Modal.Header>{title}</Modal.Header>
       <Modal.Content>
         <Modal.Description>
           {!invoice.length ? (
@@ -64,7 +64,7 @@ export default function InvoiceModal({
             Close
           </Button>
         ) : (
-          <Button color="green" onClick={e => requestInvoice(e, data)} inverted>
+          <Button color="green" onClick={e => requestInvoice(e)} inverted>
             Get Invoice
           </Button>
         )}
@@ -74,7 +74,7 @@ export default function InvoiceModal({
 }
 
 InvoiceModal.propTypes = {
-  data: PropTypes.object,
+  title: PropTypes.string.isRequired,
   requestInvoice: PropTypes.func.isRequired,
   changeSeconds: PropTypes.func.isRequired,
   closeModal: PropTypes.func.isRequired,

@@ -1,31 +1,30 @@
 import React, { PureComponent } from 'react'
+
 import { Header, Button, Loader, Segment } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
-
+import axios from 'axios'
 import InvoiceModal from './InvoiceModal.jsx'
 
 export default class Reader extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      text: null,
-      nextText: null,
-      wordCount: 0,
-      readCount: 0,
-      readIndex: 0,
-      doc: props.location.query,
       modalOpen: false,
-      modal: {},
       seconds: 30,
-      invoice: '',
       rate: null,
+      timer: 0,
     }
   }
 
   static get propTypes() {
     return {
-      setWordCount: PropTypes.func.isRequired,
       wordCount: PropTypes.number.isRequired,
+      filename: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      invoice: PropTypes.string.isRequired,
+      readIndex: PropTypes.number.isRequired,
+      text: PropTypes.string.isRequired,
+      readCount: PropTypes.number.isRequired,
       location: PropTypes.shape({
         query: PropTypes.object,
         search: PropTypes.string,
@@ -33,80 +32,45 @@ export default class Reader extends PureComponent {
       userSession: PropTypes.shape({
         loadUserData: PropTypes.function,
       }),
+      updateText: PropTypes.func.isRequired,
+      getDocInfo: PropTypes.func.isRequired,
+      setDocInfo: PropTypes.func.isRequired,
+      setInvoice: PropTypes.func.isRequired,
     }
   }
 
   async componentDidMount() {
-    const { setWordCount } = this.props
-    if (this.state.docs) return
-    const doc = await this.getDocument()
-
+    const { getDocInfo, location, setDocInfo, updateText } = this.props
+    let doc = location.query
+    // if doc info was passed, simply set the info
     if (doc) {
-      setWordCount(doc.count)
-      this.setState({ doc, wordCount: doc.count, nextText: doc.text })
+      setDocInfo(doc)
     } else {
+      // otherwise get the doc info based on the query string
       let index = location.search.indexOf('=')
       const filename = location.search.slice(index + 1)
-      index = filename.indexOf('.')
-      const title = filename
-        .slice(0, index)
-        .toUpperCase()
-        .replace(/-/g, ' ')
-      this.setState({ doc: { title, filename } })
+      await getDocInfo(filename)
     }
-  }
-
-  async getDocument() {
-    const { location } = this.props
-    const { readIndex } = this.state
-    const index = location.search.indexOf('=')
-    const query = location.search.slice(index + 1)
-    const resp = await fetch(`/api/doc/${query}?count=${readIndex}`)
-    if (resp.status === 402) return false
-    return await resp.json()
-  }
-
-  async setText(e) {
-    if (e) e.preventDefault()
-    const { nextText, readIndex, text, readCount } = this.state
-    const newCount =
-      text && text.text ? readCount + text.text.split(' ').length : readCount
-    this.setState(
-      {
-        text: nextText,
-        readIndex: readIndex + 1,
-        readCount: newCount,
-        modalOpen: false,
-        invoice: '',
-      },
-      () => this.getNextText()
-    )
-  }
-
-  async getNextText() {
-    const doc = await this.getDocument()
-    this.setState({ nextText: doc.text })
   }
 
   changeSeconds(e) {
     e.preventDefault()
-    this.setState({ seconds: e.target.value })
+    const seconds = parseInt(e.target.value, 10)
+    this.setState({ seconds })
   }
 
   async requestInvoice(e) {
+    const { userSession, filename, setInvoice } = this.props
     e.preventDefault()
-    const user = this.props.userSession.loadUserData()
-    const body = JSON.stringify({ time: this.state.seconds, user })
+    const user = userSession.loadUserData()
+    const body = {
+      time: this.state.seconds,
+      user,
+      filename: filename,
+    }
     try {
-      const res = await fetch('/api/invoice', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body,
-      })
-      const invoice = await res.json()
-      this.setState({ invoice: invoice.lightning_invoice.payreq })
+      const { data: invoice } = await axios.post('/api/node/invoice', body)
+      setInvoice(invoice.lightning_invoice.payreq)
       this.checkInvoiceStatus()
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -121,7 +85,7 @@ export default class Reader extends PureComponent {
     let count = 0
     while (count < 50) {
       await sleep(1000)
-      const resp = await fetch('/api/invoice')
+      const resp = await axios.get('/api/node/invoice')
       if (resp.status === 200) {
         return this.setText()
       } else count++
@@ -129,11 +93,31 @@ export default class Reader extends PureComponent {
     this.closeModal()
   }
 
+  async setText() {
+    const { updateText, setInvoice } = this.props
+    await updateText()
+    this.setState({ modalOpen: false, timer: this.state.seconds  }, () => {
+      setInvoice('')
+      this.setTimer(this.state.timer)
+    })
+  }
+
+  setTimer(timer) {
+    if (timer >= 0) {
+      setTimeout(() => {
+        this.setState({ timer }, () => this.setTimer(timer - 1))
+      }, 1000)
+    } else {
+      return
+    }
+
+  }
+
   async showModal(doc) {
     try {
-      const res = await fetch('/api/exchange')
-      const { BTCUSD: rate } = await res.json()
-      this.setState({ modal: doc, modalOpen: true, rate })
+      const res = await axios.get('/api/node/exchange')
+      const { BTCUSD: rate } = res.data
+      this.setState({ modalOpen: true, rate })
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e)
@@ -146,29 +130,33 @@ export default class Reader extends PureComponent {
 
   render() {
     const {
-      doc,
-      readIndex,
-      text,
       seconds,
       modalOpen,
-      modal,
-      invoice,
       rate,
-      readCount,
-      wordCount,
+      timer
     } = this.state
 
+    const {
+      wordCount,
+      title,
+      invoice,
+      text,
+      readIndex,
+      readCount,
+      filename,
+      updateText,
+    } = this.props
     return (
       <div
         className="text-container row align-items-center justify-content-center"
         style={{ height: '100%' }}
       >
-        {doc && doc.title && !text ? (
+        {title && !text ? (
           <div className="col-6 row justify-content-center">
             <Header as="h2" className="col-12">
-              {doc.title}
+              {title}
             </Header>
-            <Button onClick={e => this.showModal(e)} className="col-6">
+            <Button onClick={e => this.showModal({ title, filename })} className="col-6">
               Click to Start
             </Button>
           </div>
@@ -179,14 +167,17 @@ export default class Reader extends PureComponent {
               size="massive"
               style={{ padding: '5rem' }}
               className="col"
-              onClick={e => readIndex && this.setText(e)}
+              onClick={() => updateText()}
             >
-              {text.text}
+              {text}
             </Segment>
             <Segment className="col">
               <Header as="h4">Words left: {wordCount - readCount}</Header>
               <Header as="h4">
                 Percent left: {((readCount / wordCount) * 100).toFixed(2)}%
+              </Header>
+              <Header as="h4">
+                Time left: {timer} seconds
               </Header>
             </Segment>
           </div>
@@ -194,8 +185,8 @@ export default class Reader extends PureComponent {
           <Loader />
         )}
         <InvoiceModal
-          data={modal}
-          requestInvoice={e => this.requestInvoice(e, modal)}
+          title={title}
+          requestInvoice={e => this.requestInvoice(e)}
           changeSeconds={e => this.changeSeconds(e)}
           seconds={seconds}
           modalOpen={modalOpen}

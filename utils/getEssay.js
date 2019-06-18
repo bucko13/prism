@@ -40,7 +40,6 @@ async function getEssay(maxLen = 5, _url) {
     const index = title.indexOf(extname)
     title = title.slice(0, index)
   }
-
   subtitle =
     tokens[1].type === 'heading' && tokens[1].depth > 1
       ? tokens[1].text
@@ -58,14 +57,17 @@ async function getEssay(maxLen = 5, _url) {
         const words = curr.text.split(/[\s\n]/g)
         count += words.length
         acc.push(curr)
+        break
       }
-      case 'paragraph': {
+      case 'paragraph':
+      case 'text': {
         const words = curr.text.split(/[\s\n]/g)
         count += words.length
         while (words.length) {
           const text = words.splice(0, maxLen).join(' ')
           acc.push({ type: 'paragraph', text })
         }
+        break
       }
       default:
         break
@@ -73,11 +75,11 @@ async function getEssay(maxLen = 5, _url) {
     return acc
   }, [])
   const fileName = title
-    .replace(/[_:\/\[\]\(\)]/g, '')
+    .replace(/[_:/[\]()]/g, '')
     .replace(/\s/g, '-')
     .toLowerCase()
   fs.writeFileSync(
-    path.resolve(__dirname, '../docs', `${fileName}.json`),
+    path.resolve(__dirname, '../files', `${fileName}.json`),
     JSON.stringify(
       {
         title,

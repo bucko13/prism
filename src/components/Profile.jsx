@@ -33,7 +33,10 @@ export default class Profile extends PureComponent {
 
   async componentDidMount() {
     const { userSession } = this.props
-    const resp = await fetch('/api/docs')
+    const resp = await fetch('/api/docs', {
+      method: 'GET',
+      credentials: 'include',
+    })
     const docs = await resp.json()
     let identityPubkey
     try {
@@ -52,7 +55,10 @@ export default class Profile extends PureComponent {
   }
 
   async getNodeInfo() {
-    const resp = await fetch('/api/node')
+    const resp = await fetch('/api/node', {
+      method: 'GET',
+      credentials: 'include',
+    })
     const info = await resp.json()
     return info
   }
@@ -102,7 +108,7 @@ export default class Profile extends PureComponent {
                   key={index}
                   to={{
                     pathname: '/reader',
-                    search: `?filename=${doc.file}`,
+                    search: `?filename=${doc.filename}`,
                     query: doc,
                   }}
                   style={{ margin: '0 1rem', padding: '.5rem' }}

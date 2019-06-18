@@ -11,7 +11,7 @@
   "builds": [
     {
       "src": "api/**/*.js",
-      "use": "@now/node@canary"
+      "use": "@now/node"
     },
     {
       "src": "package.json",
@@ -28,8 +28,12 @@
     { "src": "/manifest.json", "dest": "/manifest.json" },
     { "src": "/precache-manifest.(.*)", "dest": "/precache-manifest.$1" },
     {
-      "src": "/api/(.*)",
-      "dest": "/api"
+      "src": "/api/docs/(.*)",
+      "dest": "/api/docs"
+    },
+    {
+      "src": "/api/node/(.*)",
+      "dest": "/api/node"
     }
   ]
 }
