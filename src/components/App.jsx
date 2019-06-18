@@ -80,7 +80,9 @@ export default class App extends Component {
               </React.Fragment>
             )}
           </Sidebar>
-          <Sidebar.Pusher style={{ backgroundColor: '#e91e63' }}>
+          <Sidebar.Pusher
+            style={{ backgroundColor: '#e91e63', height: 'auto' }}
+          >
             <div className="site-wrapper">
               <Menu inverted secondary>
                 <Menu.Item onClick={() => this.handleShowClick()}>
