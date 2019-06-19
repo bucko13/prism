@@ -1,19 +1,36 @@
 import React, { Component } from 'react'
-import Profile from './Profile.jsx'
-import { ReaderContainer } from '../containers'
-import Signin from './Signin.jsx'
 import { UserSession, AppConfig } from 'blockstack'
 import { Menu, Icon, Sidebar, Segment } from 'semantic-ui-react'
 import { Switch, Route, Link } from 'react-router-dom'
+import { configure, User, getConfig } from 'radiks'
 
-const appConfig = new AppConfig()
+import Profile from './Profile.jsx'
+import { ReaderContainer, AddDocContainer } from '../containers'
+import Signin from './Signin.jsx'
+
+const appConfig = new AppConfig(['store_write', 'publish_data'])
 const userSession = new UserSession({ appConfig: appConfig })
+
+// TODO: Paramaterize the server address
+configure({
+  apiServer: '/api',
+  userSession,
+})
 
 export default class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
       sidebarVisible: false,
+    }
+  }
+
+  async componentDidMount() {
+    const { userSession } = getConfig()
+    if (userSession.isSignInPending()) {
+      await userSession.handlePendingSignIn()
+      await User.createWithCurrentUser()
+      window.location = window.location.origin
     }
   }
 
@@ -42,7 +59,7 @@ export default class App extends Component {
   render() {
     const { sidebarVisible } = this.state
     return (
-      <div className="site-wrapper-inner">
+      <div className="site-wrapper">
         <Sidebar.Pushable as={Segment}>
           <Sidebar
             as={Menu}
@@ -71,6 +88,9 @@ export default class App extends Component {
                 <Link to="/" className="item">
                   <Menu.Item>Profile</Menu.Item>
                 </Link>
+                <Link to="/add-doc" className="item">
+                  <Menu.Item>Upload</Menu.Item>
+                </Link>
                 <Link to="/" className="item">
                   <Menu.Item>Browse</Menu.Item>
                 </Link>
@@ -83,7 +103,7 @@ export default class App extends Component {
           <Sidebar.Pusher
             style={{ backgroundColor: '#e91e63', height: 'auto' }}
           >
-            <div className="site-wrapper">
+            <div className="site-wrapper-inner container-fluid">
               <Menu inverted secondary>
                 <Menu.Item onClick={() => this.handleShowClick()}>
                   <Icon
@@ -121,6 +141,15 @@ export default class App extends Component {
                       />
                     )}
                   />
+                  <Route
+                    path="/add-doc"
+                    render={routeProps => (
+                      <AddDocContainer
+                        userSession={userSession}
+                        {...routeProps}
+                      />
+                    )}
+                  />
                 </Switch>
               )}
             </div>
@@ -128,13 +157,5 @@ export default class App extends Component {
         </Sidebar.Pushable>
       </div>
     )
-  }
-
-  componentWillMount() {
-    if (userSession.isSignInPending()) {
-      userSession.handlePendingSignIn().then(userData => {
-        window.location = window.location.origin
-      })
-    }
   }
 }

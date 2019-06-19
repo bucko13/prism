@@ -138,3 +138,7 @@ input,
 textarea {
   color: #000;
 }
+
+.react-mde {
+  border: none;
+}

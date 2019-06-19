@@ -34,6 +34,10 @@
     {
       "src": "/api/node/(.*)",
       "dest": "/api/node"
+    },
+    {
+      "src": "/api/radiks/(.*)",
+      "dest": "/api/radiks"
     }
   ]
 }
