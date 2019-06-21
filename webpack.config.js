@@ -45,7 +45,10 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            plugins: ['@babel/transform-runtime'],
+            plugins: [
+              '@babel/transform-runtime',
+              '@babel/plugin-proposal-class-properties',
+            ],
             presets: ['@babel/preset-env', '@babel/preset-react'],
           },
         },

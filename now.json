@@ -5,7 +5,8 @@
   "build": {
     "env": {
       "SESSION_SECRET": "@session-secret",
-      "OPEN_NODE_KEY": "@open-node-key"
+      "OPEN_NODE_KEY": "@open-node-key",
+      "APP_PRIVATE_KEY": "@app-private-key"
     }
   },
   "builds": [

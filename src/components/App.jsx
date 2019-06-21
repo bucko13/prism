@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { UserSession, AppConfig } from 'blockstack'
 import { Menu, Icon, Sidebar, Segment } from 'semantic-ui-react'
 import { Switch, Route, Link } from 'react-router-dom'
 import { configure, User, getConfig } from 'radiks'
+import { get } from 'axios'
 
 import Profile from './Profile.jsx'
 import { ReaderContainer, AddDocContainer } from '../containers'
@@ -10,7 +12,6 @@ import Signin from './Signin.jsx'
 
 const appConfig = new AppConfig(['store_write', 'publish_data'])
 const userSession = new UserSession({ appConfig: appConfig })
-
 // TODO: Paramaterize the server address
 configure({
   apiServer: '/api',
@@ -25,6 +26,13 @@ export default class App extends Component {
     }
   }
 
+  static get propTypes() {
+    return {
+      setPubKey: PropTypes.func.isRequired,
+      getAESKey: PropTypes.func.isRequired,
+    }
+  }
+
   async componentDidMount() {
     const { userSession } = getConfig()
     if (userSession.isSignInPending()) {
@@ -32,6 +40,15 @@ export default class App extends Component {
       await User.createWithCurrentUser()
       window.location = window.location.origin
     }
+    const {
+      data: { pubKey },
+    } = await get('/api/radiks/key')
+    if (pubKey) this.props.setPubKey(pubKey)
+    // eslint-disable-next-line no-console
+    else console.error('Unable to retrieve pubkey from app server')
+
+    // this action then sets the resulting aes key on the store
+    this.props.getAESKey()
   }
 
   handleSignIn(e) {

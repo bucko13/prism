@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
 
-import App from './components/App.jsx'
+import AppContainer from './containers/App.jsx'
 import createStore from './store'
 
 // Require Sass file so webpack can build it
@@ -17,7 +17,7 @@ const store = createStore({})
 ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter>
-      <App />
+      <AppContainer />
     </BrowserRouter>
   </Provider>,
   document.getElementById('root')
