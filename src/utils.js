@@ -5,7 +5,7 @@ import assert from 'bsert'
 export function encryptWithKey(key, data) {
   assert(key && typeof key === 'string')
   const iv = randomBytes(16)
-  const cipher = aes.encipher(Buffer.from(data), Buffer.from(key), iv)
+  const cipher = aes.encipher(Buffer.from(data), Buffer.from(key, 'hex'), iv)
   return cipher.toString('hex') + ':::' + iv.toString('hex')
 }
 

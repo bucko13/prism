@@ -9,9 +9,11 @@ import { get } from 'axios'
 import Profile from './Profile.jsx'
 import { ReaderContainer, AddDocContainer } from '../containers'
 import Signin from './Signin.jsx'
+import { Document } from '../models'
 
 const appConfig = new AppConfig(['store_write', 'publish_data'])
 const userSession = new UserSession({ appConfig: appConfig })
+
 // TODO: Paramaterize the server address
 configure({
   apiServer: '/api',
@@ -29,7 +31,7 @@ export default class App extends Component {
   static get propTypes() {
     return {
       setPubKey: PropTypes.func.isRequired,
-      getAESKey: PropTypes.func.isRequired,
+      saveUser: PropTypes.func.isRequired,
     }
   }
 
@@ -48,7 +50,9 @@ export default class App extends Component {
     else console.error('Unable to retrieve pubkey from app server')
 
     // this action then sets the resulting aes key on the store
-    this.props.getAESKey()
+    this.props.saveUser()
+    const documents = await Document.fetchList()
+    console.log('documents:', documents)
   }
 
   handleSignIn(e) {

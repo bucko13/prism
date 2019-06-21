@@ -31,13 +31,13 @@ function getPublicKey() {
   return getPublicKeyFromPrivate(process.env.APP_PRIVATE_KEY)
 }
 
-async function getUserKey(username) {
+async function getUserKey(id) {
   const mongo = await getDB(process.env.MONGODB_URI)
   const radiksData = mongo.collection(COLLECTION)
   const key = await radiksData.findOne(
     {
       radiksType: 'Key',
-      username,
+      _id: id,
     },
     {
       projection: {
@@ -46,6 +46,15 @@ async function getUserKey(username) {
     }
   )
   return key
+}
+
+async function getDocument(id) {
+  const mongo = await getDB(process.env.MONGODB_URI)
+  const radiksData = mongo.collection(COLLECTION)
+  return await radiksData.findOne({
+    radiksType: 'Document',
+    _id: id,
+  })
 }
 
 async function getUsersList() {
@@ -62,3 +71,4 @@ exports.getAppUserSession = getAppUserSession
 exports.getPublicKey = getPublicKey
 exports.getUsersList = getUsersList
 exports.getUserKey = getUserKey
+exports.getDocument = getDocument
