@@ -1,3 +1,5 @@
 export { default as Reader } from './Reader.jsx'
 export { default as AddDocComponent } from './AddDocComponent.jsx'
+export { default as ProfileComponent } from './Profile.jsx'
 export { default as AppComponent } from './App.jsx'
+export { default as Post } from './Post.jsx'

@@ -6,10 +6,13 @@ import { Switch, Route, Link } from 'react-router-dom'
 import { configure, User, getConfig } from 'radiks'
 import { get } from 'axios'
 
-import Profile from './Profile.jsx'
-import { ReaderContainer, AddDocContainer } from '../containers'
+import {
+  ReaderContainer,
+  AddDocContainer,
+  ProfileContainer,
+  PostContainer,
+} from '../containers'
 import Signin from './Signin.jsx'
-import { Document } from '../models'
 
 const appConfig = new AppConfig(['store_write', 'publish_data'])
 const userSession = new UserSession({ appConfig: appConfig })
@@ -51,8 +54,6 @@ export default class App extends Component {
 
     // this action then sets the resulting aes key on the store
     this.props.saveUser()
-    const documents = await Document.fetchList()
-    console.log('documents:', documents)
   }
 
   handleSignIn(e) {
@@ -146,7 +147,7 @@ export default class App extends Component {
                     exact
                     path="/"
                     render={routeProps => (
-                      <Profile
+                      <ProfileContainer
                         userSession={userSession}
                         handleSignOut={this.handleSignOut}
                         {...routeProps}
@@ -161,6 +162,10 @@ export default class App extends Component {
                         {...routeProps}
                       />
                     )}
+                  />
+                  <Route
+                    path="/post"
+                    render={routeProps => <PostContainer {...routeProps} />}
                   />
                   <Route
                     path="/add-doc"

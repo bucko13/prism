@@ -28,11 +28,21 @@ export default class Profile extends PureComponent {
     return {
       userSession: PropTypes.object,
       handleSignOut: PropTypes.func.isRequired,
+      getDocumentList: PropTypes.func.isRequired,
+      documents: PropTypes.arrayOf(
+        PropTypes.shape({
+          title: PropTypes.string.isRequired,
+          content: PropTypes.string,
+          author: PropTypes.string.isRequired,
+          docId: PropTypes.string.isRequired,
+        })
+      ),
     }
   }
 
   async componentDidMount() {
-    const { userSession } = this.props
+    const { userSession, getDocumentList } = this.props
+    await getDocumentList()
     const resp = await fetch('/api/docs', {
       method: 'GET',
       credentials: 'include',
@@ -64,7 +74,7 @@ export default class Profile extends PureComponent {
   }
 
   render() {
-    const { handleSignOut, userSession } = this.props
+    const { documents, handleSignOut, userSession } = this.props
     const { person, docs, identity } = this.state
 
     return !userSession.isSignInPending() ? (
@@ -100,7 +110,27 @@ export default class Profile extends PureComponent {
           </a>{' '}
           to create one and test out the app
         </p>
-
+        {/* the new documents list from radiks */}
+        <div className="docs-list" style={{ width: '50%', margin: 'auto' }}>
+          {documents.length
+            ? documents.map((doc, index) => (
+                <Link
+                  key={index}
+                  to={{
+                    pathname: '/post',
+                    search: `?id=${doc.docId}`,
+                    query: doc,
+                  }}
+                  style={{ margin: '0 1rem', padding: '.5rem' }}
+                >
+                  <Segment className="doc" size="large" inverted>
+                    {doc.title}
+                  </Segment>
+                </Link>
+              ))
+            : ''}
+        </div>
+        {/* end the documents list from radiks */}
         <div className="docs-list" style={{ width: '50%', margin: 'auto' }}>
           {docs.length
             ? docs.map((doc, index) => (

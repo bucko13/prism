@@ -31,11 +31,16 @@ app.get('/api/radiks/key/:username', async (req, res) => {
 
 app.get('/api/radiks/document/:docId', async (req, res) => {
   const document = await getDocument(req.params.docId)
-  const { encryptedContent, aesKey } = document
-  const [encryptedData, iv] = encryptedContent.split(':::')
+  const { encryptedContent: data, aesKey } = document
+  if (!data)
+    return res
+      .status(404)
+      .json({ message: 'no encrypted content for requested document' })
+  // TODO: the below fails if content was never encrypted
+  const [encryptedContent, iv] = data.split(':::')
   const decryptedKey = decryptECIES(process.env.APP_PRIVATE_KEY, aesKey)
   const decryptedContent = aes.decipher(
-    Buffer.from(encryptedData, 'hex'),
+    Buffer.from(encryptedContent, 'hex'),
     Buffer.from(decryptedKey, 'hex'),
     Buffer.from(iv, 'hex')
   )

@@ -40,7 +40,7 @@ export default class Reader extends PureComponent {
   }
 
   async componentDidMount() {
-    const { getDocInfo, location, setDocInfo, updateText } = this.props
+    const { getDocInfo, location, setDocInfo } = this.props
     let doc = location.query
     // if doc info was passed, simply set the info
     if (doc) {
@@ -96,7 +96,7 @@ export default class Reader extends PureComponent {
   async setText() {
     const { updateText, setInvoice } = this.props
     await updateText()
-    this.setState({ modalOpen: false, timer: this.state.seconds  }, () => {
+    this.setState({ modalOpen: false, timer: this.state.seconds }, () => {
       setInvoice('')
       this.setTimer(this.state.timer)
     })
@@ -110,7 +110,6 @@ export default class Reader extends PureComponent {
     } else {
       return
     }
-
   }
 
   async showModal(doc) {
@@ -129,12 +128,7 @@ export default class Reader extends PureComponent {
   }
 
   render() {
-    const {
-      seconds,
-      modalOpen,
-      rate,
-      timer
-    } = this.state
+    const { seconds, modalOpen, rate, timer } = this.state
 
     const {
       wordCount,
@@ -156,7 +150,10 @@ export default class Reader extends PureComponent {
             <Header as="h2" className="col-12">
               {title}
             </Header>
-            <Button onClick={e => this.showModal({ title, filename })} className="col-6">
+            <Button
+              onClick={e => this.showModal({ title, filename })}
+              className="col-6"
+            >
               Click to Start
             </Button>
           </div>
@@ -176,9 +173,7 @@ export default class Reader extends PureComponent {
               <Header as="h4">
                 Percent left: {((readCount / wordCount) * 100).toFixed(2)}%
               </Header>
-              <Header as="h4">
-                Time left: {timer} seconds
-              </Header>
+              <Header as="h4">Time left: {timer} seconds</Header>
             </Segment>
           </div>
         ) : (
