@@ -2,12 +2,13 @@
 a,
 a:focus,
 a:hover {
-  color: #fff;
+  /*color: #fff;*/
 }
 html,
 body {
   height: 100%;
-  background-color: #e91e63;
+  /*background-color: #e91e63;*/
+  background-color: white;
 }
 body {
   color: #fff;
@@ -143,3 +144,16 @@ textarea {
   border: none;
   width: 100%;
 }
+
+/***
+* Misc.
+*/
+.pushable {
+  height: auto;
+  min-height: 100vh;
+}
+
+.sidebar.menu {
+  position: fixed;
+}
+

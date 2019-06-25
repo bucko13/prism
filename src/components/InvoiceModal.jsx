@@ -31,6 +31,7 @@ export default function InvoiceModal({
                 type="number"
                 value={seconds}
                 onChange={changeSeconds}
+                min={0}
               >
                 <input />
                 <Label>${cost.toFixed(3)}</Label>
@@ -78,7 +79,7 @@ InvoiceModal.propTypes = {
   requestInvoice: PropTypes.func.isRequired,
   changeSeconds: PropTypes.func.isRequired,
   closeModal: PropTypes.func.isRequired,
-  seconds: PropTypes.number.isRequired,
+  seconds: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   modalOpen: PropTypes.bool.isRequired,
   invoice: PropTypes.string.isRequired,
   rate: PropTypes.number,

@@ -53,7 +53,7 @@ app.get('/api/node/invoice', async (req, res) => {
       console.log(`Invoice ${invoiceId} has been paid`)
       return res
         .status(200)
-        .json({ expiration: req.session['payment-config'].expiration })
+        .json({ status, expiration: req.session['payment-config'].expiration })
     } else if (status === 'processing' || status === 'unpaid') {
       console.log('still processing invoice %s...', invoiceId)
       return res.status(202).json({ status })

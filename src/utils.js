@@ -16,3 +16,7 @@ export function encryptWithKey(key, data) {
 export function generateRandomKey(length = 32) {
   return randomBytes(length).toString('hex')
 }
+
+export async function sleep(time = 500) {
+  return new Promise(resolve => setTimeout(resolve, time))
+}

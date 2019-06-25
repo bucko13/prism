@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react'
-
 import { Header, Button, Loader, Segment } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
+
 import InvoiceModal from './InvoiceModal.jsx'
+import { sleep } from '../utils'
 
 export default class Reader extends PureComponent {
   constructor(props) {
@@ -112,7 +113,7 @@ export default class Reader extends PureComponent {
     }
   }
 
-  async showModal(doc) {
+  async showModal() {
     try {
       const res = await axios.get('/api/node/exchange')
       const { BTCUSD: rate } = res.data
@@ -135,9 +136,7 @@ export default class Reader extends PureComponent {
       title,
       invoice,
       text,
-      readIndex,
       readCount,
-      filename,
       updateText,
     } = this.props
     return (
@@ -150,10 +149,7 @@ export default class Reader extends PureComponent {
             <Header as="h2" className="col-12">
               {title}
             </Header>
-            <Button
-              onClick={e => this.showModal({ title, filename })}
-              className="col-6"
-            >
+            <Button onClick={() => this.showModal()} className="col-6">
               Click to Start
             </Button>
           </div>
@@ -192,8 +188,4 @@ export default class Reader extends PureComponent {
       </div>
     )
   }
-}
-
-async function sleep(time = 500) {
-  return new Promise(resolve => setTimeout(resolve, time))
 }

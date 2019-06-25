@@ -1,11 +1,12 @@
 import assert from 'bsert'
-import { get } from 'axios'
+import { get, post } from 'axios'
 
 import { Document } from '../../models'
 import {
   SET_CURRENT_DOC,
   SET_DOCUMENT_LIST,
   CLEAR_CURRENT_DOC,
+  SET_CURRENT_CONTENT,
 } from '../constants'
 
 /*
@@ -48,19 +49,60 @@ export function setCurrentDoc(docId) {
       const {
         data: { author, _id, title, decryptedContent },
       } = await get(`/api/radiks/document/${docId}`)
-      assert(decryptedContent, 'Document did not return decrypted content')
+      // assert(decryptedContent, 'Document did not return decrypted content')
       return dispatch({
         type: SET_CURRENT_DOC,
         payload: {
           author,
           docId: _id,
           title,
-          content: decryptedContent,
+          content: decryptedContent || '',
         },
       })
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error('Problem setting document:', e.message)
+    }
+  }
+}
+
+/*
+ * Request permission and get cookie to read a document
+ * @params {String} docId - id of document requesting permission for
+ * @returns {void} dispatch action to set doc content
+ */
+
+export function getContent() {
+  return async (dispatch, getState) => {
+    try {
+      const docId = getState().documents.getIn(['currentDoc', 'docId'])
+
+      // if request is successful then we should have the cookie
+      // and can request the document content
+      const {
+        data: { decryptedContent },
+      } = await get(`/api/radiks/document/${docId}?content=true`)
+      dispatch({
+        type: SET_CURRENT_CONTENT,
+        payload: {
+          content: decryptedContent,
+          locked: false,
+        },
+      })
+    } catch (e) {
+      if (e.response && e.response.status === 402) {
+        // eslint-disable-next-line no-console
+        console.warn('Attempted to retrieve document that requires payment')
+        dispatch({
+          type: SET_CURRENT_CONTENT,
+          payload: {
+            content: '',
+            locked: true,
+          },
+        })
+      }
+      // eslint-disable-next-line no-console
+      else console.error('Problem unlocking content: ', e.message)
     }
   }
 }

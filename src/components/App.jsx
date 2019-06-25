@@ -123,7 +123,11 @@ export default class App extends Component {
             )}
           </Sidebar>
           <Sidebar.Pusher
-            style={{ backgroundColor: '#e91e63', height: 'auto' }}
+            style={{
+              // backgroundColor: '#e91e63',
+              backgroundColor: 'white',
+              height: 'auto',
+            }}
           >
             <div className="site-wrapper-inner container-fluid">
               <Menu inverted secondary>
