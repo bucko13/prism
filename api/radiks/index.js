@@ -24,21 +24,16 @@ app.get('/api/radiks/key', async (req, res) => {
   res.json({ pubKey })
 })
 
-app.get('/api/radiks/key/:username', async (req, res) => {
-  const key = await getUserKey(req.params.username)
-  res.json({ key })
-})
-
 app.get('/api/radiks/document/:docId', async (req, res) => {
   const docId = req.params.docId
   const document = await getDocument(req.params.docId)
   const { content } = req.query
   const paymentConfig = req.session['payment-config']
 
-  const { encryptedContent: data, aesKey } = document
-  // if no request for content then just return
-  // metadata
+  const { encryptedContent: data, keyId } = document
+  const { encryptedKey: aesKey } = await getUserKey(keyId)
 
+  // if no request for content then just return metadata
   if (!content)
     return res.status(200).json({
       title: document.title,
@@ -70,8 +65,10 @@ app.get('/api/radiks/document/:docId', async (req, res) => {
     return res
       .status(404)
       .json({ message: 'no encrypted content for requested document' })
+
   // TODO: the below fails if content was never encrypted
   const [encryptedContent, iv] = data.split(':::')
+
   const decryptedKey = decryptECIES(process.env.APP_PRIVATE_KEY, aesKey)
   const decryptedContent = aes.decipher(
     Buffer.from(encryptedContent, 'hex'),

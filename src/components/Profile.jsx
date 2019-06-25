@@ -2,7 +2,9 @@ import React, { PureComponent } from 'react'
 import { Person } from 'blockstack'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
-import { Segment } from 'semantic-ui-react'
+import { Segment, Button } from 'semantic-ui-react'
+
+import { Document } from '../models'
 
 const avatarFallbackImage =
   'https://s3.amazonaws.com/onename/avatar-placeholder.png'
@@ -71,6 +73,21 @@ export default class Profile extends PureComponent {
     })
     const info = await resp.json()
     return info
+  }
+
+  // This is a utility method for now for easy cleanup of testing
+  // in production probably want to have this a little more buried
+  async deleteAllPosts() {
+    const myDocs = await Document.fetchOwnList()
+    const confirm = window.confirm(
+      `Are you sure you want to delete all (${myDocs.length}) posts?`
+    )
+    if (!confirm) return
+
+    for (let doc of myDocs) {
+      await doc.destroy()
+    }
+    this.props.getDocumentList()
   }
 
   render() {
@@ -161,6 +178,17 @@ export default class Profile extends PureComponent {
               </Segment>
             </div>
           </div>
+        ) : (
+          ''
+        )}
+        {documents && documents.length ? (
+          <Button
+            color="red"
+            className="m-4"
+            onClick={() => this.deleteAllPosts()}
+          >
+            DELETE MY POSTS
+          </Button>
         ) : (
           ''
         )}

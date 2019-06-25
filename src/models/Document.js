@@ -50,20 +50,25 @@ export default class Document extends Model {
     },
 
     // this gets encrypted but can be retrieved by the app
-    // if there is an associated encrypted key model
+    // by looking up the keyId and decrypting
     aesKey: String,
+
+    keyId: {
+      type: String,
+      decrypted: true,
+    },
   }
 
   async afterFetch() {
     await this.setupKey()
   }
 
-  encryptContent() {
+  async encryptContent() {
     const { content } = this.attrs
-
+    await this.setupKey()
     assert(this.attrs.aesKey, 'must set an aesKey on Document to encrypt')
     const encryptedContent = encryptWithKey(this.attrs.aesKey, content)
-    this.update({ encryptedContent })
+    await this.update({ encryptedContent })
   }
 
   async beforeSave() {
@@ -91,7 +96,7 @@ Make sure you pass userId attr when saving a Document model.'
         `No key associated with id ${user.keyId} for user ${user.username}`
       )
     else {
-      await this.update({ aesKey: key.attrs.aesKey })
+      await this.update({ aesKey: key.attrs.aesKey, keyId: key._id })
     }
   }
 }

@@ -43,16 +43,16 @@ class AddDocContainer extends PureComponent {
 
   async handleSubmit() {
     const { title, text } = this.state
-    const { name, userId, aesKey } = this.props
+    const { name, userId } = this.props
     const doc = new Document({
       title,
       content: text,
       author: name || 'Anonymous',
       userId,
-      aesKey,
     })
     await doc.encryptContent()
     await doc.save()
+    window.location = window.location.origin
   }
 
   render() {

@@ -1,5 +1,5 @@
 import assert from 'bsert'
-import { get, post } from 'axios'
+import { get } from 'axios'
 
 import { Document } from '../../models'
 import {

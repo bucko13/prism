@@ -12,34 +12,12 @@ export function setPubKey(pubkey) {
   }
 }
 
-export function getAESKey() {
-  return async (dispatch, getState) => {
-    let aesKey = getState().app.get('aesKey')
-    if (aesKey.length)
-      // eslint-disable-next-line no-console
-      console.warn('creating new aesKey when one is already set in store')
-
-    // TODO: key should be setup in such a way that there
-    // is only one per user. For now just pulling the first one off the list
-    let [key] = await Key.fetchOwnList()
-
-    // if no key already stored then let's generate a new one
-
-    if (!key) {
-      const pubKey = getState().app.get('pubKey')
-      key = await generateKey(pubKey)
-    }
-
-    dispatch(setAESKey(key.attrs.aesKey))
-    return key
-  }
-}
-
 export function saveUser() {
   return async (dispatch, getState) => {
     const { userSession } = getConfig()
     const { username } = userSession.loadUserData()
     let [user] = await User.fetchOwnList({ username })
+
     if (!user) {
       const pubKey = getState().app.get('pubKey')
       const key = await generateKey(pubKey)

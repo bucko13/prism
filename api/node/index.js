@@ -3,7 +3,7 @@
 const app = require('../index.js')
 
 app.post('/api/node/invoice', async (req, res) => {
-  const { time, filename } = req.body // time in seconds
+  const { time, filename, docId } = req.body // time in seconds
   const paymentConfig = req.session['payment-config']
   const opennode = require('opennode')
   opennode.setCredentials(process.env.OPEN_NODE_KEY, 'dev')
@@ -21,6 +21,7 @@ app.post('/api/node/invoice', async (req, res) => {
       invoiceId: invoice.id,
       pendingTime: time,
       filename,
+      docId,
     }
     res.status(200).json(invoice)
   } catch (error) {

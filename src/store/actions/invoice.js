@@ -54,6 +54,7 @@ export function requestInvoice() {
   return async (dispatch, getState) => {
     let time = getState().invoice.get('seconds')
     const title = getState().documents.getIn(['currentDoc', 'title'])
+    const docId = getState().documents.getIn(['currentDoc', 'docId'])
     if (typeof seconds !== 'number') time = parseInt(time, 10)
     assert(typeof time === 'number' && time > 0)
     const {
@@ -65,6 +66,7 @@ export function requestInvoice() {
     } = await post('/api/node/invoice', {
       time,
       filename: title,
+      docId,
     })
     dispatch(setInvoice({ invoice, invoiceId: id, status }))
     dispatch(checkInvoiceStatus(10))
@@ -83,7 +85,8 @@ export function checkInvoiceStatus(tries = 10, timeout = 750) {
     const response = await get('/api/node/invoice')
     if (response.status === 200 && response.data.status === 'paid') {
       dispatch(closeModal())
-      return dispatch(setStatus('paid'))
+      dispatch(setStatus('paid'))
+      dispatch(clearInvoice())
     } else if (tries > 0) {
       await sleep(timeout)
       return dispatch(checkInvoiceStatus(tries - 1))
@@ -97,5 +100,15 @@ export function setStatus(status) {
   return {
     type: SET_STATUS,
     payload: status,
+  }
+}
+
+export function clearInvoice() {
+  return {
+    type: SET_INVOICE,
+    payload: {
+      invoice: '',
+      invoiceId: '',
+    },
   }
 }
