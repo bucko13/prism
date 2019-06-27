@@ -6,6 +6,12 @@ const {
 const { InstanceDataStore } = require('blockstack/lib/auth/sessionStore')
 const { getDB } = require('radiks-server')
 const { COLLECTION } = require('radiks-server/app/lib/constants')
+const {
+  MacaroonsBuilder,
+  MacaroonsVerifier,
+  verifier,
+} = require('macaroons.js')
+const TimestampCaveatVerifier = verifier.TimestampCaveatVerifier
 
 function getAppUserSession({ origin = 'localhost:3000' }) {
   const appConfig = new AppConfig(
@@ -67,8 +73,59 @@ async function getUsersList() {
     .toArray()
 }
 
+/*
+ * Validates a macaroon and should indicate reason for failure
+ * if possible
+ * @params {Macaroon} root - root macaroon
+ * @params {Macaroon} discharge - discharge macaroon from 3rd party validation
+ * @params {String} docId - document id that macaroon is validated for
+ * @returns {Boolean|Exception} will return true if passed or throw with failure
+ */
+function validateMacaroons(root, discharge, docId) {
+  root = MacaroonsBuilder.deserialize(root)
+  discharge = MacaroonsBuilder.deserialize(discharge)
+
+  const boundMacaroon = MacaroonsBuilder.modify(root)
+    .prepare_for_request(discharge)
+    .getMacaroon()
+
+  // lets verify the macaroon caveats
+  const valid = new MacaroonsVerifier(root)
+    // root macaroon should have a caveat to match the docId
+    .satisfyExact(`docId = ${docId}`)
+    // discharge macaroon is expected to have the time caveat
+    .satisfyGeneral(TimestampCaveatVerifier)
+    // confirm that the payment node has discharged appropriately
+    .satisfy3rdParty(boundMacaroon)
+    // confirm that this macaroon is valid
+    .isValid(process.env.SESSION_SECRET)
+
+  // if it's valid then we're good to go
+  if (valid) return true
+
+  // if not valid, let's check if it's because of time or because of docId mismatch
+  const TIME_CAVEAT_PREFIX = /time < .*/
+  const EXACT_CAVEAT_PREFIX = /docID = .*/
+
+  // find time caveat in third party macaroon and check if time has expired
+  for (let caveat of boundMacaroon.caveatPackets) {
+    caveat = caveat.getValueAsText()
+    if (TIME_CAVEAT_PREFIX.test(caveat) && !TimestampCaveatVerifier(caveat))
+      throw new Error(`Time has expired for viewing document ${docId}`)
+  }
+
+  for (let caveat of root.caveatPackets) {
+    caveat = caveat.getValueAsText()
+    // TODO: should probably generalize the exact caveat check or export as constant.
+    // This would fail even if there is a space missing in the caveat creation
+    if (EXACT_CAVEAT_PREFIX.test(caveat) && caveat !== `docId = ${docId}`)
+      throw new Error('Document id did not match macaroon')
+  }
+}
+
 exports.getAppUserSession = getAppUserSession
 exports.getPublicKey = getPublicKey
 exports.getUsersList = getUsersList
 exports.getUserKey = getUserKey
 exports.getDocument = getDocument
+exports.validateMacaroons = validateMacaroons
