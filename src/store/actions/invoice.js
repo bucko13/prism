@@ -7,6 +7,8 @@ import {
   SET_INVOICE,
   CHANGE_SECONDS,
   SET_STATUS,
+  SET_STATUS_PAID,
+  SET_MACAROON,
 } from '../constants'
 import { sleep } from '../../utils'
 
@@ -55,19 +57,22 @@ export function requestInvoice() {
     let time = getState().invoice.get('seconds')
     const title = getState().documents.getIn(['currentDoc', 'title'])
     const docId = getState().documents.getIn(['currentDoc', 'docId'])
+    const nodeUri = getState().documents.getIn(['currentDoc', 'node'])
+
     if (typeof seconds !== 'number') time = parseInt(time, 10)
     assert(typeof time === 'number' && time > 0)
-    const {
-      data: {
-        lightning_invoice: { payreq: invoice },
-        id,
-        status,
-      },
-    } = await post('/api/node/invoice', {
+
+    const { data } = await post('/api/invoice', {
       time,
-      filename: title,
+      title,
       docId,
+      nodeUri,
     })
+    const {
+      lightning_invoice: { payreq: invoice },
+      id,
+      status,
+    } = data
     dispatch(setInvoice({ invoice, invoiceId: id, status }))
     dispatch(checkInvoiceStatus(10))
   }
@@ -81,11 +86,20 @@ export function requestInvoice() {
  * @params {<Promise>} - will either set status to paid, failed, or call itself recursively
  */
 export function checkInvoiceStatus(tries = 10, timeout = 750) {
-  return async dispatch => {
-    const response = await get('/api/node/invoice')
+  return async (dispatch, getState) => {
+    let nodeUri = getState().documents.getIn(['currentDoc', 'node'])
+    let invoiceId = getState().invoice.get('invoiceId')
+
+    assert(
+      invoiceId,
+      'Missing invoiceId in state. Must request the invoice before checking status'
+    )
+    if (!nodeUri) if (!nodeUri) nodeUri = 'https://ln-builder.bucko.now.sh'
+
+    const response = await get(`${nodeUri}/api/invoice?id=${invoiceId}`)
     if (response.status === 200 && response.data.status === 'paid') {
       dispatch(closeModal())
-      dispatch(setStatus('paid'))
+      dispatch(setStatusPaid(response.data.discharge))
       dispatch(clearInvoice())
     } else if (tries > 0) {
       await sleep(timeout)
@@ -93,6 +107,21 @@ export function checkInvoiceStatus(tries = 10, timeout = 750) {
     } else {
       return dispatch(setStatus('failed'))
     }
+  }
+}
+
+function setStatusPaid(macaroon) {
+  assert(macaroon, 'need a macaroon to update status to paid')
+  return {
+    type: SET_STATUS_PAID,
+    payload: macaroon,
+  }
+}
+
+export function setMacaroon(macaroon) {
+  return {
+    type: SET_MACAROON,
+    payload: macaroon,
   }
 }
 

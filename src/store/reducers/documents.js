@@ -14,6 +14,7 @@ const init = Map({
     author: '',
     docId: '',
     locked: true,
+    node: '', // uri of payment node
   }),
   documentList: List([]),
 })

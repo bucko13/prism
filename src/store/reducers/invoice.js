@@ -8,6 +8,8 @@ import {
   SET_INVOICE,
   CHANGE_SECONDS,
   SET_STATUS,
+  SET_MACAROON,
+  SET_STATUS_PAID,
 } from '../constants'
 
 const init = Map({
@@ -17,6 +19,7 @@ const init = Map({
   invoiceId: '',
   rate: 1,
   status: null,
+  macaroon: '',
 })
 
 export default (state = init, action) => {
@@ -37,6 +40,12 @@ export default (state = init, action) => {
 
     case SET_STATUS:
       return state.set('status', payload)
+
+    case SET_MACAROON:
+      return state.set('macaroon', payload)
+
+    case SET_STATUS_PAID:
+      return state.merge({ status: 'paid', macaroon: payload })
 
     default:
       return state

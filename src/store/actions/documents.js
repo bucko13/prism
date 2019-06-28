@@ -47,9 +47,9 @@ export function setCurrentDoc(docId) {
   return async dispatch => {
     try {
       const {
-        data: { author, _id, title, decryptedContent },
+        data: { author, _id, title, decryptedContent, node },
       } = await get(`/api/radiks/document/${docId}`)
-      // assert(decryptedContent, 'Document did not return decrypted content')
+
       return dispatch({
         type: SET_CURRENT_DOC,
         payload: {
@@ -57,6 +57,7 @@ export function setCurrentDoc(docId) {
           docId: _id,
           title,
           content: decryptedContent || '',
+          node,
         },
       })
     } catch (e) {
@@ -76,12 +77,18 @@ export function getContent() {
   return async (dispatch, getState) => {
     try {
       const docId = getState().documents.getIn(['currentDoc', 'docId'])
+      const macaroon = getState().invoice.get('macaroon')
+
+      // can't set content without a macaroon
+      if (!macaroon) return dispatch(setCurrentDoc(docId))
 
       // if request is successful then we should have the cookie
       // and can request the document content
       const {
         data: { decryptedContent },
-      } = await get(`/api/radiks/document/${docId}?content=true`)
+      } = await get(
+        `/api/radiks/document/${docId}?content=true&dischargeMacaroon=${macaroon}`
+      )
       dispatch({
         type: SET_CURRENT_CONTENT,
         payload: {

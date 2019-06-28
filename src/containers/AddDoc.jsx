@@ -42,13 +42,15 @@ class AddDocContainer extends PureComponent {
   }
 
   async handleSubmit() {
-    const { title, text } = this.state
+    let { title, text, author, node } = this.state
     const { name, userId } = this.props
+    if (!author) author = name || 'Anonymous'
     const doc = new Document({
       title,
       content: text,
-      author: name || 'Anonymous',
+      author,
       userId,
+      node,
     })
     await doc.encryptContent()
     await doc.save()
@@ -65,6 +67,7 @@ class AddDocContainer extends PureComponent {
         }
         onTabChange={tab => this.handleTabChange(tab)}
         selectedTab={this.state.tab}
+        className="col"
       />
     )
     return (

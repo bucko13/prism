@@ -57,6 +57,12 @@ export default class Document extends Model {
       type: String,
       decrypted: true,
     },
+
+    // this is the endpoint where the app can request invoices from
+    node: {
+      type: String,
+      decrypted: true,
+    },
   }
 
   async afterFetch() {

@@ -157,3 +157,7 @@ textarea {
   position: fixed;
 }
 
+textarea.mde-text {
+  border: 1px solid lightgrey;
+}
+
