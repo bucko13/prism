@@ -21,4 +21,14 @@ app.use(
   })
 )
 
+app.use(
+  cookieSession({
+    name: 'macaroon',
+    maxAge: 86400000,
+    secret: process.env.SESSION_SECRET || 'i_am_satoshi_08',
+    overwrite: false,
+    signed: true,
+  })
+)
+
 module.exports = app

@@ -6,6 +6,7 @@ const {
   getUsersList,
   getUserKey,
   getDocument,
+  validateMacaroons,
 } = require('./helpers')
 const { decryptECIES } = require('blockstack/lib/encryption')
 
@@ -25,10 +26,15 @@ app.get('/api/radiks/key', async (req, res) => {
 })
 
 app.get('/api/radiks/document/:docId', async (req, res) => {
-  const docId = req.params.docId
-  const document = await getDocument(req.params.docId)
-  const { content } = req.query
-  const paymentConfig = req.session['payment-config']
+  const { docId } = req.params
+  const document = await getDocument(docId)
+  const { content, dischargeMacaroon } = req.query
+  const rootMacaroon = req.session.macaroon
+
+  if (!document)
+    return res
+      .status(404)
+      .json({ message: `No document found for id ${docId}` })
 
   const { encryptedContent: data, keyId } = document
   const { encryptedKey: aesKey } = await getUserKey(keyId)
@@ -40,16 +46,20 @@ app.get('/api/radiks/document/:docId', async (req, res) => {
       author: document.author,
       _id: document._id,
     })
-  // request for content but hasn't been authenticated for matching docId
-  // or the expiration has passed then return payment required
-  else if (
-    content &&
-    paymentConfig &&
-    (!paymentConfig.expiration ||
-      (paymentConfig.expiration &&
-        new Date(paymentConfig.expiration) < Date.now()))
-  )
-    return res.status(402).json({ message: 'Payment required to view content' })
+  // if requesting content but no root macaroon cookie present in request
+  // then an invoice needs to be requested first to get the macaroon for auth
+  else if (!rootMacaroon)
+    return res.status(400).json({
+      message: 'Missing macaroon. Request an invoice before requesting content',
+    })
+  // request for content but no discharge macaroon passed in query param
+  // likely means client still needs to pay ln node and verify payment status
+  else if (!dischargeMacaroon)
+    return res.status(400).json({
+      message:
+        'Missing 3rd party macaroon from payment node. \
+Make sure invoice is paid and you have received a discharge macaroon',
+    })
   else if (!data && document.title)
     return res.status(202).json({
       title: document.title,
@@ -57,14 +67,23 @@ app.get('/api/radiks/document/:docId', async (req, res) => {
       _id: document._id,
       decryptedContent: '[Content is protected]',
     })
-  else if (paymentConfig && paymentConfig.docId !== docId) {
-    return res
-      .status(404)
-      .json({ message: 'request for doc did not match existing payment' })
-  } else if (!data)
+  else if (!data)
     return res
       .status(404)
       .json({ message: 'no encrypted content for requested document' })
+
+  // if we've gotten this far we know that we have all necessary
+  // macaroons as well as available document data.
+  try {
+    // make sure request is authenticated by validating the macaroons
+    validateMacaroons(rootMacaroon, dischargeMacaroon, docId)
+  } catch (e) {
+    // if throws with an error message that includes text "expired"
+    // then payment is required again
+    if (e.message.toLowerCase().includes('expired'))
+      return res.status(402).json({ message: e.message })
+    return res.status(400).json({ message: e.message })
+  }
 
   // TODO: the below fails if content was never encrypted
   const [encryptedContent, iv] = data.split(':::')

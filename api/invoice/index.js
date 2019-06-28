@@ -39,7 +39,7 @@ app.post('/api/invoice', async (req, res) => {
     .getMacaroon()
 
   req.session.macaroon = macaroon.serialize()
-  res.json({ invoice, macaroon: macaroon.serialize() })
+  res.json(invoice)
 })
 
 module.exports = app
