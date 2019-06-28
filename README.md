@@ -1,9 +1,12 @@
-# The Lightning Reader
+# The Prism Reader
 
-The Lightning Reader is an application powered by Blockstack, Lightning, and Bitcoin. Try it live on testnet!
+The Prism Reader is an application powered by Blockstack, Lightning, and Bitcoin. Try it live on testnet!
 [https://lightingreader.club](https://lightningreader.club)
 
-![lightning reader preview](https://github.com/bucko13/lightning-reader/blob/master/preview.gif 'preview')
+This is a fork of the Lightning Reader project, building on top of the work originally done there,
+while changing some of the functionality for more flexibility and user control.
+
+![lightning reader preview](https://github.com/bucko13/prism/blob/master/preview.gif 'preview')
 
 Protect content behind a paywall where a user pays by the second to
 read. Content is presented in a format similar to speed reading, in
