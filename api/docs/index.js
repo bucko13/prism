@@ -14,21 +14,9 @@ router.get('/api/docs', async (req, res) => {
 
 router.get('/api/docs/:filename/text', async (req, res, next) => {
   const filename = req.params.filename
-  const { expiration, invoiceId } = req.session['payment-config']
   const count = parseInt(req.query.count, 10) || 0
 
   try {
-    // if there is a count but the time has expired or none set
-    if (
-      (expiration && new Date(expiration) < Date.now()) ||
-      (count && !expiration)
-    ) {
-      console.log('Session has expired for invoice', invoiceId)
-      return res
-        .status(402)
-        .json({ message: 'Time has expired. New payment required' })
-    }
-
     // prepare doc data
     const filePath = path.resolve(DOCS_DIR, filename)
     const rawDoc = fs.readFileSync(filePath, 'utf8')
@@ -48,8 +36,6 @@ router.get('/api/docs/:filename/text', async (req, res, next) => {
 
 router.get('/api/docs/:filename', async (req, res, next) => {
   const filename = req.params.filename
-  // const { expiration } = req.session['payment-config']
-  // const count = parseInt(req.query.count, 10) || null
 
   try {
     // prepare doc data

@@ -13,16 +13,6 @@ app.use(bodyParser.json())
 
 app.use(
   cookieSession({
-    name: 'payment-config',
-    maxAge: 86400000,
-    secret: process.env.SESSION_SECRET || 'i_am_satoshi_08',
-    overwrite: false,
-    signed: true,
-  })
-)
-
-app.use(
-  cookieSession({
     name: 'macaroon',
     maxAge: 86400000,
     secret: process.env.SESSION_SECRET || 'i_am_satoshi_08',

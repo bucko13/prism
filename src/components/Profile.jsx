@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import { Person } from 'blockstack'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
-import { Segment, Button } from 'semantic-ui-react'
+import { Segment, Button, Dimmer, Loader } from 'semantic-ui-react'
 
 import { Document } from '../models'
 
@@ -22,14 +22,12 @@ export default class Profile extends PureComponent {
           return avatarFallbackImage
         },
       },
-      docs: [],
     }
   }
 
   static get propTypes() {
     return {
       userSession: PropTypes.object,
-      handleSignOut: PropTypes.func.isRequired,
       getOwnDocuments: PropTypes.func.isRequired,
       clearDocumentList: PropTypes.func.isRequired,
       documents: PropTypes.arrayOf(
@@ -47,23 +45,8 @@ export default class Profile extends PureComponent {
     const { userSession, getOwnDocuments } = this.props
 
     await getOwnDocuments()
-    const resp = await fetch('/api/docs', {
-      method: 'GET',
-      credentials: 'include',
-    })
-    const docs = await resp.json()
-    let identityPubkey
-    try {
-      const info = await this.getNodeInfo()
-      identityPubkey = info.identityPubkey
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error('Error getting node info:', e.message)
-    }
 
     this.setState({
-      docs,
-      identity: identityPubkey,
       person: new Person(userSession.loadUserData().profile),
     })
   }
@@ -93,7 +76,7 @@ export default class Profile extends PureComponent {
   }
 
   render() {
-    const { documents, handleSignOut, userSession } = this.props
+    const { documents, userSession } = this.props
     const { person } = this.state
 
     return !userSession.isSignInPending() ? (
@@ -112,33 +95,28 @@ export default class Profile extends PureComponent {
           </span>
           !
         </h1>
-        <p className="lead">
-          <button
-            className="btn btn-primary btn-lg"
-            id="signout-button"
-            onClick={handleSignOut.bind(this)}
-          >
-            Logout
-          </button>
-        </p>
         <div className="docs-list" style={{ width: '50%', margin: 'auto' }}>
-          {documents.length
-            ? documents.map((doc, index) => (
-                <Link
-                  key={index}
-                  to={{
-                    pathname: '/post',
-                    search: `?id=${doc.docId}`,
-                    query: doc,
-                  }}
-                  style={{ margin: '0 1rem', padding: '.5rem' }}
-                >
-                  <Segment className="doc" size="large" inverted>
-                    {doc.title}
-                  </Segment>
-                </Link>
-              ))
-            : ''}
+          {documents.length ? (
+            documents.map((doc, index) => (
+              <Link
+                key={index}
+                to={{
+                  pathname: '/post',
+                  search: `?id=${doc.docId}`,
+                  query: doc,
+                }}
+                style={{ margin: '0 1rem', padding: '.5rem' }}
+              >
+                <Segment className="doc" size="large" inverted>
+                  {doc.title}
+                </Segment>
+              </Link>
+            ))
+          ) : (
+            <Dimmer active inverted>
+              <Loader size="large" />
+            </Dimmer>
+          )}
         </div>
         {documents && documents.length ? (
           <Button
