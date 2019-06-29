@@ -1,10 +1,11 @@
 import React, { PureComponent } from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import ReactMde from 'react-mde'
 import * as Showdown from 'showdown'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 
-// import { readerActions } from '../store/actions'
+import { Document } from '../models'
 import { AddDocComponent } from '../components'
 
 class AddDocContainer extends PureComponent {
@@ -12,6 +13,7 @@ class AddDocContainer extends PureComponent {
     super(props)
     this.state = {
       text: 'Add your text here',
+      title: '',
       tab: 'write',
     }
     this.converter = new Showdown.Converter({
@@ -22,35 +24,57 @@ class AddDocContainer extends PureComponent {
     })
   }
 
-  handleValueChange(value) {
-    this.setState({ text: value })
+  static get propTypes() {
+    return {
+      username: PropTypes.string,
+      userId: PropTypes.string,
+      name: PropTypes.string,
+      aesKey: PropTypes.string,
+    }
+  }
+
+  handleValueChange(name, value) {
+    this.setState({ [name]: value })
   }
 
   handleTabChange(tab) {
     this.setState({ tab })
   }
 
-  handleSubmit() {
-    console.log('this.text:', this.state.text)
+  async handleSubmit() {
+    let { title, text, author, node } = this.state
+    const { name, userId } = this.props
+    if (!author) author = name || 'Anonymous'
+    const doc = new Document({
+      title,
+      content: text,
+      author,
+      userId,
+      node,
+    })
+    await doc.encryptContent()
+    await doc.save()
+    window.location = window.location.origin
   }
 
   render() {
     const editor = (
       <ReactMde
-        onChange={value => this.handleValueChange(value)}
+        onChange={value => this.handleValueChange('text', value)}
         value={this.state.text}
         generateMarkdownPreview={markdown =>
           Promise.resolve(this.converter.makeHtml(markdown))
         }
         onTabChange={tab => this.handleTabChange(tab)}
         selectedTab={this.state.tab}
-        className="col-lg-8 mb-4"
-        style={{ border: 'none' }}
+        className="col"
       />
     )
     return (
       <AddDocComponent
         editor={editor}
+        title={this.state.title}
+        handleValueChange={(name, value) => this.handleValueChange(name, value)}
         handleSubmit={() => this.handleSubmit()}
       />
     )
@@ -59,7 +83,10 @@ class AddDocContainer extends PureComponent {
 
 function mapStateToProps(state) {
   return {
-    // wordCount: state.reader.get('wordCount'),
+    username: state.app.get('username'),
+    userId: state.app.get('userId'),
+    name: state.app.get('name'),
+    aesKey: state.app.get('aesKey'),
   }
 }
 

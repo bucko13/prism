@@ -12,8 +12,8 @@ function mapDispatchToProps(dispatch) {
     setPubKey: pubKey => {
       dispatch(appActions.setPubKey(pubKey))
     },
-    getAESKey: () => {
-      dispatch(appActions.getAESKey())
+    saveUser: () => {
+      dispatch(appActions.saveUser())
     },
   }
 }

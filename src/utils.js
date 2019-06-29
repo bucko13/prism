@@ -5,7 +5,7 @@ import assert from 'bsert'
 export function encryptWithKey(key, data) {
   assert(key && typeof key === 'string')
   const iv = randomBytes(16)
-  const cipher = aes.encipher(Buffer.from(data), Buffer.from(key), iv)
+  const cipher = aes.encipher(Buffer.from(data), Buffer.from(key, 'hex'), iv)
   return cipher.toString('hex') + ':::' + iv.toString('hex')
 }
 
@@ -15,4 +15,8 @@ export function encryptWithKey(key, data) {
  */
 export function generateRandomKey(length = 32) {
   return randomBytes(length).toString('hex')
+}
+
+export async function sleep(time = 500) {
+  return new Promise(resolve => setTimeout(resolve, time))
 }

@@ -39,6 +39,10 @@
     {
       "src": "/api/radiks/(.*)",
       "dest": "/api/radiks"
+    },
+    {
+      "src": "/api/invoice(.*)",
+      "dest": "/api/invoice"
     }
   ]
 }

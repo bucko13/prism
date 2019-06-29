@@ -2,7 +2,9 @@ import React, { PureComponent } from 'react'
 import { Person } from 'blockstack'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
-import { Segment } from 'semantic-ui-react'
+import { Segment, Button, Dimmer, Loader } from 'semantic-ui-react'
+
+import { Document } from '../models'
 
 const avatarFallbackImage =
   'https://s3.amazonaws.com/onename/avatar-placeholder.png'
@@ -10,7 +12,7 @@ const avatarFallbackImage =
 export default class Profile extends PureComponent {
   constructor(props) {
     super(props)
-
+    props.clearDocumentList()
     this.state = {
       person: {
         name() {
@@ -20,36 +22,31 @@ export default class Profile extends PureComponent {
           return avatarFallbackImage
         },
       },
-      docs: [],
     }
   }
 
   static get propTypes() {
     return {
       userSession: PropTypes.object,
-      handleSignOut: PropTypes.func.isRequired,
+      getOwnDocuments: PropTypes.func.isRequired,
+      clearDocumentList: PropTypes.func.isRequired,
+      documents: PropTypes.arrayOf(
+        PropTypes.shape({
+          title: PropTypes.string.isRequired,
+          content: PropTypes.string,
+          author: PropTypes.string.isRequired,
+          docId: PropTypes.string.isRequired,
+        })
+      ),
     }
   }
 
   async componentDidMount() {
-    const { userSession } = this.props
-    const resp = await fetch('/api/docs', {
-      method: 'GET',
-      credentials: 'include',
-    })
-    const docs = await resp.json()
-    let identityPubkey
-    try {
-      const info = await this.getNodeInfo()
-      identityPubkey = info.identityPubkey
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error('Error getting node info:', e.message)
-    }
+    const { userSession, getOwnDocuments } = this.props
+
+    await getOwnDocuments()
 
     this.setState({
-      docs,
-      identity: identityPubkey,
       person: new Person(userSession.loadUserData().profile),
     })
   }
@@ -63,9 +60,24 @@ export default class Profile extends PureComponent {
     return info
   }
 
+  // This is a utility method for now for easy cleanup of testing
+  // in production probably want to have this a little more buried
+  async deleteAllPosts() {
+    const myDocs = await Document.fetchOwnList()
+    const confirm = window.confirm(
+      `Are you sure you want to delete all (${myDocs.length}) posts?`
+    )
+    if (!confirm) return
+
+    for (let doc of myDocs) {
+      await doc.destroy()
+    }
+    this.props.getOwnDocuments()
+  }
+
   render() {
-    const { handleSignOut, userSession } = this.props
-    const { person, docs, identity } = this.state
+    const { documents, userSession } = this.props
+    const { person } = this.state
 
     return !userSession.isSignInPending() ? (
       <div className="panel-welcome" id="section-2">
@@ -83,54 +95,37 @@ export default class Profile extends PureComponent {
           </span>
           !
         </h1>
-        <p className="lead">
-          <button
-            className="btn btn-primary btn-lg"
-            id="signout-button"
-            onClick={handleSignOut.bind(this)}
-          >
-            Logout
-          </button>
-        </p>
-
-        <p className="lead">
-          Don&apos;t have a testnet lightning wallet? Head on over to{' '}
-          <a href="https://htlc.me/" target="_blank" rel="noopener noreferrer">
-            htlc.me
-          </a>{' '}
-          to create one and test out the app
-        </p>
-
         <div className="docs-list" style={{ width: '50%', margin: 'auto' }}>
-          {docs.length
-            ? docs.map((doc, index) => (
-                <Link
-                  key={index}
-                  to={{
-                    pathname: '/reader',
-                    search: `?filename=${doc.filename}`,
-                    query: doc,
-                  }}
-                  style={{ margin: '0 1rem', padding: '.5rem' }}
-                >
-                  <Segment className="doc" size="large" inverted>
-                    {doc.title}
-                  </Segment>
-                </Link>
-              ))
-            : ''}
+          {documents.length ? (
+            documents.map((doc, index) => (
+              <Link
+                key={index}
+                to={{
+                  pathname: '/post',
+                  search: `?id=${doc.docId}`,
+                  query: doc,
+                }}
+                style={{ margin: '0 1rem', padding: '.5rem' }}
+              >
+                <Segment className="doc" size="large" inverted>
+                  {doc.title}
+                </Segment>
+              </Link>
+            ))
+          ) : (
+            <Dimmer active inverted>
+              <Loader size="large" />
+            </Dimmer>
+          )}
         </div>
-        {identity ? (
-          <div className="row justify-content-center">
-            <div className="col-6">
-              <Segment color="green">
-                Connect w/ our node:{' '}
-                <span className="enable-select" style={{ overflow: 'hidden' }}>
-                  {identity}
-                </span>
-              </Segment>
-            </div>
-          </div>
+        {documents && documents.length ? (
+          <Button
+            color="red"
+            className="m-4"
+            onClick={() => this.deleteAllPosts()}
+          >
+            DELETE MY POSTS
+          </Button>
         ) : (
           ''
         )}

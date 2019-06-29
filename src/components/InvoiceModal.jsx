@@ -15,7 +15,15 @@ export default function InvoiceModal({
   const cost = seconds * 0.00000001 * rate
   return (
     <Modal open={modalOpen} size="small">
-      <Modal.Header>{title}</Modal.Header>
+      <Modal.Header>
+        {title}
+        <Icon
+          name="close"
+          as="i"
+          onClick={() => closeModal()}
+          style={{ float: 'right', cursor: 'pointer' }}
+        />
+      </Modal.Header>
       <Modal.Content>
         <Modal.Description>
           {!invoice.length ? (
@@ -31,6 +39,7 @@ export default function InvoiceModal({
                 type="number"
                 value={seconds}
                 onChange={changeSeconds}
+                min={0}
               >
                 <input />
                 <Label>${cost.toFixed(3)}</Label>
@@ -78,7 +87,7 @@ InvoiceModal.propTypes = {
   requestInvoice: PropTypes.func.isRequired,
   changeSeconds: PropTypes.func.isRequired,
   closeModal: PropTypes.func.isRequired,
-  seconds: PropTypes.number.isRequired,
+  seconds: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   modalOpen: PropTypes.bool.isRequired,
   invoice: PropTypes.string.isRequired,
   rate: PropTypes.number,

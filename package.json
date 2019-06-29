@@ -1,7 +1,7 @@
 {
-  "name": "lightning-reader",
-  "version": "0.0.0",
-  "description": "An app to test your reading skills, accountability held with hard money",
+  "name": "prism",
+  "version": "1.0.0",
+  "description": "Sharing ideas, distributed",
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server",
@@ -11,12 +11,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bucko13/lightning-reader.git"
+    "url": "git+https://github.com/bucko13/prism.git"
   },
   "bugs": {
-    "url": "git+https://github.com/bucko13/lightning-reader/issues"
+    "url": "git+https://github.com/bucko13/prism/issues"
   },
-  "homepage": "git+https://github.com/bucko13/lightning-reader#readme",
+  "homepage": "git+https://github.com/bucko13/prism#readme",
   "author": "",
   "license": "MIT",
   "devDependencies": {
@@ -56,6 +56,7 @@
     "blockstack": "^19.1.0",
     "bootstrap": "^4.3.1",
     "bsert": "^0.0.10",
+    "draft-js": "^0.10.5",
     "immutable": "^4.0.0-rc.12",
     "prettier": "^1.18.2",
     "prop-types": "^15.7.2",

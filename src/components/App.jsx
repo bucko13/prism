@@ -6,12 +6,18 @@ import { Switch, Route, Link } from 'react-router-dom'
 import { configure, User, getConfig } from 'radiks'
 import { get } from 'axios'
 
-import Profile from './Profile.jsx'
-import { ReaderContainer, AddDocContainer } from '../containers'
+import {
+  ReaderContainer,
+  AddDocContainer,
+  HomeContainer,
+  ProfileContainer,
+  PostContainer,
+} from '../containers'
 import Signin from './Signin.jsx'
 
 const appConfig = new AppConfig(['store_write', 'publish_data'])
 const userSession = new UserSession({ appConfig: appConfig })
+
 // TODO: Paramaterize the server address
 configure({
   apiServer: '/api',
@@ -29,7 +35,7 @@ export default class App extends Component {
   static get propTypes() {
     return {
       setPubKey: PropTypes.func.isRequired,
-      getAESKey: PropTypes.func.isRequired,
+      saveUser: PropTypes.func.isRequired,
     }
   }
 
@@ -48,7 +54,7 @@ export default class App extends Component {
     else console.error('Unable to retrieve pubkey from app server')
 
     // this action then sets the resulting aes key on the store
-    this.props.getAESKey()
+    this.props.saveUser()
   }
 
   handleSignIn(e) {
@@ -102,7 +108,7 @@ export default class App extends Component {
               </React.Fragment>
             ) : (
               <React.Fragment>
-                <Link to="/" className="item">
+                <Link to="/profile" className="item">
                   <Menu.Item>Profile</Menu.Item>
                 </Link>
                 <Link to="/add-doc" className="item">
@@ -118,7 +124,11 @@ export default class App extends Component {
             )}
           </Sidebar>
           <Sidebar.Pusher
-            style={{ backgroundColor: '#e91e63', height: 'auto' }}
+            style={{
+              // backgroundColor: '#e91e63',
+              backgroundColor: 'white',
+              height: 'auto',
+            }}
           >
             <div className="site-wrapper-inner container-fluid">
               <Menu inverted secondary>
@@ -142,7 +152,18 @@ export default class App extends Component {
                     exact
                     path="/"
                     render={routeProps => (
-                      <Profile
+                      <HomeContainer
+                        userSession={userSession}
+                        handleSignOut={this.handleSignOut}
+                        {...routeProps}
+                      />
+                    )}
+                  />
+                  <Route
+                    exact
+                    path="/profile"
+                    render={routeProps => (
+                      <ProfileContainer
                         userSession={userSession}
                         handleSignOut={this.handleSignOut}
                         {...routeProps}
@@ -157,6 +178,10 @@ export default class App extends Component {
                         {...routeProps}
                       />
                     )}
+                  />
+                  <Route
+                    path="/post"
+                    render={routeProps => <PostContainer {...routeProps} />}
                   />
                   <Route
                     path="/add-doc"
