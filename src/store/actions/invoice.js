@@ -19,11 +19,11 @@ export function changeSeconds(seconds) {
   }
 }
 
-export function setInvoice({ invoice, invoiceId }) {
+export function setInvoice({ invoice, invoiceId, status }) {
   assert(invoice && invoice.length)
   return {
     type: SET_INVOICE,
-    payload: { invoice, invoiceId },
+    payload: { invoice, invoiceId, status },
   }
 }
 
@@ -45,6 +45,7 @@ export function initializeModal(modalState) {
   return async dispatch => {
     const res = await get('/api/node/exchange')
     const { BTCUSD: rate } = res.data
+    dispatch(clearInvoice())
     dispatch({
       type: INITIALIZE_MODAL,
       payload: { ...modalState, visible: true, rate },
@@ -74,7 +75,7 @@ export function requestInvoice() {
       status,
     } = data
     dispatch(setInvoice({ invoice, invoiceId: id, status }))
-    dispatch(checkInvoiceStatus(10))
+    dispatch(checkInvoiceStatus())
   }
 }
 
@@ -85,7 +86,7 @@ export function requestInvoice() {
  * @params {Number} tries - number of times to recursively make the call
  * @params {<Promise>} - will either set status to paid, failed, or call itself recursively
  */
-export function checkInvoiceStatus(tries = 10, timeout = 750) {
+export function checkInvoiceStatus(tries = 50, timeout = 750) {
   return async (dispatch, getState) => {
     let nodeUri = getState().documents.getIn(['currentDoc', 'node'])
     let invoiceId = getState().invoice.get('invoiceId')
@@ -100,7 +101,6 @@ export function checkInvoiceStatus(tries = 10, timeout = 750) {
     if (response.status === 200 && response.data.status === 'paid') {
       dispatch(closeModal())
       dispatch(setStatusPaid(response.data.discharge))
-      dispatch(clearInvoice())
     } else if (tries > 0) {
       await sleep(timeout)
       return dispatch(checkInvoiceStatus(tries - 1))
@@ -112,9 +112,17 @@ export function checkInvoiceStatus(tries = 10, timeout = 750) {
 
 function setStatusPaid(macaroon) {
   assert(macaroon, 'need a macaroon to update status to paid')
+  if (window && localStorage) localStorage.setItem('invoiceMacaroon', macaroon)
   return {
     type: SET_STATUS_PAID,
     payload: macaroon,
+  }
+}
+
+export function clearMacaroon() {
+  return dispatch => {
+    if (window && localStorage) localStorage.removeItem('invoiceMacaroon')
+    dispatch(setMacaroon(''))
   }
 }
 
@@ -133,11 +141,14 @@ export function setStatus(status) {
 }
 
 export function clearInvoice() {
-  return {
-    type: SET_INVOICE,
-    payload: {
-      invoice: '',
-      invoiceId: '',
-    },
+  return dispatch => {
+    dispatch(clearMacaroon())
+    dispatch({
+      type: SET_INVOICE,
+      payload: {
+        invoice: '',
+        invoiceId: '',
+      },
+    })
   }
 }

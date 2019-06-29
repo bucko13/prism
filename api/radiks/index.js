@@ -36,9 +36,6 @@ app.get('/api/radiks/document/:docId', async (req, res) => {
       .status(404)
       .json({ message: `No document found for id ${docId}` })
 
-  const { encryptedContent: data, keyId } = document
-  const { encryptedKey: aesKey } = await getUserKey(keyId)
-
   // if no request for content then just return metadata
   if (!content)
     return res.status(200).json({
@@ -46,9 +43,11 @@ app.get('/api/radiks/document/:docId', async (req, res) => {
       author: document.author,
       _id: document._id,
     })
+  const { encryptedContent: data, keyId } = document
+
   // if requesting content but no root macaroon cookie present in request
   // then an invoice needs to be requested first to get the macaroon for auth
-  else if (!rootMacaroon)
+  if (!rootMacaroon)
     return res.status(400).json({
       message: 'Missing macaroon. Request an invoice before requesting content',
     })
@@ -85,6 +84,7 @@ Make sure invoice is paid and you have received a discharge macaroon',
     return res.status(400).json({ message: e.message })
   }
 
+  const { encryptedKey: aesKey } = await getUserKey(keyId)
   // TODO: the below fails if content was never encrypted
   const [encryptedContent, iv] = data.split(':::')
 

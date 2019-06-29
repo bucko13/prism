@@ -8,6 +8,7 @@ import {
   CLEAR_CURRENT_DOC,
   SET_CURRENT_CONTENT,
 } from '../constants'
+import { clearInvoice } from './invoice'
 
 /*
  * Gets a list of document models from Radiks server
@@ -28,6 +29,20 @@ export function getDocumentList(count = 10) {
   }
 }
 
+export function getOwnDocuments(count = 10) {
+  return async dispatch => {
+    const documents = await Document.fetchOwnList({
+      limit: count,
+    })
+    const list = documents.map(({ attrs: { _id, author, title } }) => ({
+      docId: _id,
+      author,
+      title,
+    }))
+    dispatch(setDocumentList(list))
+  }
+}
+
 export function setDocumentList(documents) {
   assert(Array.isArray(documents), 'Must pass an array to set document list')
   return {
@@ -37,8 +52,8 @@ export function setDocumentList(documents) {
 }
 
 /*
- * Gets the document that matches the ID. In current iteration
- * this will _always_ return decrypted document.
+ * Gets the document that matches the ID. Only retrieves metadata
+ * not the content
  * TODO: Update to go through payment flow
  * @param {String} docId - id of document to retrieve
  * @returns {void} will dispatch an action to populate the state
@@ -89,6 +104,10 @@ export function getContent() {
       } = await get(
         `/api/radiks/document/${docId}?content=true&dischargeMacaroon=${macaroon}`
       )
+
+      // TODO: cleanup
+      if (!decryptedContent) throw new Error('expected to not get this far')
+
       dispatch({
         type: SET_CURRENT_CONTENT,
         payload: {
@@ -100,6 +119,10 @@ export function getContent() {
       if (e.response && e.response.status === 402) {
         // eslint-disable-next-line no-console
         console.warn('Attempted to retrieve document that requires payment')
+        // want to make sure to clear the macaroon if we get a 402
+        // since this only would have been returned if we had
+        // one set but it was expired
+        dispatch(clearInvoice())
         dispatch({
           type: SET_CURRENT_CONTENT,
           payload: {
@@ -118,4 +141,8 @@ export function clearCurrentDoc() {
   return {
     type: CLEAR_CURRENT_DOC,
   }
+}
+
+export function clearDocumentList() {
+  return dispatch => dispatch(setDocumentList([]))
 }

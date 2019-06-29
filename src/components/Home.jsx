@@ -12,7 +12,7 @@ const avatarFallbackImage =
 export default class Profile extends PureComponent {
   constructor(props) {
     super(props)
-    props.clearDocumentList()
+
     this.state = {
       person: {
         name() {
@@ -30,8 +30,7 @@ export default class Profile extends PureComponent {
     return {
       userSession: PropTypes.object,
       handleSignOut: PropTypes.func.isRequired,
-      getOwnDocuments: PropTypes.func.isRequired,
-      clearDocumentList: PropTypes.func.isRequired,
+      getDocumentList: PropTypes.func.isRequired,
       documents: PropTypes.arrayOf(
         PropTypes.shape({
           title: PropTypes.string.isRequired,
@@ -44,9 +43,8 @@ export default class Profile extends PureComponent {
   }
 
   async componentDidMount() {
-    const { userSession, getOwnDocuments } = this.props
-
-    await getOwnDocuments()
+    const { userSession, getDocumentList } = this.props
+    await getDocumentList()
     const resp = await fetch('/api/docs', {
       method: 'GET',
       credentials: 'include',
@@ -89,12 +87,12 @@ export default class Profile extends PureComponent {
     for (let doc of myDocs) {
       await doc.destroy()
     }
-    this.props.getOwnDocuments()
+    this.props.getDocumentList()
   }
 
   render() {
     const { documents, handleSignOut, userSession } = this.props
-    const { person } = this.state
+    const { person, docs, identity } = this.state
 
     return !userSession.isSignInPending() ? (
       <div className="panel-welcome" id="section-2">
@@ -121,6 +119,15 @@ export default class Profile extends PureComponent {
             Logout
           </button>
         </p>
+
+        <p className="lead">
+          Don&apos;t have a testnet lightning wallet? Head on over to{' '}
+          <a href="https://htlc.me/" target="_blank" rel="noopener noreferrer">
+            htlc.me
+          </a>{' '}
+          to create one and test out the app
+        </p>
+        {/* the new documents list from radiks */}
         <div className="docs-list" style={{ width: '50%', margin: 'auto' }}>
           {documents.length
             ? documents.map((doc, index) => (
@@ -140,14 +147,37 @@ export default class Profile extends PureComponent {
               ))
             : ''}
         </div>
-        {documents && documents.length ? (
-          <Button
-            color="red"
-            className="m-4"
-            onClick={() => this.deleteAllPosts()}
-          >
-            DELETE MY POSTS
-          </Button>
+        {/* end the documents list from radiks */}
+        <div className="docs-list" style={{ width: '50%', margin: 'auto' }}>
+          {docs.length
+            ? docs.map((doc, index) => (
+                <Link
+                  key={index}
+                  to={{
+                    pathname: '/reader',
+                    search: `?filename=${doc.filename}`,
+                    query: doc,
+                  }}
+                  style={{ margin: '0 1rem', padding: '.5rem' }}
+                >
+                  <Segment className="doc" size="large" inverted>
+                    {doc.title}
+                  </Segment>
+                </Link>
+              ))
+            : ''}
+        </div>
+        {identity ? (
+          <div className="row justify-content-center">
+            <div className="col-6">
+              <Segment color="green">
+                Connect w/ our node:{' '}
+                <span className="enable-select" style={{ overflow: 'hidden' }}>
+                  {identity}
+                </span>
+              </Segment>
+            </div>
+          </div>
         ) : (
           ''
         )}

@@ -15,7 +15,15 @@ export default function InvoiceModal({
   const cost = seconds * 0.00000001 * rate
   return (
     <Modal open={modalOpen} size="small">
-      <Modal.Header>{title}</Modal.Header>
+      <Modal.Header>
+        {title}
+        <Icon
+          name="close"
+          as="i"
+          onClick={() => closeModal()}
+          style={{ float: 'right', cursor: 'pointer' }}
+        />
+      </Modal.Header>
       <Modal.Content>
         <Modal.Description>
           {!invoice.length ? (

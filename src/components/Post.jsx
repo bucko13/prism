@@ -4,6 +4,7 @@ import { Header, Button } from 'semantic-ui-react'
 
 import InvoiceModal from './InvoiceModal.jsx'
 import { sleep } from '../utils'
+import marked from 'marked'
 
 export default class Post extends PureComponent {
   constructor(props) {
@@ -57,9 +58,9 @@ export default class Post extends PureComponent {
   async checkStatus() {
     const { locked, getContent } = this.props
     if (!locked) {
-      await sleep(500)
-      getContent()
-      this.checkStatus()
+      await sleep(750)
+      await getContent()
+      await this.checkStatus()
     }
   }
 
@@ -78,6 +79,7 @@ export default class Post extends PureComponent {
       closeModal,
       initializeModal,
     } = this.props
+
     return (
       <div>
         <Header as="h2">{title}</Header>
@@ -92,7 +94,13 @@ export default class Post extends PureComponent {
               <Button onClick={() => initializeModal()}>Purchase Time</Button>
             </React.Fragment>
           ) : (
-            <p>{content}</p>
+            <div
+              className="container"
+              style={{ textAlign: 'justify' }}
+              dangerouslySetInnerHTML={{
+                __html: marked(content, { sanitize: true }),
+              }}
+            />
           )}
         </div>
         <InvoiceModal

@@ -57,7 +57,6 @@ class PostContainer extends PureComponent {
     const {
       document,
       getContent,
-      getMetadata,
       seconds,
       modalOpen,
       rate,
@@ -85,7 +84,6 @@ class PostContainer extends PureComponent {
       <Post
         {...document}
         getContent={() => getContent()}
-        getMetadata={() => getMetadata()}
         seconds={seconds}
         modalOpen={modalOpen}
         rate={rate}
@@ -122,9 +120,6 @@ function mapDispatchToProps(dispatch) {
     },
     getContent: () => {
       dispatch(documentActions.getContent())
-    },
-    getMetadata: () => {
-      dispatch(documentActions.getMetadata())
     },
     initializeModal: modalState => {
       dispatch(invoiceActions.initializeModal(modalState))

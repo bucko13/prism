@@ -12,7 +12,7 @@ import {
   SET_STATUS_PAID,
 } from '../constants'
 
-const init = Map({
+let init = Map({
   seconds: 30,
   visible: false,
   invoice: '',
@@ -21,6 +21,11 @@ const init = Map({
   status: null,
   macaroon: '',
 })
+
+if (window && localStorage) {
+  const invoiceMacaroon = localStorage.getItem('invoiceMacaroon')
+  if (invoiceMacaroon) init = init.set('macaroon', invoiceMacaroon)
+}
 
 export default (state = init, action) => {
   const { type, payload } = action

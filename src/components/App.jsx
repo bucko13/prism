@@ -9,6 +9,7 @@ import { get } from 'axios'
 import {
   ReaderContainer,
   AddDocContainer,
+  HomeContainer,
   ProfileContainer,
   PostContainer,
 } from '../containers'
@@ -107,7 +108,7 @@ export default class App extends Component {
               </React.Fragment>
             ) : (
               <React.Fragment>
-                <Link to="/" className="item">
+                <Link to="/profile" className="item">
                   <Menu.Item>Profile</Menu.Item>
                 </Link>
                 <Link to="/add-doc" className="item">
@@ -150,6 +151,17 @@ export default class App extends Component {
                   <Route
                     exact
                     path="/"
+                    render={routeProps => (
+                      <HomeContainer
+                        userSession={userSession}
+                        handleSignOut={this.handleSignOut}
+                        {...routeProps}
+                      />
+                    )}
+                  />
+                  <Route
+                    exact
+                    path="/profile"
                     render={routeProps => (
                       <ProfileContainer
                         userSession={userSession}

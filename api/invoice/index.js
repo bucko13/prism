@@ -14,6 +14,7 @@ const request = require('request-promise-native')
  */
 app.post('/api/invoice', async (req, res) => {
   let { docId, time, nodeUri, title } = req.body
+
   // TODO: remove hard coded node uri
   if (!nodeUri) nodeUri = 'https://ln-builder.bucko.now.sh'
 

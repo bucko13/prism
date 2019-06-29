@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 
 import { documentActions } from '../store/actions'
-import { ProfileComponent } from '../components'
+import { Home } from '../components'
 
 function mapStateToProps(state) {
   return {
@@ -20,4 +20,4 @@ function mapDispatchToProps(dispatch) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ProfileComponent)
+)(Home)
