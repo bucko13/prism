@@ -1,10 +1,11 @@
 import React, { PureComponent } from 'react'
 import { Person } from 'blockstack'
 import PropTypes from 'prop-types'
-import { Link } from 'react-router-dom'
-import { Segment, Button, Dimmer, Loader } from 'semantic-ui-react'
+import { Button, Dimmer, Loader } from 'semantic-ui-react'
 
 import { Document } from '../models'
+import { DocumentLink } from '.'
+import { documentPropTypes } from '../propTypes'
 
 const avatarFallbackImage =
   'https://s3.amazonaws.com/onename/avatar-placeholder.png'
@@ -29,15 +30,9 @@ export default class Profile extends PureComponent {
     return {
       userSession: PropTypes.object,
       getOwnDocuments: PropTypes.func.isRequired,
+      updateDocumentProofs: PropTypes.func.isRequired,
       clearDocumentList: PropTypes.func.isRequired,
-      documents: PropTypes.arrayOf(
-        PropTypes.shape({
-          title: PropTypes.string.isRequired,
-          content: PropTypes.string,
-          author: PropTypes.string.isRequired,
-          docId: PropTypes.string.isRequired,
-        })
-      ),
+      documents: PropTypes.arrayOf(documentPropTypes).isRequired,
     }
   }
 
@@ -98,19 +93,7 @@ export default class Profile extends PureComponent {
         <div className="docs-list" style={{ width: '50%', margin: 'auto' }}>
           {documents.length ? (
             documents.map((doc, index) => (
-              <Link
-                key={index}
-                to={{
-                  pathname: '/post',
-                  search: `?id=${doc.docId}`,
-                  query: doc,
-                }}
-                style={{ margin: '0 1rem', padding: '.5rem' }}
-              >
-                <Segment className="doc" size="large" inverted>
-                  {doc.title}
-                </Segment>
-              </Link>
+              <DocumentLink key={index} doc={doc} />
             ))
           ) : (
             <Dimmer active inverted>

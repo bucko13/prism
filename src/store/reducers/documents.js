@@ -15,6 +15,10 @@ const init = Map({
     docId: '',
     locked: true,
     node: '', // uri of payment node
+    // the following will also be saved on the document list items
+    proofId: '', // id of associated proof
+    rawProof: '', // raw proof data, saved as reference for evaluating
+    proofData: {}, // object of height, merkleRoot, and submittedAt
   }),
   documentList: List([]),
 })

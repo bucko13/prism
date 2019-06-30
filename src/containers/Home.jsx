@@ -14,6 +14,9 @@ function mapDispatchToProps(dispatch) {
     getDocumentList: () => {
       dispatch(documentActions.getDocumentList())
     },
+    getProofs: () => {
+      dispatch(documentActions.getProofs())
+    },
   }
 }
 
