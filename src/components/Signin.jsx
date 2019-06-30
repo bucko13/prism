@@ -19,7 +19,7 @@ export default class Signin extends Component {
         <h1 className="landing-heading">Welcome to Prism!</h1>
         <h3 className="mb-0">Your Keys, Your Content.</h3>
         <h3 style={{ fontStyle: 'italic' }} className="mt-0">
-          Own the discussion.
+          Own the conversation.
         </h3>
         <p className="lead">
           <button

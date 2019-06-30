@@ -50,8 +50,6 @@ app.post('/api/invoice', async (req, res) => {
 
   if (node) nodeUri = node
 
-  console.log('nodeUri:', nodeUri)
-  console.log('caveatKey:', caveatKey)
   const macaroon = builder
     .add_third_party_caveat(nodeUri, caveatKey, invoice.id)
     .getMacaroon()
