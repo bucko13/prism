@@ -17,6 +17,9 @@ function mapDispatchToProps(dispatch) {
     clearDocumentList: () => {
       dispatch(documentActions.clearDocumentList())
     },
+    updateDocumentProofs: () => {
+      dispatch(documentActions.updateDocumentProofs())
+    },
   }
 }
 

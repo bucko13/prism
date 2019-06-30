@@ -18,6 +18,16 @@ export default class Document extends Model {
       decrypted: true,
     },
 
+    keyId: {
+      type: String,
+      decrypted: true,
+    },
+
+    proofId: {
+      type: String,
+      decrypted: true,
+    },
+
     title: {
       type: String,
       decrypted: true,
@@ -52,11 +62,6 @@ export default class Document extends Model {
     // this gets encrypted but can be retrieved by the app
     // by looking up the keyId and decrypting
     aesKey: String,
-
-    keyId: {
-      type: String,
-      decrypted: true,
-    },
 
     // this is the endpoint where the app can request invoices from
     node: {

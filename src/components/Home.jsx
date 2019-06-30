@@ -2,9 +2,11 @@ import React, { PureComponent } from 'react'
 import { Person } from 'blockstack'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
-import { Segment, Button } from 'semantic-ui-react'
+import { Segment } from 'semantic-ui-react'
 
+import { DocumentLink } from '.'
 import { Document } from '../models'
+import { documentPropTypes } from '../propTypes'
 
 const avatarFallbackImage =
   'https://s3.amazonaws.com/onename/avatar-placeholder.png'
@@ -31,14 +33,8 @@ export default class Profile extends PureComponent {
       userSession: PropTypes.object,
       handleSignOut: PropTypes.func.isRequired,
       getDocumentList: PropTypes.func.isRequired,
-      documents: PropTypes.arrayOf(
-        PropTypes.shape({
-          title: PropTypes.string.isRequired,
-          content: PropTypes.string,
-          author: PropTypes.string.isRequired,
-          docId: PropTypes.string.isRequired,
-        })
-      ),
+      getProofs: PropTypes.func.isRequired,
+      documents: PropTypes.arrayOf(documentPropTypes).isRequired,
     }
   }
 
@@ -131,40 +127,14 @@ export default class Profile extends PureComponent {
         <div className="docs-list" style={{ width: '50%', margin: 'auto' }}>
           {documents.length
             ? documents.map((doc, index) => (
-                <Link
-                  key={index}
-                  to={{
-                    pathname: '/post',
-                    search: `?id=${doc.docId}`,
-                    query: doc,
-                  }}
-                  style={{ margin: '0 1rem', padding: '.5rem' }}
-                >
-                  <Segment className="doc" size="large" inverted>
-                    {doc.title}
-                  </Segment>
-                </Link>
+                <DocumentLink doc={doc} key={index} />
               ))
             : ''}
         </div>
         {/* end the documents list from radiks */}
         <div className="docs-list" style={{ width: '50%', margin: 'auto' }}>
           {docs.length
-            ? docs.map((doc, index) => (
-                <Link
-                  key={index}
-                  to={{
-                    pathname: '/reader',
-                    search: `?filename=${doc.filename}`,
-                    query: doc,
-                  }}
-                  style={{ margin: '0 1rem', padding: '.5rem' }}
-                >
-                  <Segment className="doc" size="large" inverted>
-                    {doc.title}
-                  </Segment>
-                </Link>
-              ))
+            ? docs.map((doc, index) => <DocumentLink doc={doc} key={index} />)
             : ''}
         </div>
         {identity ? (

@@ -1,7 +1,7 @@
 import assert from 'bsert'
 import { get } from 'axios'
 
-import { Document } from '../../models'
+import { Document, Proof } from '../../models'
 import {
   SET_CURRENT_DOC,
   SET_DOCUMENT_LIST,
@@ -20,12 +20,8 @@ export function getDocumentList(count = 10) {
     const documents = await Document.fetchList({
       limit: count,
     })
-    const list = documents.map(({ attrs: { _id, author, title } }) => ({
-      docId: _id,
-      author,
-      title,
-    }))
-    dispatch(setDocumentList(list))
+    dispatch(setDocsFromModelList(documents))
+    dispatch(getProofs())
   }
 }
 
@@ -34,11 +30,23 @@ export function getOwnDocuments(count = 10) {
     const documents = await Document.fetchOwnList({
       limit: count,
     })
-    const list = documents.map(({ attrs: { _id, author, title } }) => ({
-      docId: _id,
-      author,
-      title,
-    }))
+    dispatch(setDocsFromModelList(documents))
+    dispatch(updateDocumentProofs())
+  }
+}
+
+function setDocsFromModelList(documents) {
+  return dispatch => {
+    const list = documents.map(
+      ({ attrs: { _id, author, title, proofId, rawProof, proofData } }) => ({
+        docId: _id,
+        author,
+        title,
+        proofId,
+        rawProof,
+        proofData,
+      })
+    )
     dispatch(setDocumentList(list))
   }
 }
@@ -134,6 +142,73 @@ export function getContent() {
       // eslint-disable-next-line no-console
       else console.error('Problem unlocking content: ', e.message)
     }
+  }
+}
+
+/*
+ * An action creator that will get the proof for each document in the
+ * store's current list, run a getProofs, and if that proof has a btc/tbtc anchor
+ * evaluate it and update the document with the height, merkleRoot, and submittedAt
+ * TODO: try and optimize this in such a way that it's non-blocking
+ * i.e it would be nice if as each proof comes in that doc gets updated
+ * possibly with a Promise.all
+ * NOTE: this should only be run by the user who owns the document. Saving the proof
+ * otherwise should actually fail since `beforeSave` updates the document, which shouldn't work
+ * for a user that doesn't own the document
+ */
+
+export function updateDocumentProofs() {
+  return async (dispatch, getState) => {
+    const documents = getState().documents.get('documentList')
+    const updated = []
+    for (let doc of documents) {
+      // first if there's no proofId then we need to create a new proof
+      // and save it w/ the document this will start the anchoring process
+      if (!doc.proofId) {
+        const proof = new Proof({ docId: doc.docId })
+        await proof.save()
+        updated.push({ ...doc, proofId: proof._id })
+      } else if (!doc.proofData) {
+        // if no proof data then we need to retrieve the associated proof
+        const proof = await Proof.findById(doc.proofId)
+
+        // if the proof has no raw proof attr attached to it
+        // then we need to get that assuming it does have a proof handles
+        if (!proof.attrs.proof) await proof.getProofs()
+
+        // evaluate the raw proof to extract the relevant data
+        const proofData = proof.evaluateProof()
+        updated.push({ ...doc, rawProof: proof.attrs.proof, proofData })
+      }
+    }
+
+    if (updated.length) dispatch(setDocumentList(updated))
+  }
+}
+
+/*
+ * This will primarily be for updating document list for proof data
+ * but not actually creating the proofs
+ */
+export function getProofs() {
+  return async (dispatch, getState) => {
+    const documents = getState().documents.get('documentList')
+    const updated = []
+    for (let doc of documents) {
+      // if no proofId then the owner still needs to update it themselves
+      // so we will add this doc to the list as is
+      // if it has proofData then we don't need to update it
+      if (!doc.proofId || doc.proofData) updated.push(doc)
+      // no raw proof but there is a proofId, so we can add this locally ourselves
+      else if (!doc.rawProof && !doc.proofData) {
+        const proof = await Proof.findById(doc.proofId)
+        const rawProof = proof.attrs.proof
+        const proofData = proof.evaluateProof()
+        updated.push({ ...doc, rawProof, proofData })
+      }
+    }
+
+    dispatch(setDocumentList(updated))
   }
 }
 
