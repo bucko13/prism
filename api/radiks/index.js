@@ -1,5 +1,7 @@
 const { setup } = require('radiks-server')
 const { aes } = require('bcrypto')
+const { decryptECIES } = require('blockstack/lib/encryption')
+
 const app = require('../index.js')
 const {
   getPublicKey,
@@ -7,8 +9,8 @@ const {
   getUserKey,
   getDocument,
   validateMacaroons,
+  decryptWithAES,
 } = require('./helpers')
-const { decryptECIES } = require('blockstack/lib/encryption')
 
 let RadiksController
 
@@ -84,16 +86,18 @@ Make sure invoice is paid and you have received a discharge macaroon',
     return res.status(400).json({ message: e.message })
   }
 
-  const { encryptedKey: aesKey } = await getUserKey(keyId)
-  // TODO: the below fails if content was never encrypted
-  const [encryptedContent, iv] = data.split(':::')
+  // const { encryptedKey: aesKey } = await getUserKey(keyId)
 
-  const decryptedKey = decryptECIES(process.env.APP_PRIVATE_KEY, aesKey)
-  const decryptedContent = aes.decipher(
-    Buffer.from(encryptedContent, 'hex'),
-    Buffer.from(decryptedKey, 'hex'),
-    Buffer.from(iv, 'hex')
-  )
+  // // TODO: the below fails if content was never encrypted
+  // const [encryptedContent, iv] = data.split(':::')
+
+  // const decryptedKey = decryptECIES(process.env.APP_PRIVATE_KEY, aesKey)
+  // const decryptedContent = aes.decipher(
+  //   Buffer.from(encryptedContent, 'hex'),
+  //   Buffer.from(decryptedKey, 'hex'),
+  //   Buffer.from(iv, 'hex')
+  // )
+  const decryptedContent = await decryptWithAES(data, keyId)
   res.json({ ...document, decryptedContent: decryptedContent.toString() })
 })
 

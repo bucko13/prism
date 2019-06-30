@@ -2,6 +2,8 @@ const app = require('../index.js')
 const { MacaroonsBuilder } = require('macaroons.js')
 const request = require('request-promise-native')
 
+const { decryptWithAES, getDocument } = require('../radiks/helpers')
+
 /*
  * Must compose a root macaroon and retrieve an invoice
  * to send back in the response.
@@ -35,8 +37,23 @@ app.post('/api/invoice', async (req, res) => {
     publicIdentifier
   ).add_first_party_caveat(`docId = ${docId}`)
 
+  // Need to get the passphrase that is used to verify payments
+  // on the lightning node. This is stored on the document, encrypted
+  // with the same aes key as the document
+  // document is stored with the node information including encrypted
+  // caveat key used to verify macaroons
+  let caveatKey = process.env.CAVEAT_KEY
+
+  const document = await getDocument(docId)
+  const { caveatKey: encryptedCaveat, keyId, node } = document
+  if (encryptedCaveat) caveatKey = await decryptWithAES(encryptedCaveat, keyId)
+
+  if (node) nodeUri = node
+
+  console.log('nodeUri:', nodeUri)
+  console.log('caveatKey:', caveatKey)
   const macaroon = builder
-    .add_third_party_caveat(nodeUri, process.env.CAVEAT_KEY, invoice.id)
+    .add_third_party_caveat(nodeUri, caveatKey, invoice.id)
     .getMacaroon()
 
   req.session.macaroon = macaroon.serialize()
