@@ -12,6 +12,8 @@ const {
   verifier,
 } = require('macaroons.js')
 const TimestampCaveatVerifier = verifier.TimestampCaveatVerifier
+const { decryptECIES } = require('blockstack/lib/encryption')
+const { aes } = require('bcrypto')
 
 function getAppUserSession({ origin = 'localhost:3000' }) {
   const appConfig = new AppConfig(
@@ -123,9 +125,37 @@ function validateMacaroons(root, discharge, docId) {
   }
 }
 
+/*
+ * Given previously symmetrically encrypted data and a key id
+ * Retrieve key information, decrypt the aes key at the given keyId
+ * and use it to decrypt the data
+ * @params {String} data - encrypted data, cipher and iv split w/ string ':::'
+ * @params {String} keyId - id of key to retrieve from Radiks db
+ * @returns {String} decrypted data
+ */
+async function decryptWithAES(data, keyId) {
+  // retrieve key object that has encrypted aesKey
+  const { encryptedKey: encryptedAES } = await getUserKey(keyId)
+
+  // TODO: the below fails if content was never encrypted
+  const [encryptedCaveat, iv] = data.split(':::')
+
+  // we need to decrypt the AES Key w/ our app's priv key
+  const decryptedAES = decryptECIES(process.env.APP_PRIVATE_KEY, encryptedAES)
+
+  const caveatKey = aes.decipher(
+    Buffer.from(encryptedCaveat, 'hex'),
+    Buffer.from(decryptedAES, 'hex'),
+    Buffer.from(iv, 'hex')
+  )
+
+  return caveatKey.toString()
+}
+
 exports.getAppUserSession = getAppUserSession
 exports.getPublicKey = getPublicKey
 exports.getUsersList = getUsersList
 exports.getUserKey = getUserKey
 exports.getDocument = getDocument
 exports.validateMacaroons = validateMacaroons
+exports.decryptWithAES = decryptWithAES
