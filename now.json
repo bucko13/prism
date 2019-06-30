@@ -1,12 +1,13 @@
 {
   "version": 2,
-  "name": "lightning-reader",
-  "alias": "lightningreader.club",
+  "name": "prism",
+  "alias": "prismreader.app",
   "build": {
     "env": {
       "SESSION_SECRET": "@session-secret",
       "OPEN_NODE_KEY": "@open-node-key",
-      "APP_PRIVATE_KEY": "@app-private-key"
+      "APP_PRIVATE_KEY": "@app-private-key",
+      "MONGODB_URI": "@my-mongodb-uri"
     }
   },
   "builds": [
