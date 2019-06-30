@@ -36,7 +36,7 @@ function ProofIcon({ proofId, proofData }) {
   if (proofId && proofData) {
     // document is successfully anchored
     iconType = 'check circle outline'
-    const time = proofData.submittedAt.toLocaleString('en-us', {
+    const time = new Date(proofData.submittedAt).toLocaleString('en-us', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -66,7 +66,10 @@ function ProofIcon({ proofId, proofData }) {
           icon="lock"
           content={<span>Merkle Root: {proofData.merkleRoot}</span>}
         />
-        <List.Item icon="calendar" content={<span>Anchored at: {time}</span>} />
+        <List.Item
+          icon="calendar"
+          content={<span>Time Anchored: {time}</span>}
+        />
       </List>
     )
   } else if (proofId && (!proofData || !proofData.height)) {
