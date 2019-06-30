@@ -7,10 +7,11 @@ export const documentPropTypes = PropTypes.shape({
   author: PropTypes.string,
   rawProof: PropTypes.string,
   proofId: PropTypes.string,
-  proofData: PropTypes.shape({
-    merkleRoot: PropTypes.string.isRequired,
-    submittedAt: PropTypes.string.isRequired,
-    height: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-      .isRequired,
-  }),
+  proofData: proofDataPropTypes,
+})
+
+export const proofDataPropTypes = PropTypes.shape({
+  merkleRoot: PropTypes.string.isRequired,
+  submittedAt: PropTypes.string.isRequired,
+  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
 })
