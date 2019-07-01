@@ -37,11 +37,10 @@
       "dest": "/api/invoice"
     },
     {
-      "src": "/(.*)\\.(.*)",
-      "dest": "/$1.$2"
+      "handle": "filesystem"
     },
     {
-      "src": "/",
+      "src": "/(.*)",
       "dest": "/index.html"
     }
   ]
