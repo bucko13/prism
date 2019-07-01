@@ -24,12 +24,6 @@
     }
   ],
   "routes": [
-    { "src": "/(.*).((woff?2)|(tiff)|(eot))", "dest": "" },
-    { "src": "/favicon.ico", "dest": "/favicon.ico" },
-    { "src": "/logo.png", "dest": "/logo.png" },
-    { "src": "/asset-manifest.json", "dest": "/asset-manifest.json" },
-    { "src": "/manifest.json", "dest": "/manifest.json" },
-    { "src": "/precache-manifest.(.*)", "dest": "/precache-manifest.$1" },
     {
       "src": "/api/node/(.*)",
       "dest": "/api/node"
@@ -41,6 +35,14 @@
     {
       "src": "/api/invoice(.*)",
       "dest": "/api/invoice"
+    },
+    {
+      "src": "/(.*)\\.(.*)",
+      "dest": "/$1.$2"
+    },
+    {
+      "src": "/",
+      "dest": "/index.html"
     }
   ]
 }
