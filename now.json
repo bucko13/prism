@@ -26,13 +26,10 @@
   "routes": [
     { "src": "/(.*).((woff?2)|(tiff)|(eot))", "dest": "" },
     { "src": "/favicon.ico", "dest": "/favicon.ico" },
+    { "src": "/logo.png", "dest": "/logo.png" },
     { "src": "/asset-manifest.json", "dest": "/asset-manifest.json" },
     { "src": "/manifest.json", "dest": "/manifest.json" },
     { "src": "/precache-manifest.(.*)", "dest": "/precache-manifest.$1" },
-    {
-      "src": "/api/docs/(.*)",
-      "dest": "/api/docs"
-    },
     {
       "src": "/api/node/(.*)",
       "dest": "/api/node"

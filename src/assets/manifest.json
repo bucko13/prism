@@ -1,10 +1,10 @@
 {
-  "name": "Lightning Reader",
-  "start_url": "https://lightningreader.club",
-  "description": "Speed reading where you pay for time with Bitcoin on lightning",
+  "name": "Prism",
+  "start_url": "https://prismreader.app",
+  "description": "Your keys, your content. Own the conversation.",
   "icons": [
     {
-      "src": "http://localhost:8080/icon-192x192.png",
+      "src": "https://prismreader.app/logo.png",
       "sizes": "192x192",
       "type": "image/png"
     }

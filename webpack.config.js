@@ -8,7 +8,8 @@ const ManifestAssetPlugin = new CopyWebpackPlugin([
   { from: 'src/assets/manifest.json', to: 'manifest.json' },
 ])
 const IconAssetPlugin = new CopyWebpackPlugin([
-  { from: 'src/images/icon-192x192.png', to: 'icon-192x192.png' },
+  { from: 'src/images/logo.png', to: 'logo.png' },
+  { from: 'src/images/favicon.ico', to: 'favicon.ico' },
 ])
 
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -55,7 +56,7 @@ module.exports = {
       },
       // { test: /\.jsx$/, loader: 'babel-loader', exclude: /node_modules/ },
       {
-        test: /\.(eot|woff|woff2|ttf|svg|png|jpe?g|gif)(\?\S*)?$/,
+        test: /\.(eot|woff|woff2|ttf|svg|png|jpe?g|gif|ico)(\?\S*)?$/,
         loader: 'file-loader!url-loader',
       },
       { test: /\.css$/, loader: 'style-loader!css-loader' },

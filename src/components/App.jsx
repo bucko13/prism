@@ -7,7 +7,6 @@ import { configure, User, getConfig } from 'radiks'
 import { get } from 'axios'
 
 import {
-  ReaderContainer,
   AddDocContainer,
   HomeContainer,
   ProfileContainer,
