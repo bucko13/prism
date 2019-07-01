@@ -5,13 +5,13 @@ import { Header, Segment, Card, Icon } from 'semantic-ui-react'
 const cardContent = [
   [
     {
-      header: 'Your ID',
+      header: 'Self-Sovereign IDs',
       icon: 'user',
       description:
         'Your user and all related information is yours. Even if Prism goes away, you retain control.',
     },
     {
-      header: 'Your Content',
+      header: 'Decentralized Storage',
       icon: 'newspaper',
       description:
         'Using the power of the Blockstack network, you always own your content, no matter what.',
@@ -19,13 +19,13 @@ const cardContent = [
   ],
   [
     {
-      header: 'Your Payments',
+      header: 'BTC Payments',
       icon: 'btc',
       description:
         "Receive payments directly for content you share, using the world's most popular Cryptocurrency, Bitcoin",
     },
     {
-      header: 'Your Immutability',
+      header: 'Timestamps Built-In',
       icon: 'lock',
       description:
         'With the immutable properties of the Bitcoin blockchain, you are able to timestamp your content and prove you are the creator',
@@ -108,6 +108,20 @@ export default class Signin extends Component {
               </div>
             </Card.Group>
           </div>
+        </div>
+        <div className="row mt-4">
+          <Header as="h3" className="col-12">
+            Sign up or Login With Blockstack to Get Started
+          </Header>
+          <p className="lead col-12">
+            <button
+              className="btn btn-primary btn-lg"
+              id="signin-button"
+              onClick={handleSignIn.bind(this)}
+            >
+              Sign In with Blockstack
+            </button>
+          </p>
         </div>
       </div>
     )
