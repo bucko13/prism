@@ -9,8 +9,7 @@ const ManifestAssetPlugin = new CopyWebpackPlugin([
   { from: 'src/assets/manifest.json', to: 'manifest.json' },
 ])
 const IconAssetPlugin = new CopyWebpackPlugin([
-  { from: 'src/images/logo.png', to: 'logo.png' },
-  { from: 'src/images/favicon.ico', to: 'favicon.ico' },
+  { from: 'src/images/**', to: '.', flatten: true },
 ])
 
 const HtmlWebpackPlugin = require('html-webpack-plugin')
