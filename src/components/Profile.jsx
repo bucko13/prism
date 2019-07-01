@@ -47,7 +47,7 @@ export default class Profile extends PureComponent {
     })
     setTimeout(() => {
       this.setState({ loading: false })
-    }, 2500)
+    }, 3000)
   }
 
   async getNodeInfo() {
