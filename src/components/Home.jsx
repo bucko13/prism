@@ -1,11 +1,9 @@
 import React, { PureComponent } from 'react'
 import { Person } from 'blockstack'
 import PropTypes from 'prop-types'
-import { Link } from 'react-router-dom'
 import { Segment } from 'semantic-ui-react'
 
 import { DocumentLink } from '.'
-import { Document } from '../models'
 import { documentPropTypes } from '../propTypes'
 
 const avatarFallbackImage =
@@ -39,7 +37,10 @@ export default class Profile extends PureComponent {
   }
 
   async componentDidMount() {
-    const { getDocumentList } = this.props
+    const { getDocumentList, userSession } = this.props
+    this.setState({
+      person: new Person(userSession.loadUserData().profile),
+    })
     await getDocumentList()
   }
 
@@ -56,32 +57,37 @@ export default class Profile extends PureComponent {
     const { documents, handleSignOut, userSession } = this.props
     const { person, identity } = this.state
 
-    return !userSession.isSignInPending() ? (
+    return (
       <div className="panel-welcome" id="section-2">
-        <div className="avatar-section">
-          <img
-            src={person.avatarUrl() ? person.avatarUrl() : avatarFallbackImage}
-            className="img-rounded avatar"
-            id="avatar-image"
-          />
-        </div>
-        <h1>
-          Hello,{' '}
-          <span id="heading-name">
-            {person.name() ? person.name() : 'Nameless Person'}
-          </span>
-          !
-        </h1>
-        <p className="lead">
-          <button
-            className="btn btn-primary btn-lg"
-            id="signout-button"
-            onClick={handleSignOut.bind(this)}
-          >
-            Logout
-          </button>
-        </p>
-
+        {!userSession.isSignInPending() ? (
+          <React.Fragment>
+            <div className="avatar-section">
+              <img
+                src={
+                  person.avatarUrl() ? person.avatarUrl() : avatarFallbackImage
+                }
+                className="img-rounded avatar"
+                id="avatar-image"
+              />
+            </div>
+            <h1>
+              Hello,{' '}
+              <span id="heading-name">
+                {person.name() ? person.name() : 'Nameless Person'}
+              </span>
+              !
+            </h1>
+            <p className="lead">
+              <button
+                className="btn btn-primary btn-lg"
+                id="signout-button"
+                onClick={handleSignOut.bind(this)}
+              >
+                Logout
+              </button>
+            </p>
+          </React.Fragment>
+        ) : null}
         <p className="lead">
           Don&apos;t have a testnet lightning wallet? Head on over to{' '}
           <a href="https://htlc.me/" target="_blank" rel="noopener noreferrer">
@@ -113,6 +119,6 @@ export default class Profile extends PureComponent {
           ''
         )}
       </div>
-    ) : null
+    )
   }
 }

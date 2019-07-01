@@ -23,6 +23,7 @@ export default class Profile extends PureComponent {
           return avatarFallbackImage
         },
       },
+      loading: true,
     }
   }
 
@@ -44,6 +45,9 @@ export default class Profile extends PureComponent {
     this.setState({
       person: new Person(userSession.loadUserData().profile),
     })
+    setTimeout(() => {
+      this.setState({ loading: false })
+    }, 3000)
   }
 
   async getNodeInfo() {
@@ -72,7 +76,7 @@ export default class Profile extends PureComponent {
 
   render() {
     const { documents, userSession } = this.props
-    const { person } = this.state
+    const { person, loading } = this.state
 
     return !userSession.isSignInPending() ? (
       <div className="panel-welcome" id="section-2">
@@ -95,10 +99,12 @@ export default class Profile extends PureComponent {
             documents.map((doc, index) => (
               <DocumentLink key={index} doc={doc} />
             ))
-          ) : (
+          ) : loading ? (
             <Dimmer active inverted>
               <Loader size="large" />
             </Dimmer>
+          ) : (
+            <h4>No Documents Available</h4>
           )}
         </div>
         {documents && documents.length ? (

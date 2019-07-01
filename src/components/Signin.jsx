@@ -16,7 +16,8 @@ export default class Signin extends Component {
 
     return (
       <div className="panel-landing" id="section-1">
-        <h1 className="landing-heading">Welcome to Prism!</h1>
+        <img src="/logo.png" />
+        <h1 className="landing-heading mt-0">Welcome to Prism!</h1>
         <h3 className="mb-0">Your Keys, Your Content.</h3>
         <h3 style={{ fontStyle: 'italic' }} className="mt-0">
           Own the conversation.
