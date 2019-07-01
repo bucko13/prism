@@ -17,8 +17,14 @@ const { decryptWithAES, getDocument } = require('../radiks/helpers')
 app.post('/api/invoice', async (req, res) => {
   let { docId, time, nodeUri, title } = req.body
 
-  // TODO: remove hard coded node uri
-  if (!nodeUri) nodeUri = 'https://ln-builder.bucko.now.sh'
+  if (!nodeUri) nodeUri = process.env.LN_URI
+
+  // if still none set then we need to return an error
+  if (!nodeUri) {
+    // eslint-disable-next-line no-console
+    console.error('Missing fallback LN_URI for payments')
+    return res.status(500).json({ message: 'Problem generating invoice' })
+  }
 
   // first need to forward the request to retrieve the invoice
   const invoice = await request({

@@ -1,5 +1,6 @@
 const path = require('path')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const webpack = require('webpack')
 
 // copy manifest.json to the path: 'public/build'
 // this will allow for the authRequest to see the file at www.example.com/manifest.json
@@ -17,6 +18,12 @@ const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
   template: './src/index.html',
   filename: 'index.html',
   inject: 'body',
+})
+
+const DefinePluginConfig = new webpack.DefinePlugin({
+  'process.env': {
+    LN_URI: JSON.stringify(process.env.LN_URI),
+  },
 })
 
 module.exports = {
@@ -66,6 +73,7 @@ module.exports = {
     HtmlWebpackPluginConfig,
     ManifestAssetPlugin,
     IconAssetPlugin,
+    DefinePluginConfig,
     new CleanWebpackPlugin(),
   ],
 }

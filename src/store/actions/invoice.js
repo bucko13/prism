@@ -95,7 +95,15 @@ export function checkInvoiceStatus(tries = 50, timeout = 750) {
       invoiceId,
       'Missing invoiceId in state. Must request the invoice before checking status'
     )
-    if (!nodeUri) if (!nodeUri) nodeUri = 'https://ln-builder.bucko.now.sh'
+
+    if (!nodeUri) nodeUri = process.env.LN_URI
+
+    // if we still don't have a nodeUri, we should just return with an error
+    if (!nodeUri)
+      throw new Error(
+        'No node uri associated with the post and no default payment gateway set. \
+Contact site admin to create one with ln-builder.'
+      )
 
     const response = await get(`${nodeUri}/api/invoice?id=${invoiceId}`)
     if (response.status === 200 && response.data.status === 'paid') {
