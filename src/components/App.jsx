@@ -170,15 +170,6 @@ export default class App extends Component {
                     )}
                   />
                   <Route
-                    path="/reader"
-                    render={routeProps => (
-                      <ReaderContainer
-                        userSession={userSession}
-                        {...routeProps}
-                      />
-                    )}
-                  />
-                  <Route
                     path="/post"
                     render={routeProps => <PostContainer {...routeProps} />}
                   />

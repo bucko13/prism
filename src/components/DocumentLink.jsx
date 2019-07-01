@@ -1,26 +1,35 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import { Segment, Icon, Popup, List } from 'semantic-ui-react'
+import { Segment, Icon, Popup, List, Header } from 'semantic-ui-react'
 
 import { documentPropTypes, proofDataPropTypes } from '../propTypes'
 
 function DocumentLink({ doc }) {
-  const { docId, title, proofId, proofData } = doc
+  const { docId, title, proofId, proofData, author } = doc
 
   return (
-    <Segment className="doc mb-3" size="large" inverted>
-      <Link
-        to={{
-          pathname: '/post',
-          search: `?id=${docId}`,
-          query: doc,
-        }}
-        style={{ margin: '0 1rem', padding: '.5rem', color: 'white' }}
-      >
-        {' '}
-        {title}
-      </Link>
+    <Segment
+      className="doc mb-3 row align-items-center justify-content-between"
+      size="large"
+      inverted
+    >
+      <div className="col-10" style={{ textAlign: 'left' }}>
+        <Header as="h3" className="mb-0">
+          <Link
+            to={{
+              pathname: '/post',
+              search: `?id=${docId}`,
+              query: doc,
+            }}
+            style={{ color: 'white' }}
+          >
+            {' '}
+            {title}
+          </Link>
+        </Header>
+        <p style={{ fontStyle: 'italic' }}>Article by: {author}</p>
+      </div>
       <ProofIcon proofId={proofId} proofData={proofData} />
     </Segment>
   )
@@ -97,7 +106,9 @@ function ProofIcon({ proofId, proofData }) {
   }
   return (
     <Popup
-      trigger={<Icon name={iconType} style={{ cursor: 'pointer' }} />}
+      trigger={
+        <Icon name={iconType} style={{ cursor: 'pointer' }} className="col-1" />
+      }
       on="click"
     >
       {content}

@@ -95,7 +95,7 @@ export default class Post extends PureComponent {
             </React.Fragment>
           ) : (
             <div
-              className="container"
+              className="container mb-5 p-2"
               style={{ textAlign: 'justify' }}
               dangerouslySetInnerHTML={{
                 __html: marked(content, { sanitize: true }),
