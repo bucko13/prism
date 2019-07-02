@@ -129,7 +129,7 @@ export default class App extends Component {
               height: 'auto',
             }}
           >
-            <div className="site-wrapper-inner container-fluid">
+            <div className="site-wrapper-inner container-fluid mb-4">
               <Menu inverted secondary>
                 <Menu.Item onClick={() => this.handleShowClick()}>
                   <Icon

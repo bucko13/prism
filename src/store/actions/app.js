@@ -14,28 +14,33 @@ export function setPubKey(pubkey) {
 
 export function saveUser() {
   return async (dispatch, getState) => {
-    const { userSession } = getConfig()
-    const { username } = userSession.loadUserData()
-    let [user] = await User.fetchOwnList({ username })
+    try {
+      const { userSession } = getConfig()
+      const { username } = userSession.loadUserData()
+      let [user] = await User.fetchOwnList({ username })
 
-    if (!user) {
-      const pubKey = getState().app.get('pubKey')
-      const key = await generateKey(pubKey)
-      user = new User({ keyId: key._id })
+      if (!user) {
+        const pubKey = getState().app.get('pubKey')
+        const key = await generateKey(pubKey)
+        user = new User({ keyId: key._id })
+      }
+      // run user.save to set the key property which runs after every `save` call
+      await user.save()
+
+      // sanity check to make sure everything is setup correctly
+      assert(user.key, 'AES Key not set on user')
+      dispatch(
+        setUser({
+          username: user.attrs.username,
+          userId: user._id,
+          name: user.attrs.name,
+        })
+      )
+      dispatch(setAESKey(user.key.attrs.aesKey))
+    } catch (e) {
+      if (e.message.includes('No user data found')) return
+      else console.error(e) // eslint-disable-line no-console
     }
-    // run user.save to set the key property which runs after every `save` call
-    await user.save()
-
-    // sanity check to make sure everything is setup correctly
-    assert(user.key, 'AES Key not set on user')
-    dispatch(
-      setUser({
-        username: user.attrs.username,
-        userId: user._id,
-        name: user.attrs.name,
-      })
-    )
-    dispatch(setAESKey(user.key.attrs.aesKey))
   }
 }
 
