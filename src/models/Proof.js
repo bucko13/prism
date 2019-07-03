@@ -98,6 +98,9 @@ export default class Proof extends Model {
       // don't need the proofHandles anymore if we have a proof
       this.update({ proof, proofHandles: [] })
       await this.save()
+    } else {
+      // eslint-disable-next-line no-console
+      console.warn('No btc or tbtc anchor found for proof', this._id, 'yet')
     }
   }
 

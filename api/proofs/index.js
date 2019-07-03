@@ -1,4 +1,4 @@
-const { submitHashes, getProofs } = require('chainpoint-client/index')
+const { submitHashes, getProofs } = require('chainpoint-client/dist/bundle')
 const app = require('../index.js')
 
 app.post('/api/proofs', async (req, res) => {
@@ -33,7 +33,6 @@ app.put('/api/proofs', async (req, res) => {
         'Proof Handles sent in unknown format. Must pass an array of handles',
     })
   }
-
   try {
     const proofs = await getProofs(proofHandles)
     res.status(200).json({ proofs })
