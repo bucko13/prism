@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react'
 import { Person } from 'blockstack'
 import PropTypes from 'prop-types'
-import { Button, Dimmer, Loader } from 'semantic-ui-react'
+import { Button } from 'semantic-ui-react'
 
 import { Document } from '../models'
-import { DocumentLink } from '.'
+import { DocumentList } from '.'
 import { documentPropTypes } from '../propTypes'
 
 const avatarFallbackImage =
@@ -47,16 +47,7 @@ export default class Profile extends PureComponent {
     })
     setTimeout(() => {
       this.setState({ loading: false })
-    }, 3000)
-  }
-
-  async getNodeInfo() {
-    const resp = await fetch('/api/node', {
-      method: 'GET',
-      credentials: 'include',
-    })
-    const info = await resp.json()
-    return info
+    }, 4000)
   }
 
   componentWillUnmount() {
@@ -98,19 +89,7 @@ export default class Profile extends PureComponent {
           </span>
           !
         </h1>
-        <div className="docs-list" style={{ width: '50%', margin: 'auto' }}>
-          {documents.length ? (
-            documents.map((doc, index) => (
-              <DocumentLink key={index} doc={doc} />
-            ))
-          ) : loading ? (
-            <Dimmer active inverted>
-              <Loader size="large" />
-            </Dimmer>
-          ) : (
-            <h4>No Documents Available</h4>
-          )}
-        </div>
+        <DocumentList documents={documents} loading={loading} />
         {documents && documents.length ? (
           <Button
             color="red"

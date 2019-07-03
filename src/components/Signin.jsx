@@ -80,13 +80,14 @@ export default class Signin extends Component {
           Own the conversation.
         </h2>
         <p className="lead">
-          <button
-            className="btn btn-primary btn-lg"
+          <Button
             id="signin-button"
             onClick={handleSignIn.bind(this)}
+            size="large"
+            color="black"
           >
             Sign In with Blockstack
-          </button>
+          </Button>
         </p>
         <div
           className="row align-items-center"

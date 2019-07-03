@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { Segment, Dimmer, Loader } from 'semantic-ui-react'
+import { Segment } from 'semantic-ui-react'
 
-import { DocumentLink } from '.'
+import { DocumentList } from '.'
 import { documentPropTypes } from '../propTypes'
 
 export default class Profile extends PureComponent {
@@ -58,17 +58,7 @@ export default class Profile extends PureComponent {
           to create one and test out the app
         </p>
         {/* the new documents list from radiks */}
-        <div className="docs-list" style={{ width: '50%', margin: 'auto' }}>
-          {documents.length ? (
-            documents.map((doc, index) => (
-              <DocumentLink doc={doc} key={index} />
-            ))
-          ) : (
-            <Dimmer active inverted>
-              <Loader size="large" />
-            </Dimmer>
-          )}
-        </div>
+        <DocumentList documents={documents} />
         {/* end the documents list from radiks */}
         {node && node.length ? (
           <div className="row justify-content-center">
