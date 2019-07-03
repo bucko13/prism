@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 
 export const documentPropTypes = PropTypes.shape({
+  _id: PropTypes.string,
   title: PropTypes.string,
-  docId: PropTypes.string,
   content: PropTypes.string,
   author: PropTypes.string,
   rawProof: PropTypes.string,

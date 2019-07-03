@@ -53,7 +53,7 @@ function setDocsFromModelList(documents) {
   return dispatch => {
     const list = documents.map(
       ({ attrs: { _id, author, title, proofId, rawProof, proofData } }) => ({
-        docId: _id,
+        _id,
         author,
         title,
         proofId,
@@ -90,8 +90,8 @@ export function setCurrentDoc(docId) {
       return dispatch({
         type: SET_CURRENT_DOC,
         payload: {
+          _id,
           author,
-          docId: _id,
           title,
           content: decryptedContent || '',
           node,
@@ -113,7 +113,7 @@ export function setCurrentDoc(docId) {
 export function getContent() {
   return async (dispatch, getState) => {
     try {
-      const docId = getState().documents.getIn(['currentDoc', 'docId'])
+      const docId = getState().documents.getIn(['currentDoc', '_id'])
       const macaroon = getState().invoice.get('macaroon')
 
       // can't set content without a macaroon
@@ -180,7 +180,7 @@ export function updateDocumentProofs() {
       // and save it w/ the document this will start the anchoring process
       try {
         if (!doc.proofId) {
-          const proof = new Proof({ docId: doc.docId })
+          const proof = new Proof({ docId: doc._id })
           await proof.save()
           if (!proof.attrs.proofHandles)
             throw new Error('Could not retrieve proofs from Chainpoint')
@@ -231,6 +231,7 @@ export function getProofs() {
           let rawProof, proofData
           if (userIsSignedIn) {
             const proof = await Proof.findById(doc.proofId)
+            console.log('proof:', proof)
             rawProof = proof.attrs.proof
             proofData = proof.evaluateProof()
           } else {

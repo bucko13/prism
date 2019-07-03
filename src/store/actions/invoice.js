@@ -57,7 +57,7 @@ export function requestInvoice() {
   return async (dispatch, getState) => {
     let time = getState().invoice.get('seconds')
     const title = getState().documents.getIn(['currentDoc', 'title'])
-    const docId = getState().documents.getIn(['currentDoc', 'docId'])
+    const docId = getState().documents.getIn(['currentDoc', '_id'])
     const nodeUri = getState().documents.getIn(['currentDoc', 'node'])
 
     if (typeof seconds !== 'number') time = parseInt(time, 10)
