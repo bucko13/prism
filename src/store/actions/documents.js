@@ -1,12 +1,14 @@
 import assert from 'bsert'
 import { get } from 'axios'
 
+import { getConfig } from 'radiks'
 import { Document, Proof } from '../../models'
 import {
   SET_CURRENT_DOC,
   SET_DOCUMENT_LIST,
   CLEAR_CURRENT_DOC,
   SET_CURRENT_CONTENT,
+  UPDATE_DOCUMENT,
 } from '../constants'
 import { clearInvoice } from './invoice'
 
@@ -17,10 +19,22 @@ import { clearInvoice } from './invoice'
  */
 export function getDocumentList(count = 10) {
   return async dispatch => {
-    const documents = await Document.fetchList({
-      limit: count,
-    })
-    dispatch(setDocsFromModelList(documents))
+    const { userSession } = getConfig()
+    let documents
+
+    if (userSession.isUserSignedIn()) {
+      documents = await Document.fetchList({
+        limit: count,
+      })
+      dispatch(setDocsFromModelList(documents))
+    } else {
+      // if user is not signed in, we want to use the server's proxy
+      // endpoint for retrieving documents rather than radiks
+      const { data } = await get(`/api/radiks/documents?limit=${count}`)
+      if (!(data && data.documents)) return
+      documents = data.documents
+      dispatch(setDocumentList(documents))
+    }
     dispatch(getProofs())
   }
 }
@@ -198,26 +212,48 @@ export function updateDocumentProofs() {
 /*
  * This will primarily be for updating document list for proof data
  * but not actually creating the proofs
+ * @returns {<Promise>} returns a Promise.all where each Promise resolves
+ * to dispatch an update to the document in the list with the updated proof
  */
 export function getProofs() {
-  return async (dispatch, getState) => {
+  return (dispatch, getState) => {
     const documents = getState().documents.get('documentList')
-    const updated = []
-    for (let doc of documents) {
-      // if no proofId then the owner still needs to update it themselves
-      // so we will add this doc to the list as is
-      // if it has proofData then we don't need to update it
-      if (!doc.proofId || doc.proofData) updated.push(doc)
-      // no raw proof but there is a proofId, so we can add this locally ourselves
-      else if (!doc.rawProof && !doc.proofData) {
-        const proof = await Proof.findById(doc.proofId)
-        const rawProof = proof.attrs.proof
-        const proofData = proof.evaluateProof()
-        updated.push({ ...doc, rawProof, proofData })
-      }
-    }
+    const { userSession } = getConfig()
+    const userIsSignedIn = userSession.isUserSignedIn()
+    return Promise.all(
+      documents.map(async doc => {
+        // if no proofId then the owner still needs to update it themselves
+        // so we will add this doc to the list as is
+        // if it has proofData then we don't need to update it
+        if (!doc.proofId || doc.proofData) return
+        // no raw proof but there is a proofId, so we can add this locally ourselves
+        else if (!doc.rawProof && !doc.proofData) {
+          let rawProof, proofData
+          if (userIsSignedIn) {
+            const proof = await Proof.findById(doc.proofId)
+            rawProof = proof.attrs.proof
+            proofData = proof.evaluateProof()
+          } else {
+            const { data } = await get(`/api/radiks/proof?id=${doc.proofId}`)
+            if (!data.proof) return
+            rawProof = data.proof
+            const proof = new Proof({ proof: rawProof })
+            proofData = proof.evaluateProof()
+          }
+          return dispatch(updateDocument(doc._id, { rawProof, proofData }))
+        }
+      })
+    )
+  }
+}
 
-    dispatch(setDocumentList(updated))
+export function updateDocument(docId, data) {
+  return {
+    type: UPDATE_DOCUMENT,
+    payload: {
+      docId,
+      data,
+    },
   }
 }
 

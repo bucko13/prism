@@ -11,6 +11,7 @@ import {
   HomeContainer,
   ProfileContainer,
   PostContainer,
+  BrowseContainer,
 } from '../containers'
 import Signin from './Signin.jsx'
 
@@ -98,7 +99,7 @@ export default class App extends Component {
             </Link>
             {!userSession.isUserSignedIn() ? (
               <React.Fragment>
-                <Link to="/" className="item">
+                <Link to="/browse" className="item">
                   <Menu.Item>Browse</Menu.Item>
                 </Link>
                 <Menu.Item onClick={e => this.handleSignIn(e)}>
@@ -113,7 +114,7 @@ export default class App extends Component {
                 <Link to="/add-doc" className="item">
                   <Menu.Item>Upload</Menu.Item>
                 </Link>
-                <Link to="/" className="item">
+                <Link to="/browse" className="item">
                   <Menu.Item>Browse</Menu.Item>
                 </Link>
                 <Menu.Item onClick={e => this.handleSignOut(e)}>
@@ -141,10 +142,24 @@ export default class App extends Component {
                 </Menu.Item>
               </Menu>
               {!userSession.isUserSignedIn() ? (
-                <Signin
-                  userSession={userSession}
-                  handleSignIn={this.handleSignIn}
-                />
+                <Switch>
+                  <Route
+                    exact
+                    path="/"
+                    render={() => (
+                      <Signin
+                        userSession={userSession}
+                        handleSignIn={this.handleSignIn}
+                      />
+                    )}
+                  />
+
+                  <Route
+                    exact
+                    path="/browse"
+                    render={routeProps => <BrowseContainer {...routeProps} />}
+                  />
+                </Switch>
               ) : (
                 <Switch>
                   <Route
