@@ -21,5 +21,10 @@
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:import/errors"
-  ]
+  ],
+  "settings": {
+    "react": {
+     "version": "detect"
+    }
+  }
 }

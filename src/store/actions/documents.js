@@ -11,7 +11,7 @@ import {
   UPDATE_DOCUMENT,
 } from '../constants'
 import { clearInvoice } from './invoice'
-
+import { sleep } from '../../utils'
 /*
  * Gets a list of document models from Radiks server
  * @param {Number} [count=10] - number of documents to populate state with
@@ -105,8 +105,7 @@ export function setCurrentDoc(docId) {
 }
 
 /*
- * Request permission and get cookie to read a document
- * @params {String} docId - id of document requesting permission for
+ * Request permission and get cookie to read the currentDoc from state
  * @returns {void} dispatch action to set doc content
  */
 
@@ -137,6 +136,8 @@ export function getContent() {
           locked: false,
         },
       })
+      await sleep(750)
+      dispatch(getContent())
     } catch (e) {
       if (e.response && e.response.status === 402) {
         // eslint-disable-next-line no-console
@@ -231,7 +232,6 @@ export function getProofs() {
           let rawProof, proofData
           if (userIsSignedIn) {
             const proof = await Proof.findById(doc.proofId)
-            console.log('proof:', proof)
             rawProof = proof.attrs.proof
             proofData = proof.evaluateProof()
           } else {
