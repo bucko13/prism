@@ -14,7 +14,7 @@ const cardContent = [
       header: 'Decentralized Storage',
       icon: 'newspaper',
       description:
-        'Using the power of the Blockstack network, you always own your content, no matter what. You can even move your content to a different platform if you want!',
+        'Decentralized storage means you always own your content, no matter what. You can even move to a different platform if you want!',
     },
   ],
   [
@@ -75,11 +75,10 @@ export default class Signin extends Component {
     return (
       <div className="panel-landing" id="section-1">
         <img src="/logo.png" />
-        <h1 className="landing-heading mt-0">Welcome to Prism!</h1>
-        <h3 className="mb-0">Your Keys, Your Content.</h3>
-        <h3 style={{ fontStyle: 'italic' }} className="mt-0">
+        <h3 className="m-0">Your Keys, Your Content.</h3>
+        <h2 style={{ fontStyle: 'italic' }} className="mt-0">
           Own the conversation.
-        </h3>
+        </h2>
         <p className="lead">
           <button
             className="btn btn-primary btn-lg"

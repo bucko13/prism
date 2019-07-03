@@ -1,8 +1,9 @@
 import assert from 'bsert'
 import { getConfig } from 'radiks'
+import { get } from 'axios'
 
 import { Key, User } from '../../models'
-import { SET_PUB_KEY, SET_AES_KEY, SET_USER } from '../constants'
+import { SET_PUB_KEY, SET_AES_KEY, SET_USER, SET_NODE_INFO } from '../constants'
 
 export function setPubKey(pubkey) {
   assert(typeof pubkey === 'string')
@@ -56,6 +57,21 @@ export function setUser({ username, userId, name }) {
   }
 }
 
+export function getNodeInfo() {
+  return async dispatch => {
+    const {
+      data: { identityPubkey },
+    } = await get('/api/node')
+    dispatch(setNodeInfo(identityPubkey))
+  }
+}
+
+function setNodeInfo(nodeInfo) {
+  return {
+    type: SET_NODE_INFO,
+    payload: nodeInfo,
+  }
+}
 /*
  * creates and saves a new key model, this should generally
  * only be run if a User does not already have a key associated with it

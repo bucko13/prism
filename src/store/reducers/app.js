@@ -1,8 +1,8 @@
 import { Map } from 'immutable'
 
-import { SET_PUB_KEY, SET_AES_KEY, SET_USER } from '../constants'
+import { SET_PUB_KEY, SET_AES_KEY, SET_USER, SET_NODE_INFO } from '../constants'
 
-const init = Map({ pubKey: '', aesKey: '' })
+const init = Map({ pubKey: '', aesKey: '', node: '' })
 
 export default (state = init, action) => {
   const { type, payload } = action
@@ -20,6 +20,9 @@ export default (state = init, action) => {
         userId: payload.userId,
         name: payload.name,
       })
+
+    case SET_NODE_INFO:
+      return state.set('node', payload)
 
     default:
       return state

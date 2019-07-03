@@ -38,6 +38,10 @@
       "dest": "/api/invoice"
     },
     {
+      "src": "/api/proofs(.*)",
+      "dest": "/api/proofs"
+    },
+    {
       "handle": "filesystem"
     },
     {

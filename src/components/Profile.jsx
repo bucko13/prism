@@ -59,6 +59,10 @@ export default class Profile extends PureComponent {
     return info
   }
 
+  componentWillUnmount() {
+    this.props.clearDocumentList()
+  }
+
   // This is a utility method for now for easy cleanup of testing
   // in production probably want to have this a little more buried
   async deleteAllPosts() {

@@ -1,11 +1,8 @@
 import { Model } from 'radiks'
 import assert from 'bsert'
 import SHA256 from 'bcrypto/lib/sha256-browser'
-import {
-  submitHashes,
-  getProofs,
-  evaluateProofs,
-} from 'chainpoint-client/dist/bundle.web'
+import { evaluateProofs } from 'chainpoint-client/dist/bundle.web'
+import { put, post } from 'axios'
 
 import { Document } from './index'
 
@@ -49,48 +46,43 @@ export default class Proof extends Model {
     assert(docId, 'Must save a proof with an associated document ID')
     // if there's no hash but we do have the doc ID then
     // let's retrieve the doc with this id and create the hash
-    if (!hash) {
-      // we want the hash to be the encrypted version of content
-      // even if it's our own, that way any user can verify w/o actually
-      // knowing the contents
-      const document = await Document.findById(docId, { decrypted: false })
-      const attrs = JSON.stringify(document.attrs)
-
-      hash = SHA256.digest(Buffer.from(attrs)).toString('hex')
-
-      // handles are used to later retrieve proof information
-      const proofHandles = await submitHashes([hash])
-
-      // we will update with the hash but also initialize with empty
-      // proof information.
-      // NOTE: This means that saving a Proof with no hash will clear any other information
-      // associated with the model. This is to avoid having a proof that does not match with the id
-      this.update({ hash, proofHandles, proof: '' })
-
-      // now we want to make sure that the associated document has the id of this proof model
-      // assocaited with it
-      if (!document.attrs.proofId || document.attrs.proofID !== this._id) {
-        document.update({ proofId: this._id })
-        await document.save()
+    try {
+      if (!hash) {
+        hash = await this.getHash()
+        await this.submitHash(hash)
       }
+    } catch (e) {
+      //eslint-disable-next-line no-console
+      throw new Error(
+        `Problem attempting to submit proof for document ${docId}: ${e.message}`
+      )
     }
   }
 
   async getProofs() {
-    const { proofHandles } = this.attrs
+    const { proofHandles, hash } = this.attrs
     // skip if there are no proofHandles available
     if (!proofHandles.length) {
       // eslint-disable-next-line no-console
-      console.warn('Attempted to get proofs for a proof with no proofHandles.')
+      console.warn(
+        'Attempted to retrieve proofs without any proof handles. Resubmitting hash...'
+      )
+      await this.submitHash(hash)
+      await this.save()
       return
     }
 
-    const proofs = await getProofs(proofHandles)
+    const {
+      data: { proofs },
+    } = await put('/api/proofs', { proofHandles })
 
-    // if no proofs yet then just return
-    // TODO/TOCHECK: Do we want re-submit if there are no proofs
-    // since this could be the result of cal expiring and our losing access to the proof for retrieval?
-    if (!proofs || !proofs.length) return
+    // if no proofs but we had proof handles, then the handles probably
+    // expired, so we need to re-submit the hash
+    if (!proofs || !proofs.length) {
+      const _hash = hash || (await this.getHash())
+      await this.submitHash(_hash)
+      return this.save()
+    }
 
     // only need one of the proofs and only care about the btc/tbtc proof
     let proof
@@ -136,6 +128,64 @@ export default class Proof extends Model {
       height: btcProof.anchor_id,
       merkleRoot: btcProof.expected_value,
       submittedAt: btcProof.hash_submitted_core_at,
+    }
+  }
+
+  /*
+   * Utility function to get the hash of a document
+   * @returns {String} SHA256 hash of all (encrypted) document attributes
+   */
+  async getHash() {
+    let { docId } = this.attrs
+    // we want the hash to be the encrypted version of content
+    // even if it's our own, that way any user can verify w/o actually
+    // knowing the contents
+    const document = await Document.findById(docId, { decrypted: false })
+    const attrs = JSON.stringify(document.attrs)
+
+    return SHA256.digest(Buffer.from(attrs)).toString('hex')
+  }
+
+  /*
+   * Submit a hash to the chainpoint network
+   * @params {String} [hash] - hash of content to submit to Chainpoint and retrieve proof
+   */
+  async submitHash(hash) {
+    const { docId } = this.attrs
+    if (!hash) hash = await this.getHash()
+
+    assert(typeof hash === 'string')
+    assert(
+      docId,
+      'Must have a docId associated with Proof to submit and save hashes'
+    )
+    try {
+      // handles are used to later retrieve proof information
+      const {
+        data: { proofHandles },
+      } = await post('/api/proofs', {
+        hashes: [hash],
+      })
+      console.log('proofHandles:', proofHandles)
+      // we will update with the hash but also initialize with empty
+      // proof information.
+      // NOTE: This means that saving a Proof with no hash will clear any other information
+      // associated with the model. This is to avoid having a proof that does not match with the id
+      this.update({ hash, proofHandles, proof: '' })
+
+      const document = await Document.findById(docId)
+
+      // now we want to make sure that the associated document has the id of this proof model
+      // assocaited with it
+      if (!document.attrs.proofId || document.attrs.proofID !== this._id) {
+        document.update({ proofId: this._id })
+        await document.save()
+      }
+    } catch (e) {
+      //eslint-disable-next-line no-console
+      console.error(
+        `Problem attempting to submit proof for document ${docId}: ${e.message}`
+      )
     }
   }
 }
