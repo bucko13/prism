@@ -171,3 +171,10 @@ img {
   line-height: 1.8rem;
   font-size: 1.1rem;
 }
+
+/** landing page styles ***/
+
+.panel-landing p {
+  font-size: 1.3rem;
+  line-height: 2.5rem;
+}

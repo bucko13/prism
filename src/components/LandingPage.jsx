@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Header, Segment, Card, Icon, Button } from 'semantic-ui-react'
+import { Link } from 'react-router-dom'
 
 const cardContent = [
   [
@@ -59,7 +60,7 @@ const techContent = [
   },
 ]
 
-export default class Signin extends Component {
+export default class LandingPage extends Component {
   constructor(props) {
     super(props)
   }
@@ -135,6 +136,29 @@ export default class Signin extends Component {
             </Card.Group>
           </div>
         </div>
+        <div className="row my-5 py-5" style={{ backgroundColor: '#f4f4f4' }}>
+          <Header as="h3" className="col-12">
+            Account-less Access
+          </Header>
+          <div className="col">
+            <div className="row justify-content-center">
+              <div className="col-12 col-md-4">
+                <p>
+                  Don&apos;t want to create an account but still have a post you
+                  want to read? Prism has you covered! Thanks decentralized
+                  nature of Bitcoin, you can access content without ever having
+                  to log in.
+                </p>
+                <Link to="/browse">
+                  <Button color="black">Latest Posts</Button>
+                </Link>
+              </div>
+              <div className="col-12 col-md-4">
+                <img src="/invoice-preview.png" />
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="row mt-4 p-4">
           <Segment inverted style={{ width: '100%' }}>
             <Header as="h3" className="col-12">
@@ -190,7 +214,7 @@ export default class Signin extends Component {
                 </Card.Group>
               </div>
               <div className="col order-first order-md-last">
-                <p style={{ fontSize: '1.3rem', lineHeight: '2.5rem' }}>
+                <p>
                   Prism is made with technologies built primarily ontop of
                   Bitcoin. The primary principle the system was designed around
                   is that the user should always have the final say over their

@@ -12,7 +12,7 @@ import {
   PostContainer,
   BrowseContainer,
 } from '../containers'
-import Signin from './Signin.jsx'
+import { LandingPage } from '.'
 
 const appConfig = new AppConfig(['store_write', 'publish_data'])
 const userSession = new UserSession({ appConfig: appConfig })
@@ -146,7 +146,7 @@ export default class App extends Component {
                     exact
                     path="/"
                     render={() => (
-                      <Signin
+                      <LandingPage
                         userSession={userSession}
                         handleSignIn={this.handleSignIn}
                       />
