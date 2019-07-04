@@ -9,7 +9,7 @@ const cardContent = [
       header: 'Self-Sovereign IDs',
       icon: 'user',
       description:
-        'Your user and all related information is yours. Even if Prism goes away, you retain control.',
+        'Your user ID and all related information is yours. Even if Prism goes away, you retain control.',
     },
     {
       header: 'Decentralized Storage',
@@ -23,7 +23,7 @@ const cardContent = [
       header: 'BTC Payments',
       icon: 'btc',
       description:
-        "Receive payments directly for content you share, using the world's most popular Cryptocurrency, Bitcoin",
+        "Receive payments directly for content you share, using the world's most popular cryptocurrency, Bitcoin",
     },
     {
       header: 'Timestamps Built-In',
@@ -145,9 +145,9 @@ export default class LandingPage extends Component {
               <div className="col-12 col-md-4">
                 <p>
                   Don&apos;t want to create an account but still have a post you
-                  want to read? Prism has you covered! Thanks decentralized
-                  nature of Bitcoin, you can access content without ever having
-                  to log in.
+                  want to read? Prism has you covered! Thanks to the
+                  decentralized nature of Bitcoin, you can access content
+                  without ever having to log in.
                 </p>
                 <Link to="/browse">
                   <Button color="black">Latest Posts</Button>
@@ -215,11 +215,11 @@ export default class LandingPage extends Component {
               </div>
               <div className="col order-first order-md-last">
                 <p>
-                  Prism is made with technologies built primarily ontop of
-                  Bitcoin. The primary principle the system was designed around
-                  is that the user should always have the final say over their
-                  data. We believe this creates a better relationship between
-                  the platform and its users.
+                  Prism is made with technologies built primarily on top of
+                  Bitcoin. The driving principle behind our system is that the
+                  user should always have the final say over their data. We
+                  believe this creates a better relationship between the
+                  platform and its users.
                 </p>
               </div>
             </div>
