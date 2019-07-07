@@ -10,6 +10,7 @@ import {
   SET_STATUS,
   SET_MACAROON,
   SET_STATUS_PAID,
+  SET_RATE,
 } from '../constants'
 
 let init = Map({
@@ -51,6 +52,9 @@ export default (state = init, action) => {
 
     case SET_STATUS_PAID:
       return state.merge({ status: 'paid', macaroon: payload })
+
+    case SET_RATE:
+      return state.set('rate', payload)
 
     default:
       return state

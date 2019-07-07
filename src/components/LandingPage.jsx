@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Header, Segment, Card, Icon, Button } from 'semantic-ui-react'
+import { Link } from 'react-router-dom'
 
 const cardContent = [
   [
@@ -8,7 +9,7 @@ const cardContent = [
       header: 'Self-Sovereign IDs',
       icon: 'user',
       description:
-        'Your user and all related information is yours. Even if Prism goes away, you retain control.',
+        'Your user ID and all related information is yours. Even if Prism goes away, you retain control.',
     },
     {
       header: 'Decentralized Storage',
@@ -22,7 +23,7 @@ const cardContent = [
       header: 'BTC Payments',
       icon: 'btc',
       description:
-        "Receive payments directly for content you share, using the world's most popular Cryptocurrency, Bitcoin",
+        "Receive payments directly for content you share, using the world's most popular cryptocurrency, Bitcoin",
     },
     {
       header: 'Timestamps Built-In',
@@ -59,7 +60,7 @@ const techContent = [
   },
 ]
 
-export default class Signin extends Component {
+export default class LandingPage extends Component {
   constructor(props) {
     super(props)
   }
@@ -135,6 +136,29 @@ export default class Signin extends Component {
             </Card.Group>
           </div>
         </div>
+        <div className="row my-5 py-5" style={{ backgroundColor: '#f4f4f4' }}>
+          <Header as="h3" className="col-12">
+            Account-less Access
+          </Header>
+          <div className="col">
+            <div className="row justify-content-center">
+              <div className="col-12 col-md-4">
+                <p>
+                  Don&apos;t want to create an account but still have a post you
+                  want to read? Prism has you covered! Thanks to the
+                  decentralized nature of Bitcoin, you can access content
+                  without ever having to log in.
+                </p>
+                <Link to="/browse">
+                  <Button color="black">Latest Posts</Button>
+                </Link>
+              </div>
+              <div className="col-12 col-md-4">
+                <img src="/invoice-preview.png" />
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="row mt-4 p-4">
           <Segment inverted style={{ width: '100%' }}>
             <Header as="h3" className="col-12">
@@ -190,12 +214,12 @@ export default class Signin extends Component {
                 </Card.Group>
               </div>
               <div className="col order-first order-md-last">
-                <p style={{ fontSize: '1.3rem', lineHeight: '2.5rem' }}>
-                  Prism is made with technologies built primarily ontop of
-                  Bitcoin. The primary principle the system was designed around
-                  is that the user should always have the final say over their
-                  data. We believe this creates a better relationship between
-                  the platform and its users.
+                <p>
+                  Prism is made with technologies built primarily on top of
+                  Bitcoin. The driving principle behind our system is that the
+                  user should always have the final say over their data. We
+                  believe this creates a better relationship between the
+                  platform and its users.
                 </p>
               </div>
             </div>

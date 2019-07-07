@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server",
+    "lint": "eslint src/",
     "pre-build": "cd node_modules/chainpoint-client/ && npm install && npm run build && cd ../../",
     "build": "npm run pre-build && webpack -p",
     "now-build": "npm run build",

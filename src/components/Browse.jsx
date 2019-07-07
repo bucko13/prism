@@ -5,7 +5,7 @@ import { Segment } from 'semantic-ui-react'
 import { DocumentList } from '.'
 import { documentPropTypes } from '../propTypes'
 
-export default class Profile extends PureComponent {
+export default class BrowseComponent extends PureComponent {
   constructor(props) {
     super(props)
   }
@@ -62,7 +62,7 @@ export default class Profile extends PureComponent {
         {/* end the documents list from radiks */}
         {node && node.length ? (
           <div className="row justify-content-center">
-            <div className="col-6">
+            <div className="col-12 col-md-6">
               <Segment color="green">
                 Connect w/ our node:{' '}
                 <span className="enable-select" style={{ overflow: 'hidden' }}>

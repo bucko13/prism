@@ -17,7 +17,7 @@ class PostContainer extends PureComponent {
         title: PropTypes.string.isRequired,
         content: PropTypes.string.isRequired,
         author: PropTypes.string.isRequired,
-        docId: PropTypes.string.isRequired,
+        _id: PropTypes.string.isRequired,
       }),
       location: PropTypes.shape({
         search: PropTypes.string.isRequired,

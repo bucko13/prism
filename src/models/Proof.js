@@ -169,7 +169,7 @@ export default class Proof extends Model {
       } = await post('/api/proofs', {
         hashes: [hash],
       })
-      console.log('proofHandles:', proofHandles)
+
       // we will update with the hash but also initialize with empty
       // proof information.
       // NOTE: This means that saving a Proof with no hash will clear any other information

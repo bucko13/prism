@@ -9,6 +9,7 @@ import {
   SET_STATUS,
   SET_STATUS_PAID,
   SET_MACAROON,
+  SET_RATE,
 } from '../constants'
 import { sleep } from '../../utils'
 
@@ -43,13 +44,22 @@ export function closeModal() {
 
 export function initializeModal(modalState) {
   return async dispatch => {
-    const res = await get('/api/node/exchange')
-    const { BTCUSD: rate } = res.data
     dispatch(clearInvoice())
     dispatch({
       type: INITIALIZE_MODAL,
-      payload: { ...modalState, visible: true, rate },
+      payload: { ...modalState, visible: true },
     })
+    const res = await get('/api/node/exchange')
+    const { BTCUSD: rate } = res.data
+    dispatch(setRate(rate))
+  }
+}
+
+function setRate(rate) {
+  assert(typeof rate === 'number')
+  return {
+    type: SET_RATE,
+    payload: rate,
   }
 }
 
@@ -57,7 +67,7 @@ export function requestInvoice() {
   return async (dispatch, getState) => {
     let time = getState().invoice.get('seconds')
     const title = getState().documents.getIn(['currentDoc', 'title'])
-    const docId = getState().documents.getIn(['currentDoc', 'docId'])
+    const docId = getState().documents.getIn(['currentDoc', '_id'])
     const nodeUri = getState().documents.getIn(['currentDoc', 'node'])
 
     if (typeof seconds !== 'number') time = parseInt(time, 10)

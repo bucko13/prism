@@ -8,11 +8,11 @@ import { get } from 'axios'
 
 import {
   AddDocContainer,
-  HomeContainer,
   ProfileContainer,
   PostContainer,
+  BrowseContainer,
 } from '../containers'
-import Signin from './Signin.jsx'
+import { LandingPage } from '.'
 
 const appConfig = new AppConfig(['store_write', 'publish_data'])
 const userSession = new UserSession({ appConfig: appConfig })
@@ -98,7 +98,7 @@ export default class App extends Component {
             </Link>
             {!userSession.isUserSignedIn() ? (
               <React.Fragment>
-                <Link to="/" className="item">
+                <Link to="/browse" className="item">
                   <Menu.Item>Browse</Menu.Item>
                 </Link>
                 <Menu.Item onClick={e => this.handleSignIn(e)}>
@@ -113,7 +113,7 @@ export default class App extends Component {
                 <Link to="/add-doc" className="item">
                   <Menu.Item>Upload</Menu.Item>
                 </Link>
-                <Link to="/" className="item">
+                <Link to="/browse" className="item">
                   <Menu.Item>Browse</Menu.Item>
                 </Link>
                 <Menu.Item onClick={e => this.handleSignOut(e)}>
@@ -140,50 +140,64 @@ export default class App extends Component {
                   />
                 </Menu.Item>
               </Menu>
-              {!userSession.isUserSignedIn() ? (
-                <Signin
-                  userSession={userSession}
-                  handleSignIn={this.handleSignIn}
-                />
-              ) : (
-                <Switch>
+              <Switch>
+                {!userSession.isUserSignedIn() ? (
                   <Route
                     exact
                     path="/"
-                    render={routeProps => (
-                      <HomeContainer
+                    render={() => (
+                      <LandingPage
                         userSession={userSession}
-                        handleSignOut={this.handleSignOut}
-                        {...routeProps}
+                        handleSignIn={this.handleSignIn}
                       />
                     )}
                   />
-                  <Route
-                    exact
-                    path="/profile"
-                    render={routeProps => (
-                      <ProfileContainer
-                        userSession={userSession}
-                        handleSignOut={this.handleSignOut}
-                        {...routeProps}
-                      />
-                    )}
-                  />
-                  <Route
-                    path="/post"
-                    render={routeProps => <PostContainer {...routeProps} />}
-                  />
-                  <Route
-                    path="/add-doc"
-                    render={routeProps => (
-                      <AddDocContainer
-                        userSession={userSession}
-                        {...routeProps}
-                      />
-                    )}
-                  />
-                </Switch>
-              )}
+                ) : (
+                  <React.Fragment>
+                    {/* These are the routes that are only available if logged in*/}
+                    <Route
+                      exact
+                      path="/"
+                      render={routeProps => (
+                        <BrowseContainer
+                          userSession={userSession}
+                          handleSignOut={this.handleSignOut}
+                          {...routeProps}
+                        />
+                      )}
+                    />
+                    <Route
+                      exact
+                      path="/profile"
+                      render={routeProps => (
+                        <ProfileContainer
+                          userSession={userSession}
+                          handleSignOut={this.handleSignOut}
+                          {...routeProps}
+                        />
+                      )}
+                    />
+                    <Route
+                      path="/add-doc"
+                      render={routeProps => (
+                        <AddDocContainer
+                          userSession={userSession}
+                          {...routeProps}
+                        />
+                      )}
+                    />
+                  </React.Fragment>
+                )}
+                <Route
+                  exact
+                  path="/browse"
+                  render={routeProps => <BrowseContainer {...routeProps} />}
+                />
+                <Route
+                  path="/post"
+                  render={routeProps => <PostContainer {...routeProps} />}
+                />
+              </Switch>
             </div>
           </Sidebar.Pusher>
         </Sidebar.Pushable>

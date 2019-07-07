@@ -65,6 +65,30 @@ async function getDocument(id) {
   })
 }
 
+async function getDocumentsList(limit = 10) {
+  if (typeof limit === 'string') limit = parseInt(limit, 10)
+
+  const mongo = await getDB(process.env.MONGODB_URI)
+  const radiksData = mongo.collection(COLLECTION)
+  return await radiksData
+    .find(
+      {
+        radiksType: 'Document',
+      },
+      {
+        limit,
+        projection: {
+          title: 1,
+          author: 1,
+          proofId: 1,
+          rawProof: 1,
+          proofData: 1,
+        },
+      }
+    )
+    .toArray()
+}
+
 async function getUsersList() {
   const mongo = await getDB(process.env.MONGODB_URI)
   const radiksData = mongo.collection(COLLECTION)
@@ -73,6 +97,15 @@ async function getUsersList() {
       radiksType: 'BlockstackUser',
     })
     .toArray()
+}
+
+async function getProof(id) {
+  const mongo = await getDB(process.env.MONGODB_URI)
+  const radiksData = mongo.collection(COLLECTION)
+  return await radiksData.findOne({
+    radiksType: 'Proof',
+    _id: id,
+  })
 }
 
 /*
@@ -154,7 +187,9 @@ async function decryptWithAES(data, keyId) {
 
 exports.getAppUserSession = getAppUserSession
 exports.getPublicKey = getPublicKey
+exports.getDocumentsList = getDocumentsList
 exports.getUsersList = getUsersList
+exports.getProof = getProof
 exports.getUserKey = getUserKey
 exports.getDocument = getDocument
 exports.validateMacaroons = validateMacaroons

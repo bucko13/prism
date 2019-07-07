@@ -5,6 +5,7 @@ import {
   SET_CURRENT_DOC,
   CLEAR_CURRENT_DOC,
   SET_CURRENT_CONTENT,
+  UPDATE_DOCUMENT,
 } from '../constants'
 
 const init = Map({
@@ -12,7 +13,7 @@ const init = Map({
     title: '',
     content: '',
     author: '',
-    docId: '',
+    _id: '',
     locked: true,
     node: '', // uri of payment node
     // the following will also be saved on the document list items
@@ -43,6 +44,25 @@ export default (state = init, action) => {
       return state.mergeDeep({
         currentDoc: { content: content, locked: locked },
       })
+    }
+
+    case UPDATE_DOCUMENT: {
+      const { docId, data } = payload
+      // we need to replace a doc with the matching id in the array
+      const index = state
+        .get('documentList')
+        .findIndex(doc => doc._id === docId)
+      let documentList = state.get('documentList')
+
+      // skip if not found
+      if (index < 0) return state
+
+      documentList = documentList.update(index, oldDoc => ({
+        ...oldDoc,
+        ...data,
+      }))
+
+      return state.set('documentList', documentList)
     }
 
     default:

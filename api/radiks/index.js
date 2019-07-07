@@ -5,8 +5,10 @@ const {
   getPublicKey,
   getUsersList,
   getDocument,
+  getDocumentsList,
   validateMacaroons,
   decryptWithAES,
+  getProof,
 } = require('./helpers')
 
 let RadiksController
@@ -85,6 +87,20 @@ Make sure invoice is paid and you have received a discharge macaroon',
 
   const decryptedContent = await decryptWithAES(data, keyId)
   res.json({ ...document, decryptedContent: decryptedContent.toString() })
+})
+
+// get documents list without radiks client on the front end
+// useful for providing documents to users that are not signed in
+app.get('/api/radiks/documents', async (req, res) => {
+  const { limit = 10 } = req.query
+  const documents = await getDocumentsList(limit)
+  res.json({ documents })
+})
+
+app.get('/api/radiks/proof', async (req, res) => {
+  const { id } = req.query
+  const proof = await getProof(id)
+  res.json(proof)
 })
 
 app.get('/api/radiks/users', async (req, res) => {

@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 
 import { documentActions, appActions } from '../store/actions'
-import { Home } from '../components'
+import { BrowseComponent } from '../components'
 
 function mapStateToProps(state) {
   return {
@@ -30,4 +30,4 @@ function mapDispatchToProps(dispatch) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Home)
+)(BrowseComponent)

@@ -6,7 +6,7 @@ import { Segment, Icon, Popup, List, Header } from 'semantic-ui-react'
 import { documentPropTypes, proofDataPropTypes } from '../propTypes'
 
 function DocumentLink({ doc }) {
-  const { docId, title, proofId, proofData, author } = doc
+  const { _id, title, proofId, proofData, author } = doc
 
   return (
     <Segment
@@ -19,7 +19,7 @@ function DocumentLink({ doc }) {
           <Link
             to={{
               pathname: '/post',
-              search: `?id=${docId}`,
+              search: `?id=${_id}`,
               query: doc,
             }}
             style={{ color: 'white' }}
