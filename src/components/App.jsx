@@ -111,7 +111,7 @@ export default class App extends Component {
                   <Menu.Item>Profile</Menu.Item>
                 </Link>
                 <Link to="/add-doc" className="item">
-                  <Menu.Item>Upload</Menu.Item>
+                  <Menu.Item>New Post</Menu.Item>
                 </Link>
                 <Link to="/browse" className="item">
                   <Menu.Item>Browse</Menu.Item>
@@ -185,6 +185,15 @@ export default class App extends Component {
                           {...routeProps}
                         />
                       )}
+                    />
+                    <Route
+                      exact
+                      path="/browse"
+                      render={routeProps => <BrowseContainer {...routeProps} />}
+                    />
+                    <Route
+                      path="/post"
+                      render={routeProps => <PostContainer {...routeProps} />}
                     />
                   </React.Fragment>
                 )}
