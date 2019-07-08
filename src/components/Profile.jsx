@@ -31,7 +31,6 @@ export default class Profile extends PureComponent {
     return {
       userSession: PropTypes.object,
       getOwnDocuments: PropTypes.func.isRequired,
-      updateDocumentProofs: PropTypes.func.isRequired,
       clearDocumentList: PropTypes.func.isRequired,
       documents: PropTypes.arrayOf(documentPropTypes).isRequired,
     }
@@ -47,7 +46,7 @@ export default class Profile extends PureComponent {
     })
     setTimeout(() => {
       this.setState({ loading: false })
-    }, 4000)
+    }, 7000)
   }
 
   componentWillUnmount() {
@@ -89,7 +88,7 @@ export default class Profile extends PureComponent {
           </span>
           !
         </h1>
-        <DocumentList documents={documents} loading={loading} />
+        <DocumentList documents={documents} loading={loading} edit />
         {documents && documents.length ? (
           <Button
             color="red"

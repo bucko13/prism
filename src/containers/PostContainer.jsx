@@ -2,8 +2,10 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Loader, Header, Dimmer } from 'semantic-ui-react'
+import qs from 'qs'
 
 import { Post } from '../components'
+import { AddOrEditDocContainer } from '.'
 import { documentActions, invoiceActions } from '../store/actions'
 
 class PostContainer extends PureComponent {
@@ -44,9 +46,8 @@ class PostContainer extends PureComponent {
       setCurrentDoc,
       location: { search },
     } = this.props
-    let index = search.indexOf('id=')
-    const docId = location.search.slice(index + 3)
-    setCurrentDoc(docId)
+    const { id } = qs.parse(search, { ignoreQueryPrefix: true })
+    setCurrentDoc(id)
   }
 
   componentWillUnmount() {
@@ -56,6 +57,7 @@ class PostContainer extends PureComponent {
   render() {
     const {
       document,
+      location,
       getContent,
       seconds,
       modalOpen,
@@ -77,7 +79,11 @@ class PostContainer extends PureComponent {
           <Loader size="large" />
         </Dimmer>
       )
+    const { search } = location
 
+    const { edit } = qs.parse(search, { ignoreQueryPrefix: true })
+
+    if (edit) return <AddOrEditDocContainer edit docId={document._id} />
     // otherwise show the Post component with the document information
     // TODO: setup pagination for this to enable the paywall functionality
     return (
