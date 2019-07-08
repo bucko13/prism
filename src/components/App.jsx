@@ -7,7 +7,7 @@ import { configure, User, getConfig } from 'radiks'
 import { get } from 'axios'
 
 import {
-  AddDocContainer,
+  AddOrEditDocContainer,
   ProfileContainer,
   PostContainer,
   BrowseContainer,
@@ -180,7 +180,7 @@ export default class App extends Component {
                     <Route
                       path="/add-doc"
                       render={routeProps => (
-                        <AddDocContainer
+                        <AddOrEditDocContainer
                           userSession={userSession}
                           {...routeProps}
                         />

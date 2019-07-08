@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { Button, Input } from 'semantic-ui-react'
 
-export default class AddDocComponent extends PureComponent {
+export default class AddOrEditDocComponent extends PureComponent {
   constructor(props) {
     super(props)
   }

@@ -8,9 +8,9 @@ import * as Showdown from 'showdown'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 
 import { Document, Proof } from '../models'
-import { AddDocComponent } from '../components'
+import { AddOrEditDoc } from '../components'
 
-class AddDocContainer extends PureComponent {
+class AddOrEditDocContainer extends PureComponent {
   document = null
 
   constructor(props) {
@@ -169,7 +169,7 @@ class AddDocContainer extends PureComponent {
         ) : (
           ''
         )}
-        <AddDocComponent
+        <AddOrEditDoc
           editor={editor}
           title={title}
           author={author}
@@ -195,15 +195,4 @@ function mapStateToProps(state) {
   }
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    // updateText: () => {
-    //   dispatch(readerActions.updateText())
-    // },
-  }
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(AddDocContainer)
+export default connect(mapStateToProps)(AddOrEditDocContainer)

@@ -5,7 +5,7 @@ import { Loader, Header, Dimmer } from 'semantic-ui-react'
 import qs from 'qs'
 
 import { Post } from '../components'
-import { AddDocContainer } from '.'
+import { AddOrEditDocContainer } from '.'
 import { documentActions, invoiceActions } from '../store/actions'
 
 class PostContainer extends PureComponent {
@@ -83,8 +83,7 @@ class PostContainer extends PureComponent {
 
     const { edit } = qs.parse(search, { ignoreQueryPrefix: true })
 
-    if (edit)
-      return (<AddDocContainer edit docId={document._id} />)
+    if (edit) return <AddOrEditDocContainer edit docId={document._id} />
     // otherwise show the Post component with the document information
     // TODO: setup pagination for this to enable the paywall functionality
     return (
