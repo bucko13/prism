@@ -7,7 +7,7 @@ import { Header, Loader, Dimmer } from 'semantic-ui-react'
 import * as Showdown from 'showdown'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 
-import { Document } from '../models'
+import { Document, Proof } from '../models'
 import { AddDocComponent } from '../components'
 
 class AddDocContainer extends PureComponent {
@@ -74,6 +74,34 @@ class AddDocContainer extends PureComponent {
     }
   }
 
+  /*
+   * Given a proof Id, we want to update the proof model that is saved in Radix
+   * by getting a new hash and submitting it (automatically with Proof.submitHash())
+   */
+  async updateProof() {
+    const { proofId, _id } = this.document.attrs
+
+    // if no proofId then we need to create it from scratch
+    // this will save it with our associated document in radiks
+    // TODO: may need to update the state though?
+    if (!proofId) {
+      const proof = new Proof({ docId: _id })
+      await proof.save()
+      assert(
+        proof.attrs.proofHandles,
+        'Could not retrieve proofs from Chainpoint'
+      )
+    } else {
+      // if we have a proofId then we need to get the proof w/ that id and update
+      const proof = await Proof.findById(proofId)
+
+      // when no hash is passed as an arg, it will generate a new one by retrieving
+      // the document from radiks and re-creating the hash to submit
+      await proof.submitHash()
+      await proof.save()
+    }
+  }
+
   handleValueChange(name, value) {
     this.setState({ [name]: value })
   }
@@ -102,6 +130,7 @@ class AddDocContainer extends PureComponent {
     this.setState({ loading: true }, async () => {
       await this.document.encryptContent()
       await this.document.save()
+      await this.updateProof()
       window.location = window.location.origin + '/profile'
     })
   }

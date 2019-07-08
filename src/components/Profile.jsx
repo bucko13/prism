@@ -31,7 +31,6 @@ export default class Profile extends PureComponent {
     return {
       userSession: PropTypes.object,
       getOwnDocuments: PropTypes.func.isRequired,
-      updateDocumentProofs: PropTypes.func.isRequired,
       clearDocumentList: PropTypes.func.isRequired,
       documents: PropTypes.arrayOf(documentPropTypes).isRequired,
     }
