@@ -46,7 +46,7 @@ export default class Profile extends PureComponent {
     })
     setTimeout(() => {
       this.setState({ loading: false })
-    }, 4000)
+    }, 7000)
   }
 
   componentWillUnmount() {

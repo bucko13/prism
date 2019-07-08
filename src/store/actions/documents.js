@@ -175,38 +175,42 @@ export function getContent() {
 export function updateDocumentProofs() {
   return async (dispatch, getState) => {
     const documents = getState().documents.get('documentList')
-    const updated = []
-    for (let doc of documents) {
-      // first if there's no proofId then we need to create a new proof
-      // and save it w/ the document this will start the anchoring process
-      try {
-        if (!doc.proofId) {
-          const proof = new Proof({ docId: doc._id })
-          await proof.save()
-          if (!proof.attrs.proofHandles)
-            throw new Error('Could not retrieve proofs from Chainpoint')
-          updated.push({ ...doc, proofId: proof._id })
-        } else if (!doc.proofData) {
-          // if no proof data then we need to retrieve the associated proof
-          const proof = await Proof.findById(doc.proofId)
-          // if the proof has no raw proof attr attached to it
-          // then we need to get that assuming it does have a proof handles
-          if (!proof.attrs.proof) await proof.getProofs()
+    return Promise.all(
+      documents.map(async doc => {
+        // first if there's no proofId then we need to create a new proof
+        // and save it w/ the document this will start the anchoring process
+        try {
+          if (!doc.proofId) {
+            const proof = new Proof({ docId: doc._id })
+            await proof.save()
+            if (!proof.attrs.proofHandles)
+              throw new Error('Could not retrieve proofs from Chainpoint')
+            return dispatch(updateDocument(doc._id, { proofId: proof._id }))
+          } else if (!doc.proofData) {
+            // if no proof data then we need to retrieve the associated proof
+            const proof = await Proof.findById(doc.proofId)
+            // if the proof has no raw proof attr attached to it
+            // then we need to get that assuming it does have a proof handles
+            if (!proof.attrs.proof) await proof.getProofs()
 
-          // evaluate the raw proof to extract the relevant data
-          const proofData = proof.evaluateProof()
-          updated.push({ ...doc, rawProof: proof.attrs.proof, proofData })
+            // evaluate the raw proof to extract the relevant data
+            const proofData = proof.evaluateProof()
+            return dispatch(
+              updateDocument(doc._id, {
+                rawProof: proof.attrs.proof,
+                proofData,
+              })
+            )
+          }
+        } catch (e) {
+          //eslint-disable-next-line no-console
+          console.error(
+            `Problem updating document proof for ${doc.title}: ${e.message}`
+          )
+          return
         }
-      } catch (e) {
-        //eslint-disable-next-line no-console
-        console.error(
-          `Problem updating document proof for ${doc.title}: ${e.message}`
-        )
-        updated.push(doc)
-      }
-    }
-
-    if (updated.length) dispatch(setDocumentList(updated))
+      })
+    )
   }
 }
 
