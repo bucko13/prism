@@ -5,7 +5,7 @@ import { Segment, Icon, Popup, List, Header } from 'semantic-ui-react'
 
 import { documentPropTypes, proofDataPropTypes } from '../propTypes'
 
-function DocumentLink({ doc }) {
+function DocumentLink({ doc, edit }) {
   const { _id, title, proofId, proofData, author } = doc
 
   return (
@@ -19,7 +19,7 @@ function DocumentLink({ doc }) {
           <Link
             to={{
               pathname: '/post',
-              search: `?id=${_id}`,
+              search: `?id=${_id}${edit ? '&edit=true' : ''}`,
               query: doc,
             }}
             style={{ color: 'white' }}
@@ -37,6 +37,7 @@ function DocumentLink({ doc }) {
 
 DocumentLink.propTypes = {
   doc: documentPropTypes,
+  edit: PropTypes.bool,
 }
 
 function ProofIcon({ proofId, proofData }) {

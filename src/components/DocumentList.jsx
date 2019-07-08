@@ -5,7 +5,11 @@ import { Dimmer, Loader } from 'semantic-ui-react'
 import { documentPropTypes } from '../propTypes'
 import { DocumentLink } from '.'
 
-export default function DocumentList({ documents, loading = true }) {
+export default function DocumentList({
+  documents,
+  loading = true,
+  edit = false,
+}) {
   return (
     <div
       className="docs-list row justify-content-center"
@@ -13,7 +17,9 @@ export default function DocumentList({ documents, loading = true }) {
     >
       <div className="col-12 col-md-6">
         {documents.length ? (
-          documents.map((doc, index) => <DocumentLink key={index} doc={doc} />)
+          documents.map((doc, index) => (
+            <DocumentLink key={index} doc={doc} edit={edit} />
+          ))
         ) : loading ? (
           <Dimmer active inverted>
             <Loader size="large" />
@@ -29,4 +35,5 @@ export default function DocumentList({ documents, loading = true }) {
 DocumentList.propTypes = {
   documents: PropTypes.arrayOf(documentPropTypes),
   loading: PropTypes.bool,
+  edit: PropTypes.bool,
 }

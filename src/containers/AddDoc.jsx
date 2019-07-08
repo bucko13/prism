@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
+import assert from 'bsert'
 import { connect } from 'react-redux'
 import ReactMde from 'react-mde'
+import { Header, Loader, Dimmer } from 'semantic-ui-react'
 import * as Showdown from 'showdown'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 
@@ -9,12 +11,19 @@ import { Document } from '../models'
 import { AddDocComponent } from '../components'
 
 class AddDocContainer extends PureComponent {
+  document = null
+
   constructor(props) {
     super(props)
     this.state = {
       text: 'Add your text here',
+      author: '',
       title: '',
       tab: 'write',
+      caveatKey: '',
+      node: '',
+      requirePayment: true,
+      loading: true,
     }
     this.converter = new Showdown.Converter({
       tables: true,
@@ -30,6 +39,38 @@ class AddDocContainer extends PureComponent {
       userId: PropTypes.string,
       name: PropTypes.string,
       aesKey: PropTypes.string,
+      edit: PropTypes.bool,
+      docId: PropTypes.string,
+    }
+  }
+
+  async componentDidMount() {
+    const { edit, docId } = this.props
+
+    if (edit) {
+      assert(typeof docId === 'string', 'Need a document id to edit post')
+      this.document = await Document.findById(docId)
+      assert(this.document, 'No document matches that id')
+      const {
+        content,
+        title,
+        author,
+        node,
+        caveatKey,
+        requirePayment = true,
+      } = this.document.attrs
+
+      this.setState({
+        text: content,
+        title,
+        author,
+        node,
+        caveatKey,
+        requirePayment,
+        loading: false,
+      })
+    } else {
+      this.setState({ loading: false })
     }
   }
 
@@ -43,22 +84,39 @@ class AddDocContainer extends PureComponent {
 
   async handleSubmit() {
     let { title, text, author, node, caveatKey } = this.state
-    const { name, userId } = this.props
+    const { name, userId, edit } = this.props
     if (!author) author = name || 'Anonymous'
-    const doc = new Document({
+    const attrs = {
       title,
       content: text,
       author,
       userId,
       node,
       caveatKey,
+    }
+
+    // if we are in an edit screen then we want to update the current document
+    if (edit) this.document.update(attrs)
+    // otherwise current document is still null and we want to set it to a new value
+    else this.document = new Document(attrs)
+    this.setState({ loading: true }, async () => {
+      await this.document.encryptContent()
+      await this.document.save()
+      window.location = window.location.origin + '/profile'
     })
-    await doc.encryptContent()
-    await doc.save()
-    window.location = window.location.origin
   }
 
   render() {
+    const { edit } = this.props
+    const {
+      loading,
+      title,
+      author,
+      node,
+      caveatKey,
+      requirePayment,
+    } = this.state
+
     const editor = (
       <ReactMde
         onChange={value => this.handleValueChange('text', value)}
@@ -71,13 +129,30 @@ class AddDocContainer extends PureComponent {
         className="col"
       />
     )
+
     return (
-      <AddDocComponent
-        editor={editor}
-        title={this.state.title}
-        handleValueChange={(name, value) => this.handleValueChange(name, value)}
-        handleSubmit={() => this.handleSubmit()}
-      />
+      <React.Fragment>
+        <Header as="h2">{edit ? 'Edit Document' : 'Add New Document'}</Header>
+        {loading ? (
+          <Dimmer active inverted>
+            <Loader size="large" />
+          </Dimmer>
+        ) : (
+          ''
+        )}
+        <AddDocComponent
+          editor={editor}
+          title={title}
+          author={author}
+          requirePayment={requirePayment}
+          caveatKey={caveatKey}
+          node={node}
+          handleValueChange={(name, value) =>
+            this.handleValueChange(name, value)
+          }
+          handleSubmit={() => this.handleSubmit()}
+        />
+      </React.Fragment>
     )
   }
 }

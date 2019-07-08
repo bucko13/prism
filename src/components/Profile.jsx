@@ -89,7 +89,7 @@ export default class Profile extends PureComponent {
           </span>
           !
         </h1>
-        <DocumentList documents={documents} loading={loading} />
+        <DocumentList documents={documents} loading={loading} edit />
         {documents && documents.length ? (
           <Button
             color="red"

@@ -63,6 +63,7 @@
     "immutable": "^4.0.0-rc.12",
     "prettier": "^1.18.2",
     "prop-types": "^15.7.2",
+    "qs": "^6.7.0",
     "radiks": "^0.2.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
