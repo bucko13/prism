@@ -123,7 +123,10 @@ class AddOrEditDocContainer extends PureComponent {
     )
     if (confirm) {
       this.setState({ loading: true }, async () => {
-        await this.document.destroy()
+        const proof = await Proof.findById(this.document.attrs.proofId)
+        const promises = [this.document.destroy()]
+        if (proof) promises.push(proof.destroy())
+        await Promise.all(promises)
         window.location = window.location.origin + '/profile'
       })
     }

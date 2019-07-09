@@ -3,7 +3,7 @@ import { Person } from 'blockstack'
 import PropTypes from 'prop-types'
 import { Button } from 'semantic-ui-react'
 
-import { Document } from '../models'
+import { Document, Proof } from '../models'
 import { DocumentList } from '.'
 import { documentPropTypes } from '../propTypes'
 
@@ -58,13 +58,17 @@ export default class Profile extends PureComponent {
   async deleteAllPosts() {
     const myDocs = await Document.fetchOwnList()
     const confirm = window.confirm(
-      `Are you sure you want to delete all (${myDocs.length}) posts?`
+      `Are you sure you want to delete all posts (${myDocs.length})?`
     )
     if (!confirm) return
 
+    const promises = []
     for (let doc of myDocs) {
-      await doc.destroy()
+      const proof = await Proof.findById(doc.attrs.proofId)
+      promises.push(doc.destroy())
+      if (proof) promises.push(proof.destroy())
     }
+    await Promise.all(promises)
     this.props.getOwnDocuments()
   }
 

@@ -119,7 +119,7 @@ Make sure you pass userId attr when saving a Document model.'
     if (this.attrs.aesKey) return
 
     const user = await User.findById(this.attrs.userId)
-
+    assert(user, 'No associated user found')
     // fetch the key information from the server
     const key = await Key.findById(user.attrs.keyId)
     if (!key)

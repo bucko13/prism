@@ -26,13 +26,13 @@ export function getDocumentList(count = 10) {
       documents = await Document.fetchList({
         limit: count,
       })
-      dispatch(setDocsFromModelList(documents))
+      dispatch(setDocsFromModelList(documents.reverse()))
     } else {
       // if user is not signed in, we want to use the server's proxy
       // endpoint for retrieving documents rather than radiks
       const { data } = await get(`/api/radiks/documents?limit=${count}`)
       if (!(data && data.documents)) return
-      documents = data.documents
+      documents = data.documents.reverse()
       dispatch(setDocumentList(documents))
     }
     dispatch(getProofs())
@@ -44,7 +44,7 @@ export function getOwnDocuments(count = 10) {
     const documents = await Document.fetchOwnList({
       limit: count,
     })
-    dispatch(setDocsFromModelList(documents))
+    dispatch(setDocsFromModelList(documents.reverse()))
     dispatch(updateDocumentProofs())
   }
 }
