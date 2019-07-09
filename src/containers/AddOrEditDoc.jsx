@@ -60,6 +60,12 @@ class AddOrEditDocContainer extends PureComponent {
         requirePayment = true,
       } = this.document.attrs
 
+      // under some very narrow circumstances
+      // the content will still be encrypted, for example if the user uploaded
+      // the content from localhost but to the shared database (which gets mixed up by radiks).
+      // this catches that error
+      if (typeof content !== 'string') return this.setState({ error: true })
+
       this.setState({
         text: content,
         title,
@@ -79,13 +85,13 @@ class AddOrEditDocContainer extends PureComponent {
    * by getting a new hash and submitting it (automatically with Proof.submitHash())
    */
   async updateProof() {
-    const { proofId, _id } = this.document.attrs
+    const { proofId } = this.document.attrs
 
     // if no proofId then we need to create it from scratch
     // this will save it with our associated document in radiks
     // TODO: may need to update the state though?
     if (!proofId) {
-      const proof = new Proof({ docId: _id })
+      const proof = new Proof({ docId: this.document._id })
       await proof.save()
       assert(
         proof.attrs.proofHandles,
@@ -144,6 +150,7 @@ class AddOrEditDocContainer extends PureComponent {
       node,
       caveatKey,
       requirePayment,
+      error,
     } = this.state
 
     const editor = (
@@ -158,7 +165,13 @@ class AddOrEditDocContainer extends PureComponent {
         className="col"
       />
     )
-
+    if (error)
+      return (
+        <div>
+          It appears there was a problem retrieving the content for this post
+          for editing. Check with the system administrator for more information.
+        </div>
+      )
     return (
       <React.Fragment>
         <Header as="h2">{edit ? 'Edit Document' : 'Add New Document'}</Header>
