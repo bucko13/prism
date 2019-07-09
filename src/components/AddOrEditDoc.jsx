@@ -18,6 +18,7 @@ export default class AddOrEditDocComponent extends PureComponent {
       node: PropTypes.string,
       caveatKey: PropTypes.string,
       edit: PropTypes.bool, // whether or not we are in edit or add mode
+      userId: PropTypes.string,
     }
   }
 
@@ -32,6 +33,7 @@ export default class AddOrEditDocComponent extends PureComponent {
       node = '',
       caveatKey = '',
       edit,
+      userId,
     } = this.props
     return (
       <div className="row justify-content-center">
@@ -105,6 +107,8 @@ export default class AddOrEditDocComponent extends PureComponent {
           )}
           <Button
             className="col-sm-2  mb-3 mb-sm-0 ml-0 ml-sm-3"
+            disabled={userId && userId.length ? false : true}
+            loading={userId && userId.length ? false : true}
             onClick={() => handleSubmit()}
           >
             Submit

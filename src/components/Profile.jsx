@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import { Person } from 'blockstack'
 import PropTypes from 'prop-types'
-import { Button } from 'semantic-ui-react'
+import { Button, Dimmer, Loader } from 'semantic-ui-react'
 
 import { Document, Proof } from '../models'
 import { DocumentList } from '.'
@@ -62,14 +62,19 @@ export default class Profile extends PureComponent {
     )
     if (!confirm) return
 
-    const promises = []
-    for (let doc of myDocs) {
-      const proof = await Proof.findById(doc.attrs.proofId)
-      promises.push(doc.destroy())
-      if (proof) promises.push(proof.destroy())
-    }
-    await Promise.all(promises)
-    this.props.getOwnDocuments()
+    this.setState({ loading: true }, async () => {
+      const promises = []
+      for (let doc of myDocs) {
+        const proof = await Proof.findById(doc.attrs.proofId)
+        promises.push(doc.destroy())
+        if (proof) promises.push(proof.destroy())
+      }
+      await Promise.all(promises)
+      this.props.clearDocumentList()
+      this.setState({ loading: false }, () => {
+        this.props.getOwnDocuments()
+      })
+    })
   }
 
   render() {
@@ -92,6 +97,13 @@ export default class Profile extends PureComponent {
           </span>
           !
         </h1>
+        {loading && documents.length ? (
+          <Dimmer active inverted>
+            <Loader size="large" />
+          </Dimmer>
+        ) : (
+          ''
+        )}
         <DocumentList documents={documents} loading={loading} edit />
         {documents && documents.length ? (
           <Button

@@ -9,6 +9,7 @@ import 'react-mde/lib/styles/css/react-mde-all.css'
 
 import { Document, Proof } from '../models'
 import { AddOrEditDoc } from '../components'
+import { appActions } from '../store/actions'
 
 class AddOrEditDocContainer extends PureComponent {
   document = null
@@ -41,12 +42,13 @@ class AddOrEditDocContainer extends PureComponent {
       aesKey: PropTypes.string,
       edit: PropTypes.bool,
       docId: PropTypes.string,
+      saveUser: PropTypes.func.isRequired,
     }
   }
 
   async componentDidMount() {
-    const { edit, docId } = this.props
-
+    const { edit, docId, userId, saveUser } = this.props
+    if (!userId) await saveUser()
     if (edit) {
       assert(typeof docId === 'string', 'Need a document id to edit post')
       this.document = await Document.findById(docId)
@@ -91,20 +93,34 @@ class AddOrEditDocContainer extends PureComponent {
     // this will save it with our associated document in radiks
     // TODO: may need to update the state though?
     if (!proofId) {
-      const proof = new Proof({ docId: this.document._id })
-      await proof.save()
-      assert(
-        proof.attrs.proofHandles,
-        'Could not retrieve proofs from Chainpoint'
+      this.setState(
+        {
+          loadingMessage: 'Creating a new proof...',
+        },
+        async () => {
+          const proof = new Proof({ docId: this.document._id })
+          await proof.save()
+          assert(
+            proof.attrs.proofHandles,
+            'Could not retrieve proofs from Chainpoint'
+          )
+        }
       )
     } else {
-      // if we have a proofId then we need to get the proof w/ that id and update
-      const proof = await Proof.findById(proofId)
+      this.setState(
+        {
+          loadingMessage: 'Updating proof anchor...',
+        },
+        async () => {
+          // if we have a proofId then we need to get the proof w/ that id and update
+          const proof = await Proof.findById(proofId)
 
-      // when no hash is passed as an arg, it will generate a new one by retrieving
-      // the document from radiks and re-creating the hash to submit
-      await proof.submitHash()
-      await proof.save()
+          // when no hash is passed as an arg, it will generate a new one by retrieving
+          // the document from radiks and re-creating the hash to submit
+          await proof.submitHash()
+          await proof.save()
+        }
+      )
     }
   }
 
@@ -127,7 +143,9 @@ class AddOrEditDocContainer extends PureComponent {
         const promises = [this.document.destroy()]
         if (proof) promises.push(proof.destroy())
         await Promise.all(promises)
-        window.location = window.location.origin + '/profile'
+        this.setState({ loadingMessage: 'All done!' }, () => {
+          window.location = window.location.origin + '/profile'
+        })
       })
     }
   }
@@ -139,6 +157,7 @@ class AddOrEditDocContainer extends PureComponent {
   async handleSubmit() {
     let { title, text, author, node, caveatKey } = this.state
     const { name, userId, edit } = this.props
+
     if (!author) author = name || 'Anonymous'
     const attrs = {
       title,
@@ -153,16 +172,28 @@ class AddOrEditDocContainer extends PureComponent {
     if (edit) this.document.update(attrs)
     // otherwise current document is still null and we want to set it to a new value
     else this.document = new Document(attrs)
-    this.setState({ loading: true }, async () => {
-      await this.document.encryptContent()
-      await this.document.save()
-      await this.updateProof()
-      window.location = window.location.origin + '/profile'
-    })
+    this.setState(
+      { loading: true, loadingMessage: 'Encrypting Content...' },
+      async () => {
+        await this.document.encryptContent()
+        this.setState({ loadingMessage: 'Saving Document...' }, async () => {
+          await this.document.save()
+          this.setState(
+            {
+              loadingMessage: 'Creating hash of content...',
+            },
+            async () => {
+              await this.updateProof()
+              window.location = window.location.origin + '/profile'
+            }
+          )
+        })
+      }
+    )
   }
 
   render() {
-    const { edit } = this.props
+    const { edit, userId } = this.props
     const {
       loading,
       title,
@@ -171,6 +202,7 @@ class AddOrEditDocContainer extends PureComponent {
       caveatKey,
       requirePayment,
       error,
+      loadingMessage = null,
     } = this.state
 
     const editor = (
@@ -197,7 +229,7 @@ class AddOrEditDocContainer extends PureComponent {
         <Header as="h2">{edit ? 'Edit Document' : 'Add New Document'}</Header>
         {loading ? (
           <Dimmer active inverted>
-            <Loader size="large" />
+            <Loader size="large">{loadingMessage && loadingMessage}</Loader>
           </Dimmer>
         ) : (
           ''
@@ -207,6 +239,7 @@ class AddOrEditDocContainer extends PureComponent {
           edit={edit}
           title={title}
           author={author}
+          userId={userId}
           requirePayment={requirePayment}
           caveatKey={caveatKey}
           node={node}
@@ -230,4 +263,15 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(AddOrEditDocContainer)
+function mapDispatchToProps(dispatch) {
+  return {
+    saveUser: () => {
+      dispatch(appActions.saveUser())
+    },
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AddOrEditDocContainer)
