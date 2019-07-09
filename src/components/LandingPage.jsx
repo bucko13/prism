@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Header, Segment, Card, Icon, Button } from 'semantic-ui-react'
+import { Header, Segment, Card, Icon, Button, List } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 
 const cardContent = [
@@ -54,10 +54,18 @@ const techContent = [
   },
   {
     header: 'ln-builder',
-    icon: 'broken chain',
+    icon: 'th',
     meta: 'Easy-to-deploy, user-controlled paywalls',
     href: 'https://github.com/bucko13/ln-builder',
   },
+]
+
+const checklist = [
+  'Get paid directly for your content',
+  'Always keep control of your work',
+  'No login, email, or credit card required',
+  'Supports migrating content to other platforms',
+  'Prove authenticity of your work with the blockchain',
 ]
 
 export default class LandingPage extends Component {
@@ -142,12 +150,12 @@ export default class LandingPage extends Component {
           </Header>
           <div className="col">
             <div className="row justify-content-center">
-              <div className="col-12 col-md-4">
+              <div className="col-12 col-md-6">
                 <p>
-                  Don&apos;t want to create an account but still have a post you
-                  want to read? Prism has you covered! Thanks to the
-                  decentralized nature of Bitcoin, you can access content
-                  without ever having to log in.
+                  Have a post you want to read but don&apos;t want to create an
+                  account? Prism has you covered! Thanks to the decentralized
+                  nature of Bitcoin payments with lightning, you can access
+                  content without ever having to log in.
                 </p>
                 <Link to="/browse">
                   <Button color="black">Latest Posts</Button>
@@ -159,10 +167,35 @@ export default class LandingPage extends Component {
             </div>
           </div>
         </div>
+        <div className="row mt-4 p-4 checklist">
+          <Header as="h2" className="col-12 mb-5">
+            What Makes Prism Different?
+          </Header>
+          <div className="col">
+            <div className="row justify-content-center">
+              <div className="col-auto">
+                <List size="big" style={{ textAlign: 'left' }} className="pl-5">
+                  {checklist.map((text, index) => (
+                    <List.Item key={index} className="mb-3">
+                      <List.Icon
+                        name="check circle"
+                        color="green"
+                        style={{ display: 'inline' }}
+                      />
+                      <List.Content style={{ display: 'inline' }}>
+                        {text}
+                      </List.Content>
+                    </List.Item>
+                  ))}
+                </List>
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="row mt-4 p-4">
           <Segment inverted style={{ width: '100%' }}>
             <Header as="h3" className="col-12">
-              Sign up or Login With Blockstack to Get Started
+              Sign Up Or Login With Blockstack To Publish Your First Article
             </Header>
             <p className="lead col-12">
               <Button
