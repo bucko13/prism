@@ -116,6 +116,23 @@ class AddOrEditDocContainer extends PureComponent {
     this.setState({ tab })
   }
 
+  async handleDelete() {
+    if (!window && !window.confifm) return
+    const confirm = window.confirm(
+      'Are you sure you want to delete this post? THIS ACTION CANNOT BE UNDONE.'
+    )
+    if (confirm) {
+      this.setState({ loading: true }, async () => {
+        await this.document.destroy()
+        window.location = window.location.origin + '/profile'
+      })
+    }
+  }
+
+  updateLoading() {
+    this.setState({ loading: !this.state.loading })
+  }
+
   async handleSubmit() {
     let { title, text, author, node, caveatKey } = this.state
     const { name, userId, edit } = this.props
@@ -184,6 +201,7 @@ class AddOrEditDocContainer extends PureComponent {
         )}
         <AddOrEditDoc
           editor={editor}
+          edit={edit}
           title={title}
           author={author}
           requirePayment={requirePayment}
@@ -192,6 +210,7 @@ class AddOrEditDocContainer extends PureComponent {
           handleValueChange={(name, value) =>
             this.handleValueChange(name, value)
           }
+          handleDelete={() => this.handleDelete()}
           handleSubmit={() => this.handleSubmit()}
         />
       </React.Fragment>
