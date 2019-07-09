@@ -11,11 +11,14 @@ export default class AddOrEditDocComponent extends PureComponent {
     return {
       editor: PropTypes.element.isRequired,
       handleSubmit: PropTypes.func.isRequired,
+      handleDelete: PropTypes.func.isRequired,
       handleValueChange: PropTypes.func.isRequired,
       title: PropTypes.string,
       author: PropTypes.string,
       node: PropTypes.string,
       caveatKey: PropTypes.string,
+      edit: PropTypes.bool, // whether or not we are in edit or add mode
+      userId: PropTypes.string,
     }
   }
 
@@ -25,9 +28,12 @@ export default class AddOrEditDocComponent extends PureComponent {
       author = '',
       handleValueChange,
       handleSubmit,
+      handleDelete,
       editor,
       node = '',
       caveatKey = '',
+      edit,
+      userId,
     } = this.props
     return (
       <div className="row justify-content-center">
@@ -89,9 +95,22 @@ export default class AddOrEditDocComponent extends PureComponent {
             successful payments. Required if setting a Lightning URI.
           </p>
         </div>
-        <div className="row mb-4 col-lg-8"></div>
         <div className="row justify-content-end col-lg-8">
-          <Button className="col-sm-2" onClick={() => handleSubmit()}>
+          {edit && (
+            <Button
+              className="col-sm-2 order-last order-sm-first"
+              color="red"
+              onClick={() => handleDelete()}
+            >
+              DELETE
+            </Button>
+          )}
+          <Button
+            className="col-sm-2  mb-3 mb-sm-0 ml-0 ml-sm-3"
+            disabled={!(userId && userId.length)}
+            loading={!(userId && userId.length)}
+            onClick={() => handleSubmit()}
+          >
             Submit
           </Button>
         </div>

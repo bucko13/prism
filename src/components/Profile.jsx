@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react'
 import { Person } from 'blockstack'
 import PropTypes from 'prop-types'
-import { Button } from 'semantic-ui-react'
+import { Button, Dimmer, Loader } from 'semantic-ui-react'
 
-import { Document } from '../models'
+import { Document, Proof } from '../models'
 import { DocumentList } from '.'
 import { documentPropTypes } from '../propTypes'
 
@@ -58,14 +58,23 @@ export default class Profile extends PureComponent {
   async deleteAllPosts() {
     const myDocs = await Document.fetchOwnList()
     const confirm = window.confirm(
-      `Are you sure you want to delete all (${myDocs.length}) posts?`
+      `Are you sure you want to delete all posts (${myDocs.length})?`
     )
     if (!confirm) return
 
-    for (let doc of myDocs) {
-      await doc.destroy()
-    }
-    this.props.getOwnDocuments()
+    this.setState({ loading: true }, async () => {
+      const promises = []
+      for (let doc of myDocs) {
+        const proof = await Proof.findById(doc.attrs.proofId)
+        promises.push(doc.destroy())
+        if (proof) promises.push(proof.destroy())
+      }
+      await Promise.all(promises)
+      this.props.clearDocumentList()
+      this.setState({ loading: false }, () => {
+        this.props.getOwnDocuments()
+      })
+    })
   }
 
   render() {
@@ -88,6 +97,13 @@ export default class Profile extends PureComponent {
           </span>
           !
         </h1>
+        {loading && documents.length ? (
+          <Dimmer active inverted>
+            <Loader size="large" />
+          </Dimmer>
+        ) : (
+          ''
+        )}
         <DocumentList documents={documents} loading={loading} edit />
         {documents && documents.length ? (
           <Button
