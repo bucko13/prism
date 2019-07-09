@@ -89,7 +89,10 @@ export default class Document extends Model {
   async encryptContent() {
     const { content } = this.attrs
     await this.setupKey()
-    assert(this.attrs.aesKey, 'must set an aesKey on Document to encrypt')
+    assert(
+      this.attrs.aesKey,
+      'Must set an aesKey on document to encrypt content'
+    )
     const encryptedContent = encryptWithKey(this.attrs.aesKey, content)
     this.update({ encryptedContent })
 
@@ -115,11 +118,12 @@ Make sure you pass userId attr when saving a Document model.'
   }
 
   async setupKey() {
+    assert(this.attrs.userId, 'No associated userId added with this document')
     // can skip if already set
     if (this.attrs.aesKey) return
 
     const user = await User.findById(this.attrs.userId)
-    assert(user, 'No associated user found')
+    assert(user, 'No user found matching the id connected with this document.')
     // fetch the key information from the server
     const key = await Key.findById(user.attrs.keyId)
     if (!key)

@@ -107,8 +107,8 @@ export default class AddOrEditDocComponent extends PureComponent {
           )}
           <Button
             className="col-sm-2  mb-3 mb-sm-0 ml-0 ml-sm-3"
-            disabled={userId && userId.length ? false : true}
-            loading={userId && userId.length ? false : true}
+            disabled={!(userId && userId.length)}
+            loading={!(userId && userId.length)}
             onClick={() => handleSubmit()}
           >
             Submit

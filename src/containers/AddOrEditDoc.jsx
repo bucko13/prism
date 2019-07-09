@@ -2,6 +2,8 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import assert from 'bsert'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
+
 import ReactMde from 'react-mde'
 import { Header, Loader, Dimmer } from 'semantic-ui-react'
 import * as Showdown from 'showdown'
@@ -9,7 +11,7 @@ import 'react-mde/lib/styles/css/react-mde-all.css'
 
 import { Document, Proof } from '../models'
 import { AddOrEditDoc } from '../components'
-import { appActions } from '../store/actions'
+import { documentActions } from '../store/actions'
 
 class AddOrEditDocContainer extends PureComponent {
   document = null
@@ -42,13 +44,21 @@ class AddOrEditDocContainer extends PureComponent {
       aesKey: PropTypes.string,
       edit: PropTypes.bool,
       docId: PropTypes.string,
-      saveUser: PropTypes.func.isRequired,
+      history: PropTypes.shape({
+        push: PropTypes.func.isRequired,
+      }).isRequired,
+      clearDocumentList: PropTypes.func.isRequired,
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (!prevState.backToPage && this.state.backToPage) {
+      this.props.history.push(this.state.backToPage)
     }
   }
 
   async componentDidMount() {
-    const { edit, docId, userId, saveUser } = this.props
-    if (!userId) await saveUser()
+    const { edit, docId } = this.props
     if (edit) {
       assert(typeof docId === 'string', 'Need a document id to edit post')
       this.document = await Document.findById(docId)
@@ -99,10 +109,17 @@ class AddOrEditDocContainer extends PureComponent {
         },
         async () => {
           const proof = new Proof({ docId: this.document._id })
-          await proof.save()
-          assert(
-            proof.attrs.proofHandles,
-            'Could not retrieve proofs from Chainpoint'
+          this.setState(
+            { loadingMessage: 'Saving proof data...' },
+            async () => {
+              await proof.save()
+              assert(
+                proof.attrs.proofHandles,
+                'Could not retrieve proofs from Chainpoint'
+              )
+
+              this.setState({ backToPage: '/profile' })
+            }
           )
         }
       )
@@ -118,7 +135,13 @@ class AddOrEditDocContainer extends PureComponent {
           // when no hash is passed as an arg, it will generate a new one by retrieving
           // the document from radiks and re-creating the hash to submit
           await proof.submitHash()
-          await proof.save()
+          this.setState(
+            { loadingMessage: 'Saving updated proof data...' },
+            async () => {
+              await proof.save()
+              this.setState({ backToPage: '/profile' })
+            }
+          )
         }
       )
     }
@@ -138,15 +161,20 @@ class AddOrEditDocContainer extends PureComponent {
       'Are you sure you want to delete this post? THIS ACTION CANNOT BE UNDONE.'
     )
     if (confirm) {
-      this.setState({ loading: true }, async () => {
-        const proof = await Proof.findById(this.document.attrs.proofId)
-        const promises = [this.document.destroy()]
-        if (proof) promises.push(proof.destroy())
-        await Promise.all(promises)
-        this.setState({ loadingMessage: 'All done!' }, () => {
-          window.location = window.location.origin + '/profile'
-        })
-      })
+      this.setState(
+        {
+          loading: true,
+          loadingMessage: 'Deleting post and blockchain proof...',
+        },
+        async () => {
+          const proof = await Proof.findById(this.document.attrs.proofId)
+          const promises = [this.document.destroy()]
+          if (proof) promises.push(proof.destroy())
+          await Promise.all(promises)
+          this.props.clearDocumentList()
+          this.setState({ backToPage: '/profile' })
+        }
+      )
     }
   }
 
@@ -184,7 +212,6 @@ class AddOrEditDocContainer extends PureComponent {
             },
             async () => {
               await this.updateProof()
-              window.location = window.location.origin + '/profile'
             }
           )
         })
@@ -265,13 +292,11 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    saveUser: () => {
-      dispatch(appActions.saveUser())
-    },
+    clearDocumentList: () => dispatch(documentActions.clearDocumentList()),
   }
 }
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(AddOrEditDocContainer)
+)(withRouter(AddOrEditDocContainer))
