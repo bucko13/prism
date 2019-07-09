@@ -26,13 +26,13 @@ export function getDocumentList(count = 10) {
       documents = await Document.fetchList({
         limit: count,
       })
-      dispatch(setDocsFromModelList(documents))
+      dispatch(setDocsFromModelList(documents.reverse()))
     } else {
       // if user is not signed in, we want to use the server's proxy
       // endpoint for retrieving documents rather than radiks
       const { data } = await get(`/api/radiks/documents?limit=${count}`)
       if (!(data && data.documents)) return
-      documents = data.documents
+      documents = data.documents.reverse()
       dispatch(setDocumentList(documents))
     }
     dispatch(getProofs())
@@ -44,7 +44,7 @@ export function getOwnDocuments(count = 10) {
     const documents = await Document.fetchOwnList({
       limit: count,
     })
-    dispatch(setDocsFromModelList(documents))
+    dispatch(setDocsFromModelList(documents.reverse()))
     dispatch(updateDocumentProofs())
   }
 }
@@ -181,16 +181,15 @@ export function updateDocumentProofs() {
         // and save it w/ the document this will start the anchoring process
         try {
           if (!doc.proofId) {
-            const proof = new Proof({ docId: doc._id })
-            await proof.save()
-            if (!proof.attrs.proofHandles)
-              throw new Error('Could not retrieve proofs from Chainpoint')
+            const proof = await generateProof(doc._id)
             return dispatch(updateDocument(doc._id, { proofId: proof._id }))
           } else if (!doc.proofData) {
             // if no proof data then we need to retrieve the associated proof
-            const proof = await Proof.findById(doc.proofId)
+            let proof = await Proof.findById(doc.proofId)
+
+            if (!proof) proof = await generateProof(doc._id)
             // if the proof has no raw proof attr attached to it
-            // then we need to get that assuming it does have a proof handles
+            // then we need to get that assuming it does have proof handles
             if (!proof.attrs.proof) await proof.getProofs()
 
             // evaluate the raw proof to extract the relevant data
@@ -212,6 +211,15 @@ export function updateDocumentProofs() {
       })
     )
   }
+}
+
+async function generateProof(docId) {
+  assert(docId, 'need a document id to generate associated proof')
+  const proof = new Proof({ docId })
+  await proof.save()
+  if (!proof.attrs.proofHandles)
+    throw new Error('Could not retrieve proofs from Chainpoint')
+  return proof
 }
 
 /*
