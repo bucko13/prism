@@ -178,3 +178,21 @@ img {
   font-size: 1.3rem;
   line-height: 2.5rem;
 }
+
+/**
+  Card > List styling
+  Initially for support in Proof Details
+**/
+
+.card .list .item {
+  word-wrap: break-word;
+  margin: 0.5rem 0;
+}
+
+.accordion .ui.card {
+  width: auto;
+}
+
+.ui.accordion .content.active {
+  display: flex !important;
+}

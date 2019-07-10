@@ -1,4 +1,5 @@
 export { default as Post } from './Post.jsx'
+export { default as ProofDetails } from './ProofDetails.jsx'
 export { default as AddOrEditDoc } from './AddOrEditDoc.jsx'
 export { default as Profile } from './Profile.jsx'
 export { default as BrowseComponent } from './Browse.jsx'

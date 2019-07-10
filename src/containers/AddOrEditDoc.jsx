@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import assert from 'bsert'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-
+import { evaluateProofs } from 'chainpoint-client/dist/bundle.web'
 import ReactMde from 'react-mde'
 import { Header, Loader, Dimmer } from 'semantic-ui-react'
 import * as Showdown from 'showdown'
@@ -12,6 +12,7 @@ import 'react-mde/lib/styles/css/react-mde-all.css'
 import { Document, Proof } from '../models'
 import { AddOrEditDoc } from '../components'
 import { documentActions } from '../store/actions'
+import { documentPropTypes } from '../propTypes'
 
 class AddOrEditDocContainer extends PureComponent {
   document = null
@@ -27,7 +28,9 @@ class AddOrEditDocContainer extends PureComponent {
       node: '',
       requirePayment: true,
       loading: true,
+      proofData: {},
     }
+
     this.converter = new Showdown.Converter({
       tables: true,
       simplifiedAutoLink: true,
@@ -44,6 +47,9 @@ class AddOrEditDocContainer extends PureComponent {
       aesKey: PropTypes.string,
       edit: PropTypes.bool,
       docId: PropTypes.string,
+      location: PropTypes.shape({
+        state: documentPropTypes,
+      }),
       history: PropTypes.shape({
         push: PropTypes.func.isRequired,
       }).isRequired,
@@ -55,6 +61,18 @@ class AddOrEditDocContainer extends PureComponent {
     if (!prevState.backToPage && this.state.backToPage) {
       this.props.history.push(this.state.backToPage)
     }
+  }
+
+  evaluateProof() {
+    const { rawProof } = this.props.location.state
+    const proofData = {}
+    if (rawProof && rawProof.length) {
+      const proofs = evaluateProofs([rawProof])
+      for (let proof of proofs) {
+        proofData[proof.type] = proof
+      }
+    }
+    return proofData
   }
 
   async componentDidMount() {
@@ -77,7 +95,7 @@ class AddOrEditDocContainer extends PureComponent {
       // the content from localhost but to the shared database (which gets mixed up by radiks).
       // this catches that error
       if (typeof content !== 'string') return this.setState({ error: true })
-
+      const proofData = this.evaluateProof()
       this.setState({
         text: content,
         title,
@@ -86,6 +104,7 @@ class AddOrEditDocContainer extends PureComponent {
         caveatKey,
         requirePayment,
         loading: false,
+        proofData,
       })
     } else {
       this.setState({ loading: false })
@@ -230,6 +249,7 @@ class AddOrEditDocContainer extends PureComponent {
       requirePayment,
       error,
       loadingMessage = null,
+      proofData,
     } = this.state
 
     const editor = (
@@ -275,6 +295,7 @@ class AddOrEditDocContainer extends PureComponent {
           }
           handleDelete={() => this.handleDelete()}
           handleSubmit={() => this.handleSubmit()}
+          proofData={proofData}
         />
       </React.Fragment>
     )

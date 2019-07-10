@@ -20,7 +20,7 @@ function DocumentLink({ doc, edit }) {
             to={{
               pathname: '/post',
               search: `?id=${_id}${edit ? '&edit=true' : ''}`,
-              query: doc,
+              state: doc,
             }}
             style={{ color: 'white' }}
           >
