@@ -188,9 +188,13 @@ export function updateDocumentProofs() {
             let proof = await Proof.findById(doc.proofId)
 
             if (!proof) proof = await generateProof(doc._id)
+
             // if the proof has no raw proof attr attached to it
-            // then we need to get that assuming it does have proof handles
-            if (!proof.attrs.proof) await proof.getProofs()
+            // or it has a proof but still has proof handles
+            // then we need to use the proofHandles to re-fetch the proof
+            // from chainpoint and see if there were any updates
+            if (!proof.attrs.proof || proof.attrs.proofHandles.length)
+              await proof.getProofs()
 
             // evaluate the raw proof to extract the relevant data
             const proofData = proof.evaluateProof()

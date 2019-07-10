@@ -62,7 +62,7 @@ export default class Proof extends Model {
   async getProofs() {
     const { proofHandles, hash } = this.attrs
     // skip if there are no proofHandles available
-    if (!proofHandles.length) {
+    if (!proofHandles.length && !this.attrs.proof) {
       // eslint-disable-next-line no-console
       console.warn(
         'Attempted to retrieve proofs without any proof handles. Resubmitting hash...'
@@ -86,21 +86,27 @@ export default class Proof extends Model {
 
     // only need one of the proofs and only care about the btc/tbtc proof
     let proof
-
+    let hasBtcProof = false
+    // this will go through each proof returned from the handles
+    // and save the last one or the first one that has a btc proof
     for (let { anchorsComplete, proof: rawProof } of proofs) {
+      proof = rawProof
       if (anchorsComplete.includes('btc') || anchorsComplete.includes('tbtc')) {
-        proof = rawProof
+        hasBtcProof = true
         break
       }
     }
 
-    if (proof) {
-      // don't need the proofHandles anymore if we have a proof
+    if (hasBtcProof) {
+      // don't need the proofHandles anymore if we have a btc proof
       this.update({ proof, proofHandles: [] })
+      await this.save()
+    } else if (proof) {
+      this.update({ proof })
       await this.save()
     } else {
       // eslint-disable-next-line no-console
-      console.warn('No btc or tbtc anchor found for proof', this._id, 'yet')
+      console.warn('No proof data found for ', this._id)
     }
   }
 
@@ -125,12 +131,20 @@ export default class Proof extends Model {
       ({ type }) => type === 'tbtc' || type === 'btc'
     )
 
-    if (!btcProof) return null
-
-    return {
-      height: btcProof.anchor_id,
-      merkleRoot: btcProof.expected_value,
-      submittedAt: btcProof.hash_submitted_core_at,
+    // if there's no btc proof but at least one proof
+    // we'll return the data from that proof (e.g. cal or tcal)
+    if (!btcProof && proofs.length) {
+      return {
+        submittedAt: proofs[0].hash_submitted_core_at,
+        type: proofs[0].type,
+      }
+    } else if (btcProof) {
+      return {
+        height: btcProof.anchor_id,
+        merkleRoot: btcProof.expected_value,
+        submittedAt: btcProof.hash_submitted_core_at,
+        type: btcProof.type,
+      }
     }
   }
 

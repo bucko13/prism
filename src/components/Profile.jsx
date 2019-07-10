@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import { Person } from 'blockstack'
 import PropTypes from 'prop-types'
-import { Button, Dimmer, Loader } from 'semantic-ui-react'
+import { Button } from 'semantic-ui-react'
 
 import { Document, Proof } from '../models'
 import { DocumentList } from '.'
@@ -38,15 +38,27 @@ export default class Profile extends PureComponent {
 
   async componentDidMount() {
     const { userSession, getOwnDocuments } = this.props
+    this.props.clearDocumentList()
 
     await getOwnDocuments()
 
     this.setState({
       person: new Person(userSession.loadUserData().profile),
     })
-    setTimeout(() => {
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // if currently set to loading but documents list length
+    // has changed then we can turn off the loading otherwise will continue
+    // until timeout changes
+    if (
+      prevState.loading &&
+      prevProps.documents.length !== this.props.documents.length &&
+      // need this extra check b/c on first mount, if switching from browse with populated
+      // list, then the list clears but is only registered after this catches updates
+      this.props.documents.length
+    )
       this.setState({ loading: false })
-    }, 7000)
   }
 
   componentWillUnmount() {
@@ -97,13 +109,6 @@ export default class Profile extends PureComponent {
           </span>
           !
         </h1>
-        {loading && documents.length ? (
-          <Dimmer active inverted>
-            <Loader size="large" />
-          </Dimmer>
-        ) : (
-          ''
-        )}
         <DocumentList documents={documents} loading={loading} edit />
         {documents && documents.length ? (
           <Button

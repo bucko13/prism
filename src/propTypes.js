@@ -11,7 +11,8 @@ export const documentPropTypes = PropTypes.shape({
 })
 
 export const proofDataPropTypes = PropTypes.shape({
-  merkleRoot: PropTypes.string.isRequired,
+  merkleRoot: PropTypes.string,
   submittedAt: PropTypes.string.isRequired,
-  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  type: PropTypes.string.isRequired,
 })

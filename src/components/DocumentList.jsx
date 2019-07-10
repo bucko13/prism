@@ -5,11 +5,7 @@ import { Dimmer, Loader } from 'semantic-ui-react'
 import { documentPropTypes } from '../propTypes'
 import { DocumentLink } from '.'
 
-export default function DocumentList({
-  documents,
-  loading = true,
-  edit = false,
-}) {
+export default function DocumentList({ documents, loading, edit = false }) {
   return (
     <div
       className="docs-list row justify-content-center"

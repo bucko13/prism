@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import { Segment, Icon, Popup, List, Header } from 'semantic-ui-react'
+import { Segment, Icon, Popup, List, Header, Loader } from 'semantic-ui-react'
 
 import { documentPropTypes, proofDataPropTypes } from '../propTypes'
 
@@ -43,7 +43,17 @@ DocumentLink.propTypes = {
 function ProofIcon({ proofId, proofData }) {
   let iconType, content
 
-  if (proofId && proofData) {
+  if (!proofId) {
+    iconType = 'question circle outline'
+    content = (
+      <div>
+        <p>
+          No anchor or proof data available. If this is your post, make sure to
+          load your profile page to initialize anchoring
+        </p>
+      </div>
+    )
+  } else if (proofId && proofData && proofData.height) {
     // document is successfully anchored
     iconType = 'check circle outline'
     const time = new Date(proofData.submittedAt).toLocaleString('en-us', {
@@ -51,8 +61,6 @@ function ProofIcon({ proofId, proofData }) {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-      minute: 'numeric',
-      hour: 'numeric',
     })
 
     content = (
@@ -82,37 +90,46 @@ function ProofIcon({ proofId, proofData }) {
         />
       </List>
     )
-  } else if (proofId && (!proofData || !proofData.height)) {
-    // there is a proof Id but still no anchor data which means
-    // it is still waiting to be updated
+  } else if (proofId && proofData && proofData.type && !proofData.height) {
+    // there is a proof Id and a proofData type, but no height
+    // that means we have a cal anchor but no btc anchor
     iconType = 'clock outline'
-    content = (
-      <div>
-        <p>
-          This document hasn&apos;t been anchored to the blockchain yet. Please
-          wait 1-2 hours for final anchoring
-        </p>
-      </div>
+    // time since initial anchor in seconds
+    const timeSince = Math.floor(
+      (Date.now() - new Date(proofData.submittedAt)) / 1000
     )
-  } else {
-    iconType = 'question circle outline'
+
+    // assuming around 2 hours for a proof to be anchored to bitcoin
+    const timeLeft = Math.floor((60 * 60 * 2 - timeSince) / 60)
     content = (
       <div>
         <p>
-          No anchor or proof data available. If this is your post, make sure to
-          load your profile page to initialize anchoring
+          The proof for this document is still being processed. Final anchoring
+          on the bitcoin blockchain will happen in approx. ~
+          {timeLeft > 0 ? timeLeft : 0} minutes.
         </p>
       </div>
     )
   }
+
   return (
     <Popup
       trigger={
-        <Icon name={iconType} style={{ cursor: 'pointer' }} className="col-1" />
+        content ? (
+          <Icon
+            name={iconType}
+            style={{ cursor: 'pointer' }}
+            className="col-1"
+          />
+        ) : (
+          <Loader active inline />
+        )
       }
       on="click"
     >
-      {content}
+      {content
+        ? content
+        : 'Fetching proof status from the network (can take a couple minutes for new posts)'}
     </Popup>
   )
 }

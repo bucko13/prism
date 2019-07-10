@@ -58,7 +58,7 @@ export default class BrowseComponent extends PureComponent {
           to create one and test out the app
         </p>
         {/* the new documents list from radiks */}
-        <DocumentList documents={documents} />
+        <DocumentList documents={documents} loading />
         {/* end the documents list from radiks */}
         {node && node.length ? (
           <div className="row justify-content-center">
