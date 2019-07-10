@@ -43,13 +43,15 @@ DocumentLink.propTypes = {
 function ProofIcon({ proofId, proofData }) {
   let iconType, content
 
-  if (!proofId) {
+  if (!proofId || proofData === null) {
     iconType = 'question circle outline'
     content = (
       <div>
         <p>
-          No anchor or proof data available. If this is your post, make sure to
-          load your profile page to initialize anchoring within 24 hours.
+          No anchor or proof data available. Anchor initialization can take a
+          couple minutes. If this is your post, make sure to load your profile
+          page to initialize then refresh anchoring within 24 hours for final
+          anchor.
         </p>
       </div>
     )
