@@ -48,10 +48,9 @@ function ProofIcon({ proofId, proofData }) {
     content = (
       <div>
         <p>
-          No anchor or proof data available. Anchor initialization can take a
-          couple minutes. If this is your post, make sure to load your profile
-          page to initialize then refresh anchoring within 24 hours for final
-          anchor.
+          No anchor or proof data available. Initialization can take a couple
+          minutes. If this is your post, make sure to load your profile page to
+          initialize then refresh again within 24 hours to save final anchor.
         </p>
       </div>
     )
