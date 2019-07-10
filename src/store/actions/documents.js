@@ -9,6 +9,7 @@ import {
   CLEAR_CURRENT_DOC,
   SET_CURRENT_CONTENT,
   UPDATE_DOCUMENT,
+  SET_DOCS_LOADING,
 } from '../constants'
 import { clearInvoice } from './invoice'
 import { sleep } from '../../utils'
@@ -19,6 +20,7 @@ import { sleep } from '../../utils'
  */
 export function getDocumentList(count = 10) {
   return async dispatch => {
+    dispatch(setDocsLoading(true))
     const { userSession } = getConfig()
     let documents
 
@@ -35,16 +37,19 @@ export function getDocumentList(count = 10) {
       documents = data.documents.reverse()
       dispatch(setDocumentList(documents))
     }
+    dispatch(setDocsLoading(false))
     dispatch(getProofs())
   }
 }
 
 export function getOwnDocuments(count = 10) {
   return async dispatch => {
+    dispatch(setDocsLoading(true))
     const documents = await Document.fetchOwnList({
       limit: count,
     })
     dispatch(setDocsFromModelList(documents.reverse()))
+    dispatch(setDocsLoading(false))
     dispatch(updateDocumentProofs())
   }
 }
@@ -282,4 +287,11 @@ export function clearCurrentDoc() {
 
 export function clearDocumentList() {
   return dispatch => dispatch(setDocumentList([]))
+}
+
+export function setDocsLoading(loadingState) {
+  return {
+    type: SET_DOCS_LOADING,
+    payload: loadingState,
+  }
 }

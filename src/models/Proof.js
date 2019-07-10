@@ -106,7 +106,7 @@ export default class Proof extends Model {
       await this.save()
     } else {
       // eslint-disable-next-line no-console
-      console.warn('No proof data found for ', this._id)
+      console.warn(`No proof data found for ${this._id} yet`)
     }
   }
 

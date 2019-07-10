@@ -53,7 +53,7 @@ function ProofIcon({ proofId, proofData }) {
         </p>
       </div>
     )
-  } else if (proofId && proofData && proofData.height) {
+  } else if (proofData && proofData.height) {
     // document is successfully anchored
     iconType = 'check circle outline'
     const time = new Date(proofData.submittedAt).toLocaleString('en-us', {
@@ -90,8 +90,8 @@ function ProofIcon({ proofId, proofData }) {
         />
       </List>
     )
-  } else if (proofId && proofData && proofData.type && !proofData.height) {
-    // there is a proof Id and a proofData type, but no height
+  } else if (proofData && proofData.type && !proofData.height) {
+    // If there is a proofData type, but no height
     // that means we have a cal anchor but no btc anchor
     iconType = 'clock outline'
     // time since initial anchor in seconds
@@ -101,15 +101,24 @@ function ProofIcon({ proofId, proofData }) {
 
     // assuming around 2 hours for a proof to be anchored to bitcoin
     const timeLeft = Math.floor((60 * 60 * 2 - timeSince) / 60)
-    content = (
+    if (timeLeft === 0)
       <div>
         <p>
-          The proof for this document is still being processed. Final anchoring
-          on the bitcoin blockchain will happen in approx. ~
-          {timeLeft > 0 ? timeLeft : 0} minutes.
+          Proof should be anchored but couldn&apos;t find corresponding proof.
+          If this post is yours, you may need to reload the post on your profile
+          to re-anchor.
         </p>
       </div>
-    )
+    else
+      content = (
+        <div>
+          <p>
+            The proof for this document is still being processed. Final
+            anchoring on the bitcoin blockchain will happen in approx. ~
+            {timeLeft > 0 ? timeLeft : 0} minutes.
+          </p>
+        </div>
+      )
   }
 
   return (

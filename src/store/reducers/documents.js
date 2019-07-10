@@ -6,6 +6,7 @@ import {
   CLEAR_CURRENT_DOC,
   SET_CURRENT_CONTENT,
   UPDATE_DOCUMENT,
+  SET_DOCS_LOADING,
 } from '../constants'
 
 const init = Map({
@@ -22,6 +23,7 @@ const init = Map({
     proofData: {}, // object of height, merkleRoot, and submittedAt
   }),
   documentList: List([]),
+  loading: true,
 })
 
 export default (state = init, action) => {
@@ -64,6 +66,9 @@ export default (state = init, action) => {
 
       return state.set('documentList', documentList)
     }
+
+    case SET_DOCS_LOADING:
+      return state.set('loading', payload)
 
     default:
       return state

@@ -14,6 +14,7 @@ export default class BrowseComponent extends PureComponent {
     return {
       documents: PropTypes.arrayOf(documentPropTypes).isRequired,
       node: PropTypes.string,
+      loading: PropTypes.bool.isRequired,
       getNodeInfo: PropTypes.func.isRequired,
       getDocumentList: PropTypes.func.isRequired,
       clearDocumentList: PropTypes.func.isRequired,
@@ -41,7 +42,7 @@ export default class BrowseComponent extends PureComponent {
   }
 
   render() {
-    const { documents, node } = this.props
+    const { documents, node, loading } = this.props
 
     return (
       <div className="panel-welcome" id="section-2">
@@ -58,7 +59,7 @@ export default class BrowseComponent extends PureComponent {
           to create one and test out the app
         </p>
         {/* the new documents list from radiks */}
-        <DocumentList documents={documents} loading />
+        <DocumentList documents={documents} loading={loading} />
         {/* end the documents list from radiks */}
         {node && node.length ? (
           <div className="row justify-content-center">

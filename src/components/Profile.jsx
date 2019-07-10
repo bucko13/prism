@@ -23,42 +23,29 @@ export default class Profile extends PureComponent {
           return avatarFallbackImage
         },
       },
-      loading: true,
     }
   }
 
   static get propTypes() {
     return {
       userSession: PropTypes.object,
+      loading: PropTypes.bool.isRequired,
+      documents: PropTypes.arrayOf(documentPropTypes).isRequired,
       getOwnDocuments: PropTypes.func.isRequired,
       clearDocumentList: PropTypes.func.isRequired,
-      documents: PropTypes.arrayOf(documentPropTypes).isRequired,
+      setDocsLoading: PropTypes.func.isRequired,
     }
   }
 
   async componentDidMount() {
-    const { userSession, getOwnDocuments } = this.props
-    this.props.clearDocumentList()
+    const { userSession, getOwnDocuments, clearDocumentList } = this.props
+    clearDocumentList()
 
     await getOwnDocuments()
 
     this.setState({
       person: new Person(userSession.loadUserData().profile),
     })
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    // if currently set to loading but documents list length
-    // has changed then we can turn off the loading otherwise will continue
-    // until timeout changes
-    if (
-      prevState.loading &&
-      prevProps.documents.length !== this.props.documents.length &&
-      // need this extra check b/c on first mount, if switching from browse with populated
-      // list, then the list clears but is only registered after this catches updates
-      this.props.documents.length
-    )
-      this.setState({ loading: false })
   }
 
   componentWillUnmount() {
@@ -73,25 +60,21 @@ export default class Profile extends PureComponent {
       `Are you sure you want to delete all posts (${myDocs.length})?`
     )
     if (!confirm) return
-
-    this.setState({ loading: true }, async () => {
-      const promises = []
-      for (let doc of myDocs) {
-        const proof = await Proof.findById(doc.attrs.proofId)
-        promises.push(doc.destroy())
-        if (proof) promises.push(proof.destroy())
-      }
-      await Promise.all(promises)
-      this.props.clearDocumentList()
-      this.setState({ loading: false }, () => {
-        this.props.getOwnDocuments()
-      })
-    })
+    this.props.setDocsLoading(true)
+    const promises = []
+    for (let doc of myDocs) {
+      const proof = await Proof.findById(doc.attrs.proofId)
+      promises.push(doc.destroy())
+      if (proof) promises.push(proof.destroy())
+    }
+    await Promise.all(promises)
+    this.props.clearDocumentList()
+    this.props.getOwnDocuments()
   }
 
   render() {
-    const { documents, userSession } = this.props
-    const { person, loading } = this.state
+    const { documents, userSession, loading } = this.props
+    const { person } = this.state
 
     return !userSession.isSignInPending() ? (
       <div className="panel-welcome" id="section-2">
