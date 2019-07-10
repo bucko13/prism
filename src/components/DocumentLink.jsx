@@ -49,7 +49,7 @@ function ProofIcon({ proofId, proofData }) {
       <div>
         <p>
           No anchor or proof data available. If this is your post, make sure to
-          load your profile page to initialize anchoring
+          load your profile page to initialize anchoring within 24 hours.
         </p>
       </div>
     )
