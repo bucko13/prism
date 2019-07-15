@@ -257,10 +257,15 @@ export function getProofs() {
             proofData = proof.evaluateProof()
           } else {
             const { data } = await get(`/api/radiks/proof?id=${doc.proofId}`)
-            if (!data.proof) return
-            rawProof = data.proof
-            const proof = new Proof({ proof: rawProof })
-            proofData = proof.evaluateProof()
+            if (!data.proof) {
+              // there was a problem getting the proof so lets just set to empty
+              proofData = null
+              rawProof = ''
+            } else {
+              rawProof = data.proof
+              const proof = new Proof({ proof: rawProof })
+              proofData = proof.evaluateProof()
+            }
           }
           return dispatch(updateDocument(doc._id, { rawProof, proofData }))
         }
