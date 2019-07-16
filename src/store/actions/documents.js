@@ -167,11 +167,8 @@ export function getContent() {
 
 /*
  * An action creator that will get the proof for each document in the
- * store's current list, run a getProofs, and if that proof has a btc/tbtc anchor
+ * store's current list, run a getProofs, and if that proof has an anchor
  * evaluate it and update the document with the height, merkleRoot, and submittedAt
- * TODO: try and optimize this in such a way that it's non-blocking
- * i.e it would be nice if as each proof comes in that doc gets updated
- * possibly with a Promise.all
  * NOTE: this should only be run by the user who owns the document. Saving the proof
  * otherwise should actually fail since `beforeSave` updates the document, which shouldn't work
  * for a user that doesn't own the document
@@ -194,15 +191,21 @@ export function updateDocumentProofs() {
 
             if (!proof) proof = await generateProof(doc._id)
 
-            // if the proof has no raw proof attr attached to it
+            // if the proof has no raw proof attr attached to it (or an empty one)
             // or it has a proof but still has proof handles
             // then we need to use the proofHandles to re-fetch the proof
             // from chainpoint and see if there were any updates
-            if (!proof.attrs.proof || proof.attrs.proofHandles.length)
+            // proofHandles should get cleared once we have a btc anchor
+            if (
+              !proof.attrs.proof ||
+              !proof.attrs.proof.length ||
+              proof.attrs.proofHandles.length
+            )
               await proof.getProofs()
 
             // evaluate the raw proof to extract the relevant data
-            const proofData = proof.evaluateProof()
+            let proofData = proof.evaluateProof()
+
             return dispatch(
               updateDocument(doc._id, {
                 rawProof: proof.attrs.proof,
@@ -213,9 +216,15 @@ export function updateDocumentProofs() {
         } catch (e) {
           //eslint-disable-next-line no-console
           console.error(
-            `Problem updating document proof for ${doc.title}: ${e.message}`
+            `Problem updating document proof for "${doc.title}": ${e.message}`
           )
-          return
+          // if we caught a problem, then set the proof info to empty
+          return dispatch(
+            updateDocument(doc._id, {
+              rawProof: '',
+              proofData: null,
+            })
+          )
         }
       })
     )

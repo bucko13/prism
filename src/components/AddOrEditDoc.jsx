@@ -39,7 +39,7 @@ export default class AddOrEditDocComponent extends PureComponent {
       userId,
       proofData,
     } = this.props
-    console.log('proofData:', this.props.proofData)
+
     return (
       <div className="row justify-content-center">
         <div className="row mb-4 col-lg-8">

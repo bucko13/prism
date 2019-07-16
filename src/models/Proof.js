@@ -61,6 +61,7 @@ export default class Proof extends Model {
 
   async getProofs() {
     const { proofHandles, hash } = this.attrs
+
     // skip if there are no proofHandles available
     if (!proofHandles.length && !this.attrs.proof) {
       // eslint-disable-next-line no-console
@@ -70,6 +71,16 @@ export default class Proof extends Model {
       await this.submitHash(hash)
       await this.save()
       return
+    } else if (this.attrs.proof) {
+      // if we already have a proof we want to evaluate whether or not it has expired
+      // in which case we need to resubmit
+      const { submittedAt } = this.evaluateProof()
+      const timeSinceSubmit = Date.now() - new Date(submittedAt)
+      if (timeSinceSubmit > 24 * 60 * 60 * 1000) {
+        // eslint-disable-next-line no-console
+        console.warn(`Calendar proof ${this._id} expired. Resubmitting...`)
+        return await this.regenerateProof()
+      }
     }
 
     const {
@@ -78,11 +89,7 @@ export default class Proof extends Model {
 
     // if no proofs but we had proof handles, then the handles probably
     // expired, so we need to re-submit the hash
-    if (!proofs || !proofs.length) {
-      const _hash = hash || (await this.getHash())
-      await this.submitHash(_hash)
-      return this.save()
-    }
+    if (!proofs || !proofs.length) return await this.regenerateProof()
 
     // only need one of the proofs and only care about the btc/tbtc proof
     let proof
@@ -101,13 +108,28 @@ export default class Proof extends Model {
       // don't need the proofHandles anymore if we have a btc proof
       this.update({ proof, proofHandles: [] })
       await this.save()
-    } else if (proof) {
+    } else if (proof && proof !== this.attrs.proof) {
+      // proof has been updated, usually when it newly includes a btcProof
       this.update({ proof })
       await this.save()
-    } else {
+    } else if (!proof && proofs && proofs.length) {
+      // this is usually the case when anchors have expired -
+      // there is no raw proof but we did get proofs back from the endpoint
+
+      // eslint-disable-next-line no-console
+      console.warn(`Calendar proof ${this._id} expired. Resubmitting...`)
+      await this.regenerateProof()
+    } else if (!proof) {
       // eslint-disable-next-line no-console
       console.warn(`No proof data found for ${this._id} yet`)
     }
+  }
+
+  async regenerateProof() {
+    const { hash } = this.attrs
+    const _hash = hash || (await this.getHash())
+    this.submitHash(_hash)
+    await this.save()
   }
 
   /*
@@ -145,6 +167,10 @@ export default class Proof extends Model {
         submittedAt: btcProof.hash_submitted_core_at,
         type: btcProof.type,
       }
+    } else {
+      throw new Error(
+        'Problem evaluating proof. No btc proof and no proofs array to evaluate.'
+      )
     }
   }
 
