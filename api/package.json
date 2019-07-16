@@ -15,6 +15,9 @@
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7"
   },
+  "resolutions": {
+    "lodash": "^4.17.13"
+  },
   "scripts": {
     "now-build": "cd node_modules/chainpoint-client/ && npm install && npm run build && cd ../../"
   }
