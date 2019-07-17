@@ -6,6 +6,7 @@ import { Profile } from '../components'
 function mapStateToProps(state) {
   return {
     documents: state.documents.get('documentList').toJS(),
+    loading: state.documents.get('loading'),
   }
 }
 
@@ -16,6 +17,9 @@ function mapDispatchToProps(dispatch) {
     },
     clearDocumentList: () => {
       dispatch(documentActions.clearDocumentList())
+    },
+    setDocsLoading: loadingState => {
+      dispatch(documentActions.setDocsLoading(loadingState))
     },
   }
 }

@@ -1,7 +1,7 @@
-import React, { Component } from 'react'
+import React, { Component, createRef } from 'react'
 import PropTypes from 'prop-types'
 import { UserSession, AppConfig } from 'blockstack'
-import { Menu, Icon, Sidebar, Segment } from 'semantic-ui-react'
+import { Menu, Icon, Sidebar, Segment, Ref } from 'semantic-ui-react'
 import { Switch, Route, Link } from 'react-router-dom'
 import { configure, User, getConfig } from 'radiks'
 import { get } from 'axios'
@@ -30,6 +30,8 @@ export default class App extends Component {
       sidebarVisible: false,
     }
   }
+
+  segmentRef = createRef()
 
   static get propTypes() {
     return {
@@ -92,6 +94,7 @@ export default class App extends Component {
             visible={sidebarVisible}
             vertical
             width="thin"
+            target={this.segmentRef}
           >
             <Link to="/" className="item">
               <Menu.Item>Home</Menu.Item>
@@ -129,85 +132,89 @@ export default class App extends Component {
               height: 'auto',
             }}
           >
-            <div className="site-wrapper-inner container-fluid mb-4">
-              <Menu inverted secondary>
-                <Menu.Item onClick={() => this.handleShowClick()}>
-                  <Icon
-                    name="bars"
-                    size="big"
-                    color="black"
-                    style={{ padding: '1rem' }}
-                  />
-                </Menu.Item>
-              </Menu>
-              <Switch>
-                {!userSession.isUserSignedIn() ? (
-                  <Route
-                    exact
-                    path="/"
-                    render={() => (
-                      <LandingPage
-                        userSession={userSession}
-                        handleSignIn={this.handleSignIn}
-                      />
-                    )}
-                  />
-                ) : (
-                  <React.Fragment>
-                    {/* These are the routes that are only available if logged in*/}
+            <Ref innerRef={this.segmentRef}>
+              <div className="site-wrapper-inner container-fluid mb-4">
+                <Menu inverted secondary>
+                  <Menu.Item onClick={() => this.handleShowClick()}>
+                    <Icon
+                      name="bars"
+                      size="big"
+                      color="black"
+                      style={{ padding: '1rem' }}
+                    />
+                  </Menu.Item>
+                </Menu>
+                <Switch>
+                  {!userSession.isUserSignedIn() ? (
                     <Route
                       exact
                       path="/"
-                      render={routeProps => (
-                        <BrowseContainer
+                      render={() => (
+                        <LandingPage
                           userSession={userSession}
-                          handleSignOut={this.handleSignOut}
-                          {...routeProps}
+                          handleSignIn={this.handleSignIn}
                         />
                       )}
                     />
-                    <Route
-                      exact
-                      path="/profile"
-                      render={routeProps => (
-                        <ProfileContainer
-                          userSession={userSession}
-                          handleSignOut={this.handleSignOut}
-                          {...routeProps}
-                        />
-                      )}
-                    />
-                    <Route
-                      path="/add-doc"
-                      render={routeProps => (
-                        <AddOrEditDocContainer
-                          userSession={userSession}
-                          {...routeProps}
-                        />
-                      )}
-                    />
-                    <Route
-                      exact
-                      path="/browse"
-                      render={routeProps => <BrowseContainer {...routeProps} />}
-                    />
-                    <Route
-                      path="/post"
-                      render={routeProps => <PostContainer {...routeProps} />}
-                    />
-                  </React.Fragment>
-                )}
-                <Route
-                  exact
-                  path="/browse"
-                  render={routeProps => <BrowseContainer {...routeProps} />}
-                />
-                <Route
-                  path="/post"
-                  render={routeProps => <PostContainer {...routeProps} />}
-                />
-              </Switch>
-            </div>
+                  ) : (
+                    <React.Fragment>
+                      {/* These are the routes that are only available if logged in*/}
+                      <Route
+                        exact
+                        path="/"
+                        render={routeProps => (
+                          <BrowseContainer
+                            userSession={userSession}
+                            handleSignOut={this.handleSignOut}
+                            {...routeProps}
+                          />
+                        )}
+                      />
+                      <Route
+                        exact
+                        path="/profile"
+                        render={routeProps => (
+                          <ProfileContainer
+                            userSession={userSession}
+                            handleSignOut={this.handleSignOut}
+                            {...routeProps}
+                          />
+                        )}
+                      />
+                      <Route
+                        path="/add-doc"
+                        render={routeProps => (
+                          <AddOrEditDocContainer
+                            userSession={userSession}
+                            {...routeProps}
+                          />
+                        )}
+                      />
+                      <Route
+                        exact
+                        path="/browse"
+                        render={routeProps => (
+                          <BrowseContainer {...routeProps} />
+                        )}
+                      />
+                      <Route
+                        path="/post"
+                        render={routeProps => <PostContainer {...routeProps} />}
+                      />
+                    </React.Fragment>
+                  )}
+                  <Route
+                    exact
+                    path="/browse"
+                    render={routeProps => <BrowseContainer {...routeProps} />}
+                  />
+                  <Route
+                    path="/post"
+                    render={routeProps => <PostContainer {...routeProps} />}
+                  />
+                </Switch>
+              </div>
+            </Ref>
           </Sidebar.Pusher>
         </Sidebar.Pushable>
       </div>

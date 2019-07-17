@@ -9,6 +9,7 @@ import {
   CLEAR_CURRENT_DOC,
   SET_CURRENT_CONTENT,
   UPDATE_DOCUMENT,
+  SET_DOCS_LOADING,
 } from '../constants'
 import { clearInvoice } from './invoice'
 import { sleep } from '../../utils'
@@ -19,6 +20,7 @@ import { sleep } from '../../utils'
  */
 export function getDocumentList(count = 10) {
   return async dispatch => {
+    dispatch(setDocsLoading(true))
     const { userSession } = getConfig()
     let documents
 
@@ -35,16 +37,19 @@ export function getDocumentList(count = 10) {
       documents = data.documents.reverse()
       dispatch(setDocumentList(documents))
     }
+    dispatch(setDocsLoading(false))
     dispatch(getProofs())
   }
 }
 
 export function getOwnDocuments(count = 10) {
   return async dispatch => {
+    dispatch(setDocsLoading(true))
     const documents = await Document.fetchOwnList({
       limit: count,
     })
     dispatch(setDocsFromModelList(documents.reverse()))
+    dispatch(setDocsLoading(false))
     dispatch(updateDocumentProofs())
   }
 }
@@ -162,11 +167,8 @@ export function getContent() {
 
 /*
  * An action creator that will get the proof for each document in the
- * store's current list, run a getProofs, and if that proof has a btc/tbtc anchor
+ * store's current list, run a getProofs, and if that proof has an anchor
  * evaluate it and update the document with the height, merkleRoot, and submittedAt
- * TODO: try and optimize this in such a way that it's non-blocking
- * i.e it would be nice if as each proof comes in that doc gets updated
- * possibly with a Promise.all
  * NOTE: this should only be run by the user who owns the document. Saving the proof
  * otherwise should actually fail since `beforeSave` updates the document, which shouldn't work
  * for a user that doesn't own the document
@@ -188,12 +190,22 @@ export function updateDocumentProofs() {
             let proof = await Proof.findById(doc.proofId)
 
             if (!proof) proof = await generateProof(doc._id)
-            // if the proof has no raw proof attr attached to it
-            // then we need to get that assuming it does have proof handles
-            if (!proof.attrs.proof) await proof.getProofs()
+
+            // if the proof has no raw proof attr attached to it (or an empty one)
+            // or it has a proof but still has proof handles
+            // then we need to use the proofHandles to re-fetch the proof
+            // from chainpoint and see if there were any updates
+            // proofHandles should get cleared once we have a btc anchor
+            if (
+              !proof.attrs.proof ||
+              !proof.attrs.proof.length ||
+              proof.attrs.proofHandles.length
+            )
+              await proof.getProofs()
 
             // evaluate the raw proof to extract the relevant data
             const proofData = proof.evaluateProof()
+
             return dispatch(
               updateDocument(doc._id, {
                 rawProof: proof.attrs.proof,
@@ -204,9 +216,15 @@ export function updateDocumentProofs() {
         } catch (e) {
           //eslint-disable-next-line no-console
           console.error(
-            `Problem updating document proof for ${doc.title}: ${e.message}`
+            `Problem updating document proof for "${doc.title}": ${e.message}`
           )
-          return
+          // if we caught a problem, then set the proof info to empty
+          return dispatch(
+            updateDocument(doc._id, {
+              rawProof: '',
+              proofData: null,
+            })
+          )
         }
       })
     )
@@ -248,10 +266,15 @@ export function getProofs() {
             proofData = proof.evaluateProof()
           } else {
             const { data } = await get(`/api/radiks/proof?id=${doc.proofId}`)
-            if (!data.proof) return
-            rawProof = data.proof
-            const proof = new Proof({ proof: rawProof })
-            proofData = proof.evaluateProof()
+            if (!data.proof) {
+              // there was a problem getting the proof so lets just set to empty
+              proofData = null
+              rawProof = ''
+            } else {
+              rawProof = data.proof
+              const proof = new Proof({ proof: rawProof })
+              proofData = proof.evaluateProof()
+            }
           }
           return dispatch(updateDocument(doc._id, { rawProof, proofData }))
         }
@@ -278,4 +301,11 @@ export function clearCurrentDoc() {
 
 export function clearDocumentList() {
   return dispatch => dispatch(setDocumentList([]))
+}
+
+export function setDocsLoading(loadingState) {
+  return {
+    type: SET_DOCS_LOADING,
+    payload: loadingState,
+  }
 }

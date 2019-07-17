@@ -7,6 +7,7 @@ function mapStateToProps(state) {
   return {
     documents: state.documents.get('documentList').toJS(),
     node: state.app.get('node'),
+    loading: state.documents.get('loading'),
   }
 }
 
@@ -23,6 +24,9 @@ function mapDispatchToProps(dispatch) {
     },
     getProofs: () => {
       dispatch(documentActions.getProofs())
+    },
+    setDocsLoading: () => {
+      dispatch(documentActions.setDocsLoading())
     },
   }
 }

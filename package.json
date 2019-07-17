@@ -21,6 +21,9 @@
   "homepage": "git+https://github.com/bucko13/prism#readme",
   "author": "",
   "license": "MIT",
+  "resolutions": {
+    "lodash": "^4.17.13"
+  },
   "devDependencies": {
     "@babel/core": "^7.4.5",
     "@babel/plugin-transform-runtime": "^7.4.4",

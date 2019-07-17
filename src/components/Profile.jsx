@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import { Person } from 'blockstack'
 import PropTypes from 'prop-types'
-import { Button, Dimmer, Loader } from 'semantic-ui-react'
+import { Button } from 'semantic-ui-react'
 
 import { Document, Proof } from '../models'
 import { DocumentList } from '.'
@@ -23,30 +23,29 @@ export default class Profile extends PureComponent {
           return avatarFallbackImage
         },
       },
-      loading: true,
     }
   }
 
   static get propTypes() {
     return {
       userSession: PropTypes.object,
+      loading: PropTypes.bool.isRequired,
+      documents: PropTypes.arrayOf(documentPropTypes).isRequired,
       getOwnDocuments: PropTypes.func.isRequired,
       clearDocumentList: PropTypes.func.isRequired,
-      documents: PropTypes.arrayOf(documentPropTypes).isRequired,
+      setDocsLoading: PropTypes.func.isRequired,
     }
   }
 
   async componentDidMount() {
-    const { userSession, getOwnDocuments } = this.props
+    const { userSession, getOwnDocuments, clearDocumentList } = this.props
+    clearDocumentList()
 
     await getOwnDocuments()
 
     this.setState({
       person: new Person(userSession.loadUserData().profile),
     })
-    setTimeout(() => {
-      this.setState({ loading: false })
-    }, 7000)
   }
 
   componentWillUnmount() {
@@ -61,25 +60,21 @@ export default class Profile extends PureComponent {
       `Are you sure you want to delete all posts (${myDocs.length})?`
     )
     if (!confirm) return
-
-    this.setState({ loading: true }, async () => {
-      const promises = []
-      for (let doc of myDocs) {
-        const proof = await Proof.findById(doc.attrs.proofId)
-        promises.push(doc.destroy())
-        if (proof) promises.push(proof.destroy())
-      }
-      await Promise.all(promises)
-      this.props.clearDocumentList()
-      this.setState({ loading: false }, () => {
-        this.props.getOwnDocuments()
-      })
-    })
+    this.props.setDocsLoading(true)
+    const promises = []
+    for (let doc of myDocs) {
+      const proof = await Proof.findById(doc.attrs.proofId)
+      promises.push(doc.destroy())
+      if (proof) promises.push(proof.destroy())
+    }
+    await Promise.all(promises)
+    this.props.clearDocumentList()
+    this.props.getOwnDocuments()
   }
 
   render() {
-    const { documents, userSession } = this.props
-    const { person, loading } = this.state
+    const { documents, userSession, loading } = this.props
+    const { person } = this.state
 
     return !userSession.isSignInPending() ? (
       <div className="panel-welcome" id="section-2">
@@ -97,13 +92,6 @@ export default class Profile extends PureComponent {
           </span>
           !
         </h1>
-        {loading && documents.length ? (
-          <Dimmer active inverted>
-            <Loader size="large" />
-          </Dimmer>
-        ) : (
-          ''
-        )}
         <DocumentList documents={documents} loading={loading} edit />
         {documents && documents.length ? (
           <Button

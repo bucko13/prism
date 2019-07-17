@@ -2,6 +2,8 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { Button, Input } from 'semantic-ui-react'
 
+import { ProofDetails } from '.'
+
 export default class AddOrEditDocComponent extends PureComponent {
   constructor(props) {
     super(props)
@@ -19,6 +21,7 @@ export default class AddOrEditDocComponent extends PureComponent {
       caveatKey: PropTypes.string,
       edit: PropTypes.bool, // whether or not we are in edit or add mode
       userId: PropTypes.string,
+      proofData: PropTypes.object,
     }
   }
 
@@ -34,7 +37,9 @@ export default class AddOrEditDocComponent extends PureComponent {
       caveatKey = '',
       edit,
       userId,
+      proofData,
     } = this.props
+
     return (
       <div className="row justify-content-center">
         <div className="row mb-4 col-lg-8">
@@ -113,6 +118,13 @@ export default class AddOrEditDocComponent extends PureComponent {
           >
             Submit
           </Button>
+        </div>
+        <div className="row justify-content-end col-lg-8">
+          {proofData && Object.keys(proofData).length ? (
+            <ProofDetails proofData={proofData} />
+          ) : (
+            ''
+          )}
         </div>
       </div>
     )
