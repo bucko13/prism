@@ -204,7 +204,7 @@ export function updateDocumentProofs() {
               await proof.getProofs()
 
             // evaluate the raw proof to extract the relevant data
-            let proofData = proof.evaluateProof()
+            const proofData = proof.evaluateProof()
 
             return dispatch(
               updateDocument(doc._id, {
