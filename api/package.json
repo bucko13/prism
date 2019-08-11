@@ -18,6 +18,9 @@
   "resolutions": {
     "lodash": "^4.17.13"
   },
+  "engines": {
+    "node": ">0.10.0"
+  },
   "scripts": {
     "now-build": "cd node_modules/chainpoint-client/ && npm install && npm run build && cd ../../"
   }

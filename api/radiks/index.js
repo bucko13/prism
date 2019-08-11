@@ -43,24 +43,31 @@ app.get('/api/radiks/document/:docId', async (req, res) => {
       title: document.title,
       author: document.author,
       _id: document._id,
+      requirePayment: document.requirePayment,
     })
-  const { encryptedContent: data, keyId } = document
 
-  // if requesting content but no root macaroon cookie present in request
-  // then an invoice needs to be requested first to get the macaroon for auth
-  if (!rootMacaroon)
-    return res.status(400).json({
-      message: 'Missing macaroon. Request an invoice before requesting content',
-    })
-  // request for content but no discharge macaroon passed in query param
-  // likely means client still needs to pay ln node and verify payment status
-  else if (!dischargeMacaroon)
-    return res.status(400).json({
-      message:
-        'Missing 3rd party macaroon from payment node. \
-Make sure invoice is paid and you have received a discharge macaroon',
-    })
-  else if (!data && document.title)
+  const { encryptedContent: data, keyId, requirePayment } = document
+
+  // if the document requires payment then we need to check authorizations
+  // before continuing
+  if (requirePayment) {
+    // if requesting content but no root macaroon cookie present in request
+    // then an invoice needs to be requested first to get the macaroon for auth
+    if (!rootMacaroon)
+      return res.status(400).json({
+        message:
+          'Missing macaroon. Request an invoice before requesting content',
+      })
+    // request for content but no discharge macaroon passed in query param
+    // likely means client still needs to pay ln node and verify payment status
+    else if (!dischargeMacaroon)
+      return res.status(400).json({
+        message:
+          'Missing 3rd party macaroon from payment node. \
+  Make sure invoice is paid and you have received a discharge macaroon',
+      })
+  }
+  if (!data && document.title)
     return res.status(202).json({
       title: document.title,
       author: document.author,
@@ -75,8 +82,9 @@ Make sure invoice is paid and you have received a discharge macaroon',
   // if we've gotten this far we know that we have all necessary
   // macaroons as well as available document data.
   try {
-    // make sure request is authenticated by validating the macaroons
-    validateMacaroons(rootMacaroon, dischargeMacaroon, docId)
+    if (requirePayment)
+      // make sure request is authenticated by validating the macaroons
+      validateMacaroons(rootMacaroon, dischargeMacaroon, docId)
   } catch (e) {
     // if throws with an error message that includes text "expired"
     // then payment is required again

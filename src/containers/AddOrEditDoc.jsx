@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { evaluateProofs } from 'chainpoint-client/dist/bundle.web'
 import ReactMde from 'react-mde'
-import { Header, Loader, Dimmer } from 'semantic-ui-react'
+import { Header, Loader, Dimmer, Modal } from 'semantic-ui-react'
 import * as Showdown from 'showdown'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 
@@ -87,7 +87,7 @@ class AddOrEditDocContainer extends PureComponent {
         author,
         node,
         caveatKey,
-        requirePayment = true,
+        requirePayment,
       } = this.document.attrs
 
       // under some very narrow circumstances
@@ -174,6 +174,10 @@ class AddOrEditDocContainer extends PureComponent {
     this.setState({ tab })
   }
 
+  handleCloseModal() {
+    this.setState({ errorMessage: '' })
+  }
+
   async handleDelete() {
     if (!window && !window.confifm) return
     const confirm = window.confirm(
@@ -202,7 +206,14 @@ class AddOrEditDocContainer extends PureComponent {
   }
 
   async handleSubmit() {
-    let { title, text, author, node, caveatKey } = this.state
+    let {
+      title,
+      text,
+      author,
+      node,
+      caveatKey = false,
+      requirePayment,
+    } = this.state
     const { name, userId, edit } = this.props
 
     if (!author) author = name || 'Anonymous'
@@ -213,7 +224,28 @@ class AddOrEditDocContainer extends PureComponent {
       userId,
       node,
       caveatKey,
+      requirePayment,
     }
+
+    try {
+      if (requirePayment) new URL(node)
+    } catch {
+      return this.setState({
+        errorMessage:
+          'Lightning URI is invalid. Must be of the form http://example.com of https://example.com',
+      })
+    }
+
+    // if payment is required and we are mising either the nodeUri
+    // or the caveat key password, then throw an error
+    if (
+      requirePayment &&
+      (!node || !node.length || (!caveatKey || !caveatKey.length))
+    )
+      return this.setState({
+        errorMessage:
+          'Must provide valid lightning node URI and password when requiring payment.',
+      })
 
     // if we are in an edit screen then we want to update the current document
     if (edit) this.document.update(attrs)
@@ -250,6 +282,7 @@ class AddOrEditDocContainer extends PureComponent {
       error,
       loadingMessage = null,
       proofData,
+      errorMessage,
     } = this.state
 
     const editor = (
@@ -297,6 +330,20 @@ class AddOrEditDocContainer extends PureComponent {
           handleSubmit={() => this.handleSubmit()}
           proofData={proofData}
         />
+        <Modal
+          open={errorMessage && errorMessage.length ? true : false}
+          basic
+          size="small"
+          onClose={() => this.handleCloseModal()}
+        >
+          <Header
+            icon="exclamation triangle"
+            content="Problem with your post"
+          />
+          <Modal.Content>
+            <h3>{errorMessage}</h3>
+          </Modal.Content>
+        </Modal>
       </React.Fragment>
     )
   }

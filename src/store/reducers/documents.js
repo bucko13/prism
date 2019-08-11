@@ -21,6 +21,7 @@ const init = Map({
     proofId: '', // id of associated proof
     rawProof: '', // raw proof data, saved as reference for evaluating
     proofData: {}, // object of height, merkleRoot, and submittedAt
+    requirePayment: false,
   }),
   documentList: List([]),
   loading: true,

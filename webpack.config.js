@@ -2,7 +2,7 @@ const path = require('path')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const webpack = require('webpack')
 
-// copy manifest.json to the path: 'public/build'
+// copy manifest.json to the path: 'public'
 // this will allow for the authRequest to see the file at www.example.com/manifest.json
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const ManifestAssetPlugin = new CopyWebpackPlugin([
@@ -31,7 +31,7 @@ module.exports = {
   entry: './src/index.js',
   target: 'web',
   output: {
-    path: path.resolve('public/build'),
+    path: path.resolve('public'),
     filename: 'index_bundle.js',
   },
   devServer: {

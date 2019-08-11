@@ -69,6 +69,11 @@ export default class Document extends Model {
       decrypted: true,
     },
 
+    requirePayment: {
+      type: Boolean,
+      decrypted: true,
+    },
+
     // this is used for managing third party macaroons
     // between the remote lightning node that protects
     // this document and the app server that checks auth.
