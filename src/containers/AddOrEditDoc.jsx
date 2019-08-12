@@ -7,6 +7,7 @@ import { evaluateProofs } from 'chainpoint-client/dist/bundle.web'
 import ReactMde from 'react-mde'
 import { Header, Loader, Dimmer, Modal } from 'semantic-ui-react'
 import * as Showdown from 'showdown'
+import { get } from 'axios'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 
 import { Document, Proof } from '../models'
@@ -228,12 +229,33 @@ class AddOrEditDocContainer extends PureComponent {
     }
 
     try {
-      if (requirePayment) new URL(node)
-    } catch {
-      return this.setState({
-        errorMessage:
-          'Lightning URI is invalid. Must be of the form http://example.com of https://example.com',
-      })
+      if (requirePayment) {
+        // first test it is a valid URL
+        new URL(node)
+
+        let uri = node
+
+        // trim trailing slash
+        if (node[node.length - 1] === '/') uri = node.slice(0, node.length - 1)
+        // now see if it conforms to the api
+        const {
+          data: { pubKey, socket },
+        } = await get(`${uri}/api/node`)
+        if (!pubKey || !socket)
+          throw new Error(
+            'Paywall does not conform to boltwall specs. Please visit https://github.com/tierion/now-boltwall for more information on setting up a node to receive payments.'
+          )
+      }
+    } catch (e) {
+      if (e.message.indexOf('Invalid URL') !== -1)
+        return this.setState({
+          errorMessage:
+            'Paywall URI is invalid. Must be of the form http://example.com or https://example.com',
+        })
+      else
+        return this.setState({
+          errorMessage: e.message,
+        })
     }
 
     // if payment is required and we are mising either the nodeUri

@@ -133,7 +133,7 @@ export default class AddOrEditDocComponent extends PureComponent {
         </div>
         <div className="row mb-4 col-lg-8">
           <Input
-            label="Lightning URI"
+            label="Paywall URI"
             className="col-md-6 my-md-0 my-3"
             placeholder="Full address where node can be accessed"
             error={requirePayment && (!node || !node.length) ? true : false}
@@ -157,7 +157,7 @@ export default class AddOrEditDocComponent extends PureComponent {
           <p className="col" style={{ fontStyle: 'italic', fontSize: '.9rem' }}>
             The passphrase is used to ensure that your lightning node properly
             authenticates users that want to access your document after
-            successful payments. Required if setting a Lightning URI.
+            successful payments. Required if setting a Paywall URI.
           </p>
         </div>
         <div className="row justify-content-end col-lg-8">
