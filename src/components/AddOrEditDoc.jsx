@@ -1,4 +1,4 @@
-import React, { PureComponent, createRef } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import {
   Button,
@@ -13,7 +13,6 @@ import {
 import { ProofDetails } from '.'
 
 export default class AddOrEditDocComponent extends PureComponent {
-  contextRef = createRef()
   constructor(props) {
     super(props)
   }
