@@ -4,6 +4,7 @@ import { Header, Button } from 'semantic-ui-react'
 
 import InvoiceModal from './InvoiceModal.jsx'
 import marked from 'marked'
+import DOMPurify from 'dompurify'
 
 export default class Post extends PureComponent {
   constructor(props) {
@@ -69,7 +70,7 @@ export default class Post extends PureComponent {
       closeModal,
       initializeModal,
     } = this.props
-
+    const cleanContent = DOMPurify.sanitize(content)
     return (
       <div>
         <Header as="h2">{title}</Header>
@@ -83,7 +84,7 @@ export default class Post extends PureComponent {
             className="container mb-5 p-2"
             style={{ textAlign: 'justify' }}
             dangerouslySetInnerHTML={{
-              __html: marked(content, { sanitize: true }),
+              __html: marked(cleanContent),
             }}
           />
         </div>
