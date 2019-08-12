@@ -86,11 +86,11 @@ export function setDocumentList(documents) {
  * @returns {void} will dispatch an action to populate the state
  */
 export function setCurrentDoc(docId) {
-  return async (dispatch, getState) => {
+  return async dispatch => {
     try {
       const {
         data: { author, _id, title, decryptedContent, node, requirePayment },
-      } = await get(`/api/radiks/document/${docId}`)
+      } = await get(`/api/radiks/document/${docId}?preview=true`)
 
       dispatch({
         type: SET_CURRENT_DOC,
@@ -105,12 +105,7 @@ export function setCurrentDoc(docId) {
       })
 
       // check if we need to get or can get the decrypted content
-      const content = getState().documents.getIn(['currentDoc', 'content'])
-      if (
-        !requirePayment &&
-        !decryptedContent &&
-        (!content || !content.length)
-      ) {
+      if (!requirePayment) {
         const {
           data: { decryptedContent },
         } = await get(`/api/radiks/document/${docId}?content=true`)

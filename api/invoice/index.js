@@ -4,13 +4,13 @@ const request = require('request-promise-native')
 
 const { decryptWithAES, getDocument } = require('../radiks/helpers')
 
-/*
+/**
  * Must compose a root macaroon and retrieve an invoice
  * to send back in the response.
- * @params {String} req.body.docId - id of document client would like to pay for
- * @params {String} req.body.time - amount of time to purchase
- * @params {String} req.body.nodeUri - location of node endpoint for retrieving invoice
- * @params {String} req.body.title - title of document being requested
+ * @param {String} req.body.docId - id of document client would like to pay for
+ * @param {String} req.body.time - amount of time to purchase
+ * @param {String} req.body.nodeUri - location of node endpoint for retrieving invoice
+ * @param {String} req.body.title - title of document being requested
  * @returns {String} res.session.macaroon - serialized macaroon for client to satisfy
  * must include 3rd party caveat
  */
@@ -30,7 +30,7 @@ app.post('/api/invoice', async (req, res) => {
   const invoice = await request({
     method: 'POST',
     uri: `${nodeUri}/api/invoice`,
-    body: { docId, time, title },
+    body: { docId, time, title, appName: 'Prism Reader' },
     json: true,
   })
 

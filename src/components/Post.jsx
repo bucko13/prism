@@ -74,25 +74,30 @@ export default class Post extends PureComponent {
       <div>
         <Header as="h2">{title}</Header>
         <Header as="h4">By: {author}</Header>
-        <div className="post-container">
-          {locked && requirePayment ? (
-            <React.Fragment>
-              <p>
-                [This content is currently protected. You must purchase reading
-                time in order to view content.]
-              </p>
-              <Button onClick={() => initializeModal()}>Purchase Time</Button>
-            </React.Fragment>
-          ) : (
-            <div
-              className="container mb-5 p-2"
-              style={{ textAlign: 'justify' }}
-              dangerouslySetInnerHTML={{
-                __html: marked(content, { sanitize: true }),
-              }}
-            />
-          )}
+        <div
+          className={`post-container${
+            locked && requirePayment ? ' preview' : ''
+          }`}
+        >
+          <div
+            className="container mb-5 p-2"
+            style={{ textAlign: 'justify' }}
+            dangerouslySetInnerHTML={{
+              __html: marked(content, { sanitize: true }),
+            }}
+          />
         </div>
+        {locked && requirePayment ? (
+          <React.Fragment>
+            <p>
+              [This content is currently protected. Purchase time in order to
+              continue reading.]
+            </p>
+            <Button onClick={() => initializeModal()}>Purchase Time</Button>
+          </React.Fragment>
+        ) : (
+          ''
+        )}
         <InvoiceModal
           title={title}
           seconds={seconds}

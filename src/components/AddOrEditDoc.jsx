@@ -30,7 +30,7 @@ export default class AddOrEditDocComponent extends PureComponent {
       edit: PropTypes.bool, // whether or not we are in edit or add mode
       userId: PropTypes.string,
       proofData: PropTypes.object,
-      requirePayment: PropTypes.bool,
+      requirePayment: PropTypes.bool.isRequired,
     }
   }
 

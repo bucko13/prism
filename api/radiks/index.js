@@ -9,6 +9,7 @@ const {
   validateMacaroons,
   decryptWithAES,
   getProof,
+  getDecryptedContentPreview,
 } = require('./helpers')
 
 let RadiksController
@@ -29,7 +30,7 @@ app.get('/api/radiks/key', async (req, res) => {
 app.get('/api/radiks/document/:docId', async (req, res) => {
   const { docId } = req.params
   const document = await getDocument(docId)
-  const { content, dischargeMacaroon } = req.query
+  const { content, dischargeMacaroon, preview } = req.query
   const rootMacaroon = req.session.macaroon
 
   if (!document)
@@ -37,8 +38,8 @@ app.get('/api/radiks/document/:docId', async (req, res) => {
       .status(404)
       .json({ message: `No document found for id ${docId}` })
 
-  // if no request for content then just return metadata
-  if (!content)
+  // if no request for content, or content preview then just return metadata
+  if (!content && !preview)
     return res.status(200).json({
       title: document.title,
       author: document.author,
@@ -46,7 +47,37 @@ app.get('/api/radiks/document/:docId', async (req, res) => {
       requirePayment: document.requirePayment,
     })
 
-  const { encryptedContent: data, keyId, requirePayment } = document
+  // if the request is just for a preview then we don't need to check authorization
+  const { encryptedContent, keyId, requirePayment } = document
+
+  if (preview) {
+    const contentPreview = await getDecryptedContentPreview(
+      encryptedContent,
+      keyId
+    )
+    // destructure what we need fromm the document
+    const {
+      title,
+      author,
+      _id,
+      createdAt,
+      updatedAt,
+      requirePayment,
+      node,
+    } = document
+
+    // send relevant information for content preview
+    return res.json({
+      title,
+      author,
+      _id,
+      createdAt,
+      updatedAt,
+      requirePayment,
+      node,
+      decryptedContent: contentPreview,
+    })
+  }
 
   // if the document requires payment then we need to check authorizations
   // before continuing
@@ -67,14 +98,14 @@ app.get('/api/radiks/document/:docId', async (req, res) => {
   Make sure invoice is paid and you have received a discharge macaroon',
       })
   }
-  if (!data && document.title)
+  if (!encryptedContent && document.title)
     return res.status(202).json({
       title: document.title,
       author: document.author,
       _id: document._id,
       decryptedContent: '[Content is protected]',
     })
-  else if (!data)
+  else if (!encryptedContent)
     return res
       .status(404)
       .json({ message: 'no encrypted content for requested document' })
@@ -93,8 +124,8 @@ app.get('/api/radiks/document/:docId', async (req, res) => {
     return res.status(400).json({ message: e.message })
   }
 
-  const decryptedContent = await decryptWithAES(data, keyId)
-  res.json({ ...document, decryptedContent: decryptedContent.toString() })
+  const decryptedContent = await decryptWithAES(encryptedContent, keyId)
+  res.json({ ...document, decryptedContent })
 })
 
 // get documents list without radiks client on the front end
