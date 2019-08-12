@@ -109,7 +109,7 @@ export function setCurrentDoc(docId) {
       if (
         !requirePayment &&
         !decryptedContent &&
-        (!content || content.length)
+        (!content || !content.length)
       ) {
         const {
           data: { decryptedContent },
