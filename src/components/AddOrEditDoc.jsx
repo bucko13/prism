@@ -1,6 +1,14 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { Button, Input } from 'semantic-ui-react'
+import {
+  Button,
+  Input,
+  Checkbox,
+  Header,
+  Popup,
+  Icon,
+  Segment,
+} from 'semantic-ui-react'
 
 import { ProofDetails } from '.'
 
@@ -22,6 +30,7 @@ export default class AddOrEditDocComponent extends PureComponent {
       edit: PropTypes.bool, // whether or not we are in edit or add mode
       userId: PropTypes.string,
       proofData: PropTypes.object,
+      requirePayment: PropTypes.bool,
     }
   }
 
@@ -38,6 +47,7 @@ export default class AddOrEditDocComponent extends PureComponent {
       edit,
       userId,
       proofData,
+      requirePayment,
     } = this.props
 
     return (
@@ -61,28 +71,72 @@ export default class AddOrEditDocComponent extends PureComponent {
           />
         </div>
         <div className="row col-lg-8 mb-4">{editor}</div>
+        <div className="row col-lg-8 mb-4 justify-content-center">
+          <Segment compact>
+            <Checkbox
+              toggle
+              label="Require payment to view?"
+              checked={requirePayment}
+              onClick={() =>
+                handleValueChange('requirePayment', !requirePayment)
+              }
+            />
+          </Segment>
+        </div>
+        <div className="row col-lg-8">
+          <div className="col-md-3">
+            <Header as="h3" style={{ display: 'inline-block' }}>
+              Payment Details
+            </Header>
+            <Popup
+              trigger={
+                <Icon
+                  name="info circle"
+                  color="grey"
+                  style={{ verticalAlign: 'super', fontSize: '1em' }}
+                />
+              }
+              content={
+                <React.Fragment>
+                  <p>
+                    <strong>
+                      Required even for free posts if you&apos;d like to receive
+                      tips.
+                    </strong>
+                  </p>
+                  <p>
+                    Easily deploy your own payment server for free with{' '}
+                    <a
+                      href="https://github.com/tierion/now-boltwall"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      now-boltwall
+                    </a>{' '}
+                    which supports both{' '}
+                    <a
+                      href="https://opennode.co"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      OpenNode
+                    </a>{' '}
+                    or your own self-hosted node.
+                  </p>
+                </React.Fragment>
+              }
+              on="hover"
+              hideOnScroll
+              hoverable
+            />
+          </div>
+        </div>
         <div className="row mb-4 col-lg-8">
-          <p>
-            The server at this address must conform to the expected api for
-            retrieving invoices and setting authentication macaroons. These can
-            be easily deployed with an OpenNode Lightning instance and a (WIP){' '}
-            <a href="https://zeit.co" target="_blank" rel="noopener noreferrer">
-              zeit builder
-            </a>{' '}
-            for deployment. Visit the{' '}
-            <a
-              href="https://github.com/bucko13/ln-builder"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              LN Builder repo
-            </a>{' '}
-            to learn more and clone the project to deploy your own.
-          </p>
           <Input
-            label="Lightning URI"
+            label="Paywall URI"
             className="col-md-6 my-md-0 my-3"
             placeholder="Full address where node can be accessed"
+            error={requirePayment && (!node || !node.length) ? true : false}
             value={node}
             onChange={e => handleValueChange('node', e.target.value)}
           />
@@ -91,13 +145,19 @@ export default class AddOrEditDocComponent extends PureComponent {
             className="col-md-6"
             placeholder="Enter a secure, random key"
             type="password"
+            error={
+              (requirePayment && (!caveatKey || !caveatKey.length)) ||
+              (node && (!caveatKey || !caveatKey.length))
+                ? true
+                : false
+            }
             value={caveatKey}
             onChange={e => handleValueChange('caveatKey', e.target.value)}
           />
           <p className="col" style={{ fontStyle: 'italic', fontSize: '.9rem' }}>
             The passphrase is used to ensure that your lightning node properly
             authenticates users that want to access your document after
-            successful payments. Required if setting a Lightning URI.
+            successful payments. Required if setting a Paywall URI.
           </p>
         </div>
         <div className="row justify-content-end col-lg-8">

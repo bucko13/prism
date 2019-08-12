@@ -16,6 +16,7 @@ export default class Post extends PureComponent {
       content: PropTypes.string,
       author: PropTypes.string,
       locked: PropTypes.bool,
+      requirePayment: PropTypes.bool,
       node: PropTypes.string,
       seconds: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
         .isRequired,
@@ -38,7 +39,9 @@ export default class Post extends PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    const { invoiceStatus, getContent, locked } = this.props
+    const { invoiceStatus, getContent, locked, requirePayment } = this.props
+
+    if (!requirePayment) return
     // if the invoice status updates to 'paid' or it's not locked
     // then we want to do a request to get the post content which will loop until
     // status changes
@@ -56,6 +59,7 @@ export default class Post extends PureComponent {
       author,
       content,
       locked,
+      requirePayment,
       seconds,
       modalOpen,
       rate,
@@ -71,7 +75,7 @@ export default class Post extends PureComponent {
         <Header as="h2">{title}</Header>
         <Header as="h4">By: {author}</Header>
         <div className="post-container">
-          {locked ? (
+          {locked && requirePayment ? (
             <React.Fragment>
               <p>
                 [This content is currently protected. You must purchase reading

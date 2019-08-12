@@ -24,6 +24,9 @@
   "resolutions": {
     "lodash": "^4.17.13"
   },
+  "engines": {
+    "node": ">0.10.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.4.5",
     "@babel/plugin-transform-runtime": "^7.4.4",
@@ -42,7 +45,7 @@
     "eslint-plugin-react": "^7.13.0",
     "file-loader": "^4.0.0",
     "html-webpack-plugin": "^3.2.0",
-    "marked": "^0.6.2",
+    "marked": "^0.7.0",
     "path": "^0.12.7",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
