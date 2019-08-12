@@ -60,9 +60,10 @@ export function setUser({ username, userId, name }) {
 export function getNodeInfo() {
   return async dispatch => {
     const {
-      data: { identityPubkey },
+      data: { identityPubkey, pubKey, socket },
     } = await get('/api/node')
-    dispatch(setNodeInfo(identityPubkey))
+    const key = pubKey || identityPubkey
+    dispatch(setNodeInfo(`${key}@${socket}`))
   }
 }
 
