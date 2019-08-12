@@ -79,22 +79,19 @@ export function requestInvoice() {
       docId,
       nodeUri,
     })
-    const {
-      lightning_invoice: { payreq: invoice },
-      id,
-      status,
-    } = data
-    dispatch(setInvoice({ invoice, invoiceId: id, status }))
+    const { payreq, id, status } = data
+    dispatch(setInvoice({ invoice: payreq, invoiceId: id, status }))
     dispatch(checkInvoiceStatus())
   }
 }
 
-/* recursive call to check status of invoice
+/**
+ * recursive call to check status of invoice
  * associated with current session
  * This means that currently a client can only support one
  * payment request at a time
- * @params {Number} tries - number of times to recursively make the call
- * @params {<Promise>} - will either set status to paid, failed, or call itself recursively
+ * @param {Number} tries - number of times to recursively make the call
+ * @param {<Promise>} - will either set status to paid, failed, or call itself recursively
  */
 export function checkInvoiceStatus(tries = 50, timeout = 750) {
   return async (dispatch, getState) => {

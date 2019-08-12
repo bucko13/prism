@@ -31,7 +31,8 @@ export default class Proof extends Model {
     },
   }
 
-  /*
+  /**
+   * @function
    * Handles a couple checks and updates that are needed when saving a proof
    * Throws if there is no docId in the attrs. Can't do anything without a doc!
    * If there is a hash associated with this proof, then we don't need to do anything
@@ -132,7 +133,7 @@ export default class Proof extends Model {
     await this.save()
   }
 
-  /*
+  /**
    * a wrapper around the evaluate proof method from the chainpoint client
    * @returns {Object|null} proof -  if raw proof exists, will return an object with relevant data
    * @returns {Number|String} proof.height - block height where proof was anchored to
@@ -174,7 +175,7 @@ export default class Proof extends Model {
     }
   }
 
-  /*
+  /**
    * Utility function to get the hash of a document
    * @returns {String} SHA256 hash of all (encrypted) document attributes
    */
@@ -189,9 +190,9 @@ export default class Proof extends Model {
     return SHA256.digest(Buffer.from(attrs)).toString('hex')
   }
 
-  /*
+  /**
    * Submit a hash to the chainpoint network
-   * @params {String} [hash] - hash of content to submit to Chainpoint and retrieve proof
+   * @param {String} [hash] - hash of content to submit to Chainpoint and retrieve proof
    */
   async submitHash(hash) {
     const { docId } = this.attrs

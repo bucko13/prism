@@ -88,7 +88,7 @@ class AddOrEditDocContainer extends PureComponent {
         author,
         node,
         caveatKey,
-        requirePayment,
+        requirePayment = false,
       } = this.document.attrs
 
       // under some very narrow circumstances
@@ -146,7 +146,7 @@ class AddOrEditDocContainer extends PureComponent {
     } else {
       this.setState(
         {
-          loadingMessage: 'Updating proof anchor...',
+          loadingMessage: 'Updating proof of authenticity...',
         },
         async () => {
           // if we have a proofId then we need to get the proof w/ that id and update

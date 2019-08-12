@@ -14,6 +14,7 @@ const {
 const TimestampCaveatVerifier = verifier.TimestampCaveatVerifier
 const { decryptECIES } = require('blockstack/lib/encryption')
 const { aes } = require('bcrypto')
+const assert = require('bsert')
 
 function getAppUserSession({ origin = 'localhost:3000' }) {
   const appConfig = new AppConfig(
@@ -108,12 +109,12 @@ async function getProof(id) {
   })
 }
 
-/*
+/**
  * Validates a macaroon and should indicate reason for failure
  * if possible
- * @params {Macaroon} root - root macaroon
- * @params {Macaroon} discharge - discharge macaroon from 3rd party validation
- * @params {String} docId - document id that macaroon is validated for
+ * @param {Macaroon} root - root macaroon
+ * @param {Macaroon} discharge - discharge macaroon from 3rd party validation
+ * @param {String} docId - document id that macaroon is validated for
  * @returns {Boolean|Exception} will return true if passed or throw with failure
  */
 function validateMacaroons(root, discharge, docId) {
@@ -158,33 +159,67 @@ function validateMacaroons(root, discharge, docId) {
   }
 }
 
-/*
+/**
  * Given previously symmetrically encrypted data and a key id
  * Retrieve key information, decrypt the aes key at the given keyId
  * and use it to decrypt the data
- * @params {String} data - encrypted data, cipher and iv split w/ string ':::'
- * @params {String} keyId - id of key to retrieve from Radiks db
+ * @param {String} data - encrypted data, cipher and iv split w/ string ':::'
+ * @param {String} keyId - id of key to retrieve from Radiks db
  * @returns {String} decrypted data
  */
 async function decryptWithAES(data, keyId) {
+  assert(typeof data === 'string' && data.length, 'Missing content to decrypt')
+  assert(data.indexOf(':::') > -1, 'Content encrypted in unknown format')
+  assert(
+    typeof keyId === 'string' && keyId.length,
+    'Missing keyId for decryption'
+  )
   // retrieve key object that has encrypted aesKey
   const { encryptedKey: encryptedAES } = await getUserKey(keyId)
 
   // TODO: the below fails if content was never encrypted
-  const [encryptedCaveat, iv] = data.split(':::')
+  const [encryptedContent, iv] = data.split(':::')
 
   // we need to decrypt the AES Key w/ our app's priv key
   const decryptedAES = decryptECIES(process.env.APP_PRIVATE_KEY, encryptedAES)
 
-  const caveatKey = aes.decipher(
-    Buffer.from(encryptedCaveat, 'hex'),
+  const decryptedContent = aes.decipher(
+    Buffer.from(encryptedContent, 'hex'),
     Buffer.from(decryptedAES, 'hex'),
     Buffer.from(iv, 'hex')
   )
 
-  return caveatKey.toString()
+  return decryptedContent.toString()
 }
 
+/**
+ * Decrypts the content and returns a truncated version for displaying previews
+ * @param {String} encryptedContent - encrypted data, cipher and iv split w/ string ':::'
+ * @param {String} keyId - id of key to retrieve from Radiks db
+ * @param {Number} [wordCount=150] - number of words to return
+ * @returns {String} - returns decrypted content of no more than word count passed in
+ */
+async function getDecryptedContentPreview(
+  encryptedContent,
+  keyId,
+  wordCount = 75
+) {
+  const decryptedContent = await decryptWithAES(encryptedContent, keyId)
+
+  // get an array of all of the words
+  const words = decryptedContent.split(' ')
+
+  // if it's already less than the word count, then just return as is
+  if (words.length < wordCount) return decryptedContent
+
+  // then slice off just the words we need, join them back into a sentence and concat an elipses
+  return words
+    .slice(0, wordCount)
+    .join(' ')
+    .concat('...')
+}
+
+exports.getDecryptedContentPreview = getDecryptedContentPreview
 exports.getAppUserSession = getAppUserSession
 exports.getPublicKey = getPublicKey
 exports.getDocumentsList = getDocumentsList
