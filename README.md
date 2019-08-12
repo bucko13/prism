@@ -22,8 +22,8 @@ can be created easily via the [Blockstack Browser](https://browser.blockstack.or
 In order to directly receive payments for people that view your content, you need to setup a lambda service
 using [Now by Zeit](https://zeit.co/now), which can be setup for free, and setup a developer account
 (only testnet is supported for now) with [OpenNode](https://opennode.co) for interacting with lightning.
-With that, you can spin up and deploy an instance of the [lightning builder](https://github.com/bucko13/ln-builder)
-for receiving payments. Full instructions available on the [ln-builder repo](https://github.com/bucko13/ln-builder).
+With that, you can spin up and deploy an instance of [boltwall](https://github.com/tierion/now-boltwall)
+for receiving payments. Full instructions available on the [now-boltwall repo](https://github.com/tierion/now-boltwall).
 
 ## What it does
 
@@ -32,7 +32,7 @@ Prism uses new technology enabled by the advent of the blockchain to disaggregat
 1. **Users**- Accounts are stored on Blockstack, which means that a user always retains ownership of their online identity.
 
 2. **Storage**- Storage is managed using Blockstack's own
-   [Radiks(https://github.com/blockstack-radiks/radiks)] and
+   [Radiks](https://github.com/blockstack-radiks/radiks) and
    [Gaia](https://docs.blockstack.org/storage/overview.html) storage systems.
    This means that when a user uploads content, they are in complete control of that
    content. If Prism goes away, or decides to remove a user from the platform, that user
@@ -156,7 +156,7 @@ but it makes the system more predictable and easier to manage
 #### Session keys and LN Builder
 
 7. Generate a session key (using a crypto library for a 256 bit random number should work and is secure).
-8. Deploy an [LN Builder service](https://github.com/bucko13/ln-builder) to run
+8. Deploy a [boltwall service](https://github.com/tierion/now-boltwall) to run
    as a backup payment gateway.
 9. Take note of the session key, uri of the ln builder service, and caveat key
    you came up with for the ln builder.
