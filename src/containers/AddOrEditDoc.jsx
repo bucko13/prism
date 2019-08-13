@@ -30,6 +30,7 @@ class AddOrEditDocContainer extends PureComponent {
       requirePayment: true,
       loading: true,
       proofData: {},
+      wordCount: 0,
     }
 
     this.converter = new Showdown.Converter({
@@ -82,13 +83,14 @@ class AddOrEditDocContainer extends PureComponent {
       assert(typeof docId === 'string', 'Need a document id to edit post')
       this.document = await Document.findById(docId)
       assert(this.document, 'No document matches that id')
-      const {
+      let {
         content,
         title,
         author,
         node,
         caveatKey,
         requirePayment = false,
+        wordCount,
       } = this.document.attrs
 
       // under some very narrow circumstances
@@ -96,6 +98,7 @@ class AddOrEditDocContainer extends PureComponent {
       // the content from localhost but to the shared database (which gets mixed up by radiks).
       // this catches that error
       if (typeof content !== 'string') return this.setState({ error: true })
+      if (!wordCount) wordCount = this.getWordCount(content)
       const proofData = this.evaluateProof()
       this.setState({
         text: content,
@@ -106,6 +109,7 @@ class AddOrEditDocContainer extends PureComponent {
         requirePayment,
         loading: false,
         proofData,
+        wordCount,
       })
     } else {
       this.setState({ loading: false })
@@ -168,7 +172,11 @@ class AddOrEditDocContainer extends PureComponent {
   }
 
   handleValueChange(name, value) {
-    this.setState({ [name]: value })
+    const newState = { [name]: value }
+
+    if (name === 'text') newState.wordCount = this.getWordCount()
+
+    this.setState(newState)
   }
 
   handleTabChange(tab) {
@@ -237,6 +245,14 @@ class AddOrEditDocContainer extends PureComponent {
       )
   }
 
+  getWordCount(content) {
+    if (!content)
+      // this lets us use the method before we've full mounted the component from the doc attrs
+      content = this.state.text
+    const words = content.split(' ')
+    return words.length
+  }
+
   async handleSubmit() {
     let {
       title,
@@ -245,10 +261,13 @@ class AddOrEditDocContainer extends PureComponent {
       node,
       caveatKey = false,
       requirePayment,
+      wordCount,
     } = this.state
     const { name, userId, edit } = this.props
 
     if (!author) author = name || 'Anonymous'
+    if (!wordCount) wordCount = this.getWordCount()
+
     const attrs = {
       title,
       content: text,
@@ -257,6 +276,7 @@ class AddOrEditDocContainer extends PureComponent {
       node,
       caveatKey,
       requirePayment,
+      wordCount,
     }
 
     try {
@@ -273,7 +293,6 @@ class AddOrEditDocContainer extends PureComponent {
         })
     }
 
-    return
     // if we are in an edit screen then we want to update the current document
     if (edit) this.document.update(attrs)
     // otherwise current document is still null and we want to set it to a new value
@@ -310,6 +329,7 @@ class AddOrEditDocContainer extends PureComponent {
       loadingMessage = null,
       proofData,
       errorMessage,
+      wordCount,
     } = this.state
 
     const editor = (
@@ -356,6 +376,7 @@ class AddOrEditDocContainer extends PureComponent {
           handleDelete={() => this.handleDelete()}
           handleSubmit={() => this.handleSubmit()}
           proofData={proofData}
+          wordCount={wordCount}
         />
         <Modal
           open={errorMessage && errorMessage.length ? true : false}
