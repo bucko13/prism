@@ -11,6 +11,7 @@ import {
 } from 'semantic-ui-react'
 
 import { ProofDetails } from '.'
+import { estimateReadingTime } from '../utils'
 
 export default class AddOrEditDocComponent extends PureComponent {
   constructor(props) {
@@ -75,7 +76,7 @@ export default class AddOrEditDocComponent extends PureComponent {
         <div className="row col-lg-8 mb-4">{editor}</div>
         <div className="row col-lg-8 mb-4 justify-content-center">
           <p>
-            {wordCount} words | Reading Time: ~{Math.floor(wordCount / 200)}{' '}
+            {wordCount} words | Reading Time: ~{estimateReadingTime(wordCount)}{' '}
             minutes
           </p>
         </div>

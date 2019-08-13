@@ -1,10 +1,11 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { Header, Button } from 'semantic-ui-react'
-
-import InvoiceModal from './InvoiceModal.jsx'
 import marked from 'marked'
 import DOMPurify from 'dompurify'
+
+import { estimateReadingTime } from '../utils'
+import InvoiceModal from './InvoiceModal.jsx'
 
 export default class Post extends PureComponent {
   constructor(props) {
@@ -19,6 +20,7 @@ export default class Post extends PureComponent {
       locked: PropTypes.bool,
       requirePayment: PropTypes.bool,
       node: PropTypes.string,
+      wordCount: PropTypes.number.isRequired,
       seconds: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
         .isRequired,
       modalOpen: PropTypes.bool.isRequired,
@@ -59,6 +61,7 @@ export default class Post extends PureComponent {
       title,
       author,
       content,
+      wordCount,
       locked,
       requirePayment,
       seconds,
@@ -90,9 +93,19 @@ export default class Post extends PureComponent {
         </div>
         {locked && requirePayment ? (
           <React.Fragment>
+            {wordCount > 0 ? (
+              <p>
+                {wordCount} words | Reading Time: ~
+                {estimateReadingTime(wordCount)} minutes
+              </p>
+            ) : (
+              <p>
+                <small>(Word count not available for this post)</small>
+              </p>
+            )}
             <p>
-              [This content is currently protected. Purchase time in order to
-              continue reading.]
+              This content is currently protected. Purchase time in order to
+              continue reading.
             </p>
             <Button onClick={() => initializeModal()}>Purchase Time</Button>
           </React.Fragment>

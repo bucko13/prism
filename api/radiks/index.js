@@ -64,6 +64,7 @@ app.get('/api/radiks/document/:docId', async (req, res) => {
       updatedAt,
       requirePayment,
       node,
+      wordCount,
     } = document
 
     // send relevant information for content preview
@@ -75,6 +76,7 @@ app.get('/api/radiks/document/:docId', async (req, res) => {
       updatedAt,
       requirePayment,
       node,
+      wordCount,
       decryptedContent: contentPreview,
     })
   }
