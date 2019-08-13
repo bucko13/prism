@@ -30,6 +30,7 @@ class AddOrEditDocContainer extends PureComponent {
       requirePayment: true,
       loading: true,
       proofData: {},
+      wordCount: 0,
     }
 
     this.converter = new Showdown.Converter({
@@ -82,13 +83,14 @@ class AddOrEditDocContainer extends PureComponent {
       assert(typeof docId === 'string', 'Need a document id to edit post')
       this.document = await Document.findById(docId)
       assert(this.document, 'No document matches that id')
-      const {
+      let {
         content,
         title,
         author,
         node,
         caveatKey,
         requirePayment = false,
+        wordCount,
       } = this.document.attrs
 
       // under some very narrow circumstances
@@ -96,6 +98,7 @@ class AddOrEditDocContainer extends PureComponent {
       // the content from localhost but to the shared database (which gets mixed up by radiks).
       // this catches that error
       if (typeof content !== 'string') return this.setState({ error: true })
+      if (!wordCount) wordCount = this.getWordCount(content)
       const proofData = this.evaluateProof()
       this.setState({
         text: content,
@@ -106,6 +109,7 @@ class AddOrEditDocContainer extends PureComponent {
         requirePayment,
         loading: false,
         proofData,
+        wordCount,
       })
     } else {
       this.setState({ loading: false })
@@ -168,7 +172,11 @@ class AddOrEditDocContainer extends PureComponent {
   }
 
   handleValueChange(name, value) {
-    this.setState({ [name]: value })
+    const newState = { [name]: value }
+
+    if (name === 'text') newState.wordCount = this.getWordCount()
+
+    this.setState(newState)
   }
 
   handleTabChange(tab) {
@@ -206,56 +214,24 @@ class AddOrEditDocContainer extends PureComponent {
     this.setState({ loading: !this.state.loading })
   }
 
-  async handleSubmit() {
-    let {
-      title,
-      text,
-      author,
-      node,
-      caveatKey = false,
-      requirePayment,
-    } = this.state
-    const { name, userId, edit } = this.props
+  async validatePaymentFields() {
+    const { requirePayment, node, caveatKey } = this.state
+    if (requirePayment) {
+      // first test it is a valid URL
+      new URL(node)
 
-    if (!author) author = name || 'Anonymous'
-    const attrs = {
-      title,
-      content: text,
-      author,
-      userId,
-      node,
-      caveatKey,
-      requirePayment,
-    }
+      let uri = node
 
-    try {
-      if (requirePayment) {
-        // first test it is a valid URL
-        new URL(node)
-
-        let uri = node
-
-        // trim trailing slash
-        if (node[node.length - 1] === '/') uri = node.slice(0, node.length - 1)
-        // now see if it conforms to the api
-        const {
-          data: { pubKey, socket },
-        } = await get(`${uri}/api/node`)
-        if (!pubKey || !socket)
-          throw new Error(
-            'Paywall does not conform to boltwall specs. Please visit https://github.com/tierion/now-boltwall for more information on setting up a node to receive payments.'
-          )
-      }
-    } catch (e) {
-      if (e.message.indexOf('Invalid URL') !== -1)
-        return this.setState({
-          errorMessage:
-            'Paywall URI is invalid. Must be of the form http://example.com or https://example.com',
-        })
-      else
-        return this.setState({
-          errorMessage: e.message,
-        })
+      // trim trailing slash
+      if (node[node.length - 1] === '/') uri = node.slice(0, node.length - 1)
+      // now see if it conforms to the api
+      const {
+        data: { pubKey, socket },
+      } = await get(`${uri}/api/node`)
+      if (!pubKey || !socket)
+        throw new Error(
+          'Target paywall does not conform to boltwall specs. Please visit https://github.com/tierion/now-boltwall for more information on setting up a node to receive payments.'
+        )
     }
 
     // if payment is required and we are mising either the nodeUri
@@ -264,10 +240,58 @@ class AddOrEditDocContainer extends PureComponent {
       requirePayment &&
       (!node || !node.length || (!caveatKey || !caveatKey.length))
     )
-      return this.setState({
-        errorMessage:
-          'Must provide valid lightning node URI and password when requiring payment.',
-      })
+      throw new Error(
+        'Must provide valid paywall URI and password when requiring payment.'
+      )
+  }
+
+  getWordCount(content) {
+    if (!content)
+      // this lets us use the method before we've full mounted the component from the doc attrs
+      content = this.state.text
+    const words = content.split(' ')
+    return words.length
+  }
+
+  async handleSubmit() {
+    let {
+      title,
+      text,
+      author,
+      node,
+      caveatKey = false,
+      requirePayment,
+      wordCount,
+    } = this.state
+    const { name, userId, edit } = this.props
+
+    if (!author) author = name || 'Anonymous'
+    if (!wordCount) wordCount = this.getWordCount()
+
+    const attrs = {
+      title,
+      content: text,
+      author,
+      userId,
+      node,
+      caveatKey,
+      requirePayment,
+      wordCount,
+    }
+
+    try {
+      await this.validatePaymentFields()
+    } catch (e) {
+      if (e.message.indexOf('Invalid URL') !== -1)
+        return this.setState({
+          errorMessage:
+            'Paywall URI is invalid. Must be of the form http://example.com or https://example.com',
+        })
+      else
+        return this.setState({
+          errorMessage: `Problem with payment details: ${e.message}`,
+        })
+    }
 
     // if we are in an edit screen then we want to update the current document
     if (edit) this.document.update(attrs)
@@ -305,6 +329,7 @@ class AddOrEditDocContainer extends PureComponent {
       loadingMessage = null,
       proofData,
       errorMessage,
+      wordCount,
     } = this.state
 
     const editor = (
@@ -351,6 +376,7 @@ class AddOrEditDocContainer extends PureComponent {
           handleDelete={() => this.handleDelete()}
           handleSubmit={() => this.handleSubmit()}
           proofData={proofData}
+          wordCount={wordCount}
         />
         <Modal
           open={errorMessage && errorMessage.length ? true : false}

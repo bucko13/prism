@@ -43,6 +43,11 @@ body {
   color: black;
 }
 
+small {
+  color: grey;
+  font-style: italic;
+}
+
 i.icon {
   font-family: 'FontAwesome' !important;
   font-size: 1.75em;

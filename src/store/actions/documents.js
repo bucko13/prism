@@ -57,13 +57,16 @@ export function getOwnDocuments(count = 10) {
 function setDocsFromModelList(documents) {
   return dispatch => {
     const list = documents.map(
-      ({ attrs: { _id, author, title, proofId, rawProof, proofData } }) => ({
+      ({
+        attrs: { _id, author, title, proofId, rawProof, proofData, wordCount },
+      }) => ({
         _id,
         author,
         title,
         proofId,
         rawProof,
         proofData,
+        wordCount,
       })
     )
     dispatch(setDocumentList(list))
@@ -89,7 +92,15 @@ export function setCurrentDoc(docId) {
   return async dispatch => {
     try {
       const {
-        data: { author, _id, title, decryptedContent, node, requirePayment },
+        data: {
+          author,
+          _id,
+          title,
+          decryptedContent,
+          node,
+          requirePayment,
+          wordCount,
+        },
       } = await get(`/api/radiks/document/${docId}?preview=true`)
 
       dispatch({
@@ -101,6 +112,7 @@ export function setCurrentDoc(docId) {
           requirePayment,
           content: decryptedContent || '',
           node,
+          wordCount: wordCount || 0,
         },
       })
 

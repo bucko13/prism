@@ -22,6 +22,7 @@ const init = Map({
     rawProof: '', // raw proof data, saved as reference for evaluating
     proofData: {}, // object of height, merkleRoot, and submittedAt
     requirePayment: false,
+    wordCount: 0,
   }),
   documentList: List([]),
   loading: true,

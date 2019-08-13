@@ -11,6 +11,7 @@ import {
 } from 'semantic-ui-react'
 
 import { ProofDetails } from '.'
+import { estimateReadingTime } from '../utils'
 
 export default class AddOrEditDocComponent extends PureComponent {
   constructor(props) {
@@ -31,6 +32,7 @@ export default class AddOrEditDocComponent extends PureComponent {
       userId: PropTypes.string,
       proofData: PropTypes.object,
       requirePayment: PropTypes.bool.isRequired,
+      wordCount: PropTypes.number.isRequired,
     }
   }
 
@@ -48,6 +50,7 @@ export default class AddOrEditDocComponent extends PureComponent {
       userId,
       proofData,
       requirePayment,
+      wordCount,
     } = this.props
 
     return (
@@ -71,6 +74,12 @@ export default class AddOrEditDocComponent extends PureComponent {
           />
         </div>
         <div className="row col-lg-8 mb-4">{editor}</div>
+        <div className="row col-lg-8 mb-4 justify-content-center">
+          <p>
+            {wordCount} words | Reading Time: ~{estimateReadingTime(wordCount)}{' '}
+            minutes
+          </p>
+        </div>
         <div className="row col-lg-8 mb-4 justify-content-center">
           <Segment compact>
             <Checkbox
