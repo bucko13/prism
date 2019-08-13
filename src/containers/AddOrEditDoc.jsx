@@ -206,6 +206,37 @@ class AddOrEditDocContainer extends PureComponent {
     this.setState({ loading: !this.state.loading })
   }
 
+  async validateForm() {
+    const { requirePayment, node, caveatKey } = this.state
+    if (requirePayment) {
+      // first test it is a valid URL
+      new URL(node)
+
+      let uri = node
+
+      // trim trailing slash
+      if (node[node.length - 1] === '/') uri = node.slice(0, node.length - 1)
+      // now see if it conforms to the api
+      const {
+        data: { pubKey, socket },
+      } = await get(`${uri}/api/node`)
+      if (!pubKey || !socket)
+        throw new Error(
+          'Target paywall does not conform to boltwall specs. Please visit https://github.com/tierion/now-boltwall for more information on setting up a node to receive payments.'
+        )
+    }
+
+    // if payment is required and we are mising either the nodeUri
+    // or the caveat key password, then throw an error
+    if (
+      requirePayment &&
+      (!node || !node.length || (!caveatKey || !caveatKey.length))
+    )
+      throw new Error(
+        'Must provide valid paywall URI and password when requiring payment.'
+      )
+  }
+
   async handleSubmit() {
     let {
       title,
@@ -229,23 +260,7 @@ class AddOrEditDocContainer extends PureComponent {
     }
 
     try {
-      if (requirePayment) {
-        // first test it is a valid URL
-        new URL(node)
-
-        let uri = node
-
-        // trim trailing slash
-        if (node[node.length - 1] === '/') uri = node.slice(0, node.length - 1)
-        // now see if it conforms to the api
-        const {
-          data: { pubKey, socket },
-        } = await get(`${uri}/api/node`)
-        if (!pubKey || !socket)
-          throw new Error(
-            'Paywall does not conform to boltwall specs. Please visit https://github.com/tierion/now-boltwall for more information on setting up a node to receive payments.'
-          )
-      }
+      await this.validateForm()
     } catch (e) {
       if (e.message.indexOf('Invalid URL') !== -1)
         return this.setState({
@@ -254,21 +269,11 @@ class AddOrEditDocContainer extends PureComponent {
         })
       else
         return this.setState({
-          errorMessage: e.message,
+          errorMessage: `Problem with payment details: ${e.message}`,
         })
     }
 
-    // if payment is required and we are mising either the nodeUri
-    // or the caveat key password, then throw an error
-    if (
-      requirePayment &&
-      (!node || !node.length || (!caveatKey || !caveatKey.length))
-    )
-      return this.setState({
-        errorMessage:
-          'Must provide valid lightning node URI and password when requiring payment.',
-      })
-
+    return
     // if we are in an edit screen then we want to update the current document
     if (edit) this.document.update(attrs)
     // otherwise current document is still null and we want to set it to a new value
