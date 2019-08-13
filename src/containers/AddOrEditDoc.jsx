@@ -214,7 +214,7 @@ class AddOrEditDocContainer extends PureComponent {
     this.setState({ loading: !this.state.loading })
   }
 
-  async validateForm() {
+  async validatePaymentFields() {
     const { requirePayment, node, caveatKey } = this.state
     if (requirePayment) {
       // first test it is a valid URL
@@ -280,7 +280,7 @@ class AddOrEditDocContainer extends PureComponent {
     }
 
     try {
-      await this.validateForm()
+      await this.validatePaymentFields()
     } catch (e) {
       if (e.message.indexOf('Invalid URL') !== -1)
         return this.setState({
