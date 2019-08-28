@@ -22,7 +22,7 @@ const initMeta = {
   dislikes: 0,
 }
 
-app.get('api/metadata/rates', (req, res) =>
+app.get('/api/metadata/rates', (req, res) =>
   res.status(200).json({
     tips: {
       rate: PAYMENT_RATE,
@@ -84,27 +84,38 @@ app.use('/api/metadata/:post/tips', async (req, res, next) => {
           'Need payment hash in order to create the payment. \
 Must be associated with an invoice belonging to the post owner.',
       })
-
-    const { paymentHash } = req.body
-    // if either is included then we can check with the doc owner's node
-    // if the corresponding invoice actually exists. If it doesn't then we may
-    // not be able to settle our payment
-    const { node } = req.doc
-    const { payreq, amount } = await request({
-      method: 'GET',
-      uri: `${node}/api/invoice?id=${paymentHash}`,
-      json: true,
-    })
-
-    if (!payreq)
-      return res.status(400).json({
-        message:
-          'Could not find an invoice at the receiving node that matches the payment hash',
+    try {
+      const { paymentHash } = req.body
+      // if either is included then we can check with the doc owner's node
+      // if the corresponding invoice actually exists. If it doesn't then we may
+      // not be able to settle our payment
+      const { node } = req.doc
+      const { payreq, amount } = await request({
+        method: 'GET',
+        uri: `${node}/api/invoice?id=${paymentHash}`,
+        json: true,
       })
 
-    // finally we need to bump the amount to cover our fee
-    // fee is a flat processing fee for now
-    req.body.amount = amount + PROCESSING_FEE
+      if (!payreq)
+        return res.status(400).json({
+          message:
+            'Could not find an invoice at the receiving node that matches the payment hash',
+        })
+
+      // finally we need to bump the amount to cover our fee
+      // fee is a flat processing fee for now
+      req.body.amount = amount + PROCESSING_FEE
+    } catch (e) {
+      // this is in the event of an lnservice based error which comes as an array
+      if (Array.isArray(e))
+        return res
+          .status(e[0])
+          .json({ message: e[1], details: e[2].err.details })
+
+      return res
+        .status(500)
+        .json({ message: 'Problem processing new hodl invoice' })
+    }
   }
   next()
 })
@@ -116,7 +127,8 @@ app.use('/api/metadata/:post/tips', boltwall())
 // to be held but not settled. We want to settle that before moving to the n
 app.use('/api/metadata/:post/tips', async (req, res, next) => {
   const macaroon = req.session.macaroon
-
+  // eslint-disable-next-line no-console
+  console.log('Payment authorized to submit tips...')
   try {
     // this is the invoice id of the hodl invoice paid to prism
     // this is what we will settle with the secret once we pay the associated
@@ -147,11 +159,12 @@ app.use('/api/metadata/:post/tips', async (req, res, next) => {
       json: true,
     })
 
-    // lets make sure the payment amount matches the tips
-    const { likes = 0, dislikes = 0 } = req.body
+    // let's make sure the payment amount matches the tips
+    const likes = parseInt(req.body.likes, 10) || 0
+    const dislikes = parseInt(req.body.dislikes, 10) || 0
     if (likes + dislikes !== amount / PAYMENT_RATE)
       return res.status(400).json({
-        message: `Problem with payment. Amount paid did not match tips given. Payment allows for ${amount /
+        message: `Problem with payment. Amount paid did not match tips given. Payment is for ${amount /
           PAYMENT_RATE} tips.`,
       })
 
@@ -190,6 +203,9 @@ app.use('/api/metadata/:post/tips', async (req, res, next) => {
 
     if (!is_confirmed) throw new Error('Hodl invoice failed to settle.')
 
+    // eslint-disable-next-line no-console
+    console.log('Hodl invoice to prism settled')
+
     // pass this along to the metadata updating route
     // so we can be sure that payment corresponds to the amount paid
     req.amount = amount
@@ -199,6 +215,9 @@ app.use('/api/metadata/:post/tips', async (req, res, next) => {
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error("there was a problem paying the post owner's invoice", e)
+
+    if (Array.isArray(e)) return res.status(e[0]).json({ message: e[1] })
+
     return res
       .status(500)
       .json({ message: 'There was a problem processing the payment' })
@@ -230,9 +249,11 @@ app.put('/api/metadata/:post/tips', async (req, res) => {
       await metaDb.insertOne(newMeta)
     } else {
       newMeta = { ...metadata }
-      const { likes = 0, dislikes = 0 } = req.body
-      if (likes) newMeta.likes = metadata.likes + likes
-      if (dislikes) newMeta.dislikes = metadata.dislikes + dislikes
+      const likes = parseInt(req.body.likes, 10) || 0
+      const dislikes = parseInt(req.body.dislikes, 10) || 0
+      if (likes) newMeta.likes = parseInt(metadata.likes, 10) + likes
+      if (dislikes)
+        newMeta.dislikes = parseInt(metadata.dislikes, 10) + dislikes
 
       await metaDb.updateOne({ post }, { $set: newMeta })
     }

@@ -21,6 +21,8 @@ class PostContainer extends PureComponent {
         author: PropTypes.string.isRequired,
         _id: PropTypes.string.isRequired,
         wordCount: PropTypes.number.isRequired,
+        likes: PropTypes.number.isRequired,
+        dislikes: PropTypes.number.isRequired,
       }),
       location: PropTypes.shape({
         search: PropTypes.string.isRequired,
@@ -39,16 +41,26 @@ class PostContainer extends PureComponent {
       requestInvoice: PropTypes.func.isRequired,
       changeSeconds: PropTypes.func.isRequired,
       checkInvoiceStatus: PropTypes.func.isRequired,
+      getPostMetadata: PropTypes.func.isRequired,
+      getRate: PropTypes.func.isRequired,
+      setInvoice: PropTypes.func.isRequired,
+      setCurrentLikes: PropTypes.func.isRequired,
+      setCurrentDislikes: PropTypes.func.isRequired,
+      clearInvoice: PropTypes.func.isRequired,
     }
   }
 
   componentDidMount() {
     const {
       setCurrentDoc,
+      getPostMetadata,
+      getRate,
       location: { search },
     } = this.props
     const { id } = qs.parse(search, { ignoreQueryPrefix: true })
     setCurrentDoc(id)
+    getPostMetadata(id)
+    getRate()
   }
 
   componentWillUnmount() {
@@ -70,6 +82,10 @@ class PostContainer extends PureComponent {
       changeSeconds,
       checkInvoiceStatus,
       invoiceStatus,
+      setInvoice,
+      setCurrentLikes,
+      setCurrentDislikes,
+      clearInvoice,
     } = this.props
     // if still retrieving the document information
     // return the loader
@@ -99,8 +115,12 @@ class PostContainer extends PureComponent {
         closeModal={() => closeModal()}
         requestInvoice={() => requestInvoice()}
         changeSeconds={e => changeSeconds(e)}
-        checkInvoiceStatus={() => checkInvoiceStatus()}
+        checkInvoiceStatus={checkInvoiceStatus}
         invoiceStatus={invoiceStatus}
+        setInvoice={setInvoice}
+        setCurrentLikes={setCurrentLikes}
+        setCurrentDislikes={setCurrentDislikes}
+        clearInvoice={clearInvoice}
       />
     )
   }
@@ -125,8 +145,17 @@ function mapDispatchToProps(dispatch) {
     clearCurrentDoc: () => {
       dispatch(documentActions.clearCurrentDoc())
     },
+    getPostMetadata: docId => {
+      dispatch(documentActions.getPostMetadata(docId))
+    },
     getContent: () => {
       dispatch(documentActions.getContent())
+    },
+    setCurrentLikes: likes => {
+      dispatch(documentActions.setCurrentLikes(likes))
+    },
+    setCurrentDislikes: likes => {
+      dispatch(documentActions.setCurrentLikes(likes))
     },
     initializeModal: modalState => {
       dispatch(invoiceActions.initializeModal(modalState))
@@ -140,8 +169,17 @@ function mapDispatchToProps(dispatch) {
     changeSeconds: e => {
       dispatch(invoiceActions.changeSeconds(e.target.value))
     },
-    checkInvoiceStatus: () => {
-      dispatch(invoiceActions.checkInvoiceStatus())
+    checkInvoiceStatus: (tries, timeout, node) => {
+      dispatch(invoiceActions.checkInvoiceStatus(tries, timeout, node))
+    },
+    getRate: () => {
+      dispatch(invoiceActions.getRate())
+    },
+    setInvoice: (invoice, invoiceId, status) => {
+      dispatch(invoiceActions.setInvoice(invoice, invoiceId, status))
+    },
+    clearInvoice: () => {
+      dispatch(invoiceActions.clearInvoice())
     },
   }
 }

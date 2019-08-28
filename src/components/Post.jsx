@@ -1,13 +1,30 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { Header, Button } from 'semantic-ui-react'
+import { Header, Button, Label, Icon, Segment, Input } from 'semantic-ui-react'
 import marked from 'marked'
 import DOMPurify from 'dompurify'
+import { post, put, get } from 'axios'
+import assert from 'bsert'
 
 import { estimateReadingTime } from '../utils'
 import InvoiceModal from './InvoiceModal.jsx'
 
 export default class Post extends PureComponent {
+  state = {
+    showDialogue: false,
+    type: null,
+    count: 0,
+    loading: false,
+    error: false,
+  }
+  rates = {
+    tips: {
+      rate: 0,
+      units: 'satoshis/tip',
+      fee: 0,
+    },
+  }
+  satsPerBtc = 0.00000001
   constructor(props) {
     super(props)
   }
@@ -15,6 +32,7 @@ export default class Post extends PureComponent {
   static get propTypes() {
     return {
       title: PropTypes.string,
+      _id: PropTypes.string.isRequired,
       content: PropTypes.string,
       author: PropTypes.string,
       locked: PropTypes.bool,
@@ -33,27 +51,111 @@ export default class Post extends PureComponent {
       closeModal: PropTypes.func.isRequired,
       initializeModal: PropTypes.func.isRequired,
       checkInvoiceStatus: PropTypes.func.isRequired,
+      likes: PropTypes.number.isRequired,
+      dislikes: PropTypes.number.isRequired,
+      setInvoice: PropTypes.func.isRequired,
+      setCurrentLikes: PropTypes.func.isRequired,
+      setCurrentDislikes: PropTypes.func.isRequired,
+      clearInvoice: PropTypes.func.isRequired,
     }
   }
 
   async componentDidMount() {
     const { getContent } = this.props
     await getContent()
+    const { data: rates } = await get('/api/metadata/rates')
+    this.rates = rates
   }
 
   componentDidUpdate(prevProps) {
     const { invoiceStatus, getContent, locked, requirePayment } = this.props
-
-    if (!requirePayment) return
+    const { count, type } = this.state
+    // if the invoice status changes to "held"
+    // we want to submit our tips. This should only happen for tip submission
+    if (
+      prevProps.invoiceStatus !== invoiceStatus &&
+      invoiceStatus === 'held' &&
+      count &&
+      type
+    ) {
+      this.submitTips()
+      return
+    } else if (!requirePayment) return
     // if the invoice status updates to 'paid' or it's not locked
     // then we want to do a request to get the post content which will loop until
     // status changes
-    if (
+    else if (
       (prevProps.invoiceStatus !== 'paid' && invoiceStatus === 'paid') ||
       !locked
     ) {
       getContent()
     }
+  }
+
+  async submitTips() {
+    const {
+      _id,
+      setCurrentDislikes,
+      setCurrentLikes,
+      clearInvoice,
+    } = this.props
+    const { type, count } = this.state
+    try {
+      const { data: metadata } = await put(`/api/metadata/${_id}/tips`, {
+        [type]: count,
+      })
+      this.setState({ showDialogue: false, type: null, count: 0 }, () => {
+        clearInvoice()
+        setCurrentDislikes(metadata.dislikes)
+        setCurrentLikes(metadata.likes)
+      })
+    } catch (e) {
+      const message =
+        e.response && e.response.data ? e.response.data.message : e.message
+      // eslint-disable-next-line no-console
+      console.error('Problem submitting the tips to the server', message)
+      clearInvoice()
+      this.setState({ showDialogue: false, error: true }, () => {
+        setTimeout(() => {
+          this.setState({ error: false })
+        }, 4000)
+      })
+    }
+  }
+
+  toggleDialogue(type) {
+    this.setState({ showDialogue: !this.state.showDialogue, type, count: 1 })
+  }
+
+  handleCountChange(e) {
+    this.setState({ count: e.target.value })
+  }
+
+  async getHodlInvoice() {
+    const { node, title, _id, setInvoice, checkInvoiceStatus } = this.props
+    const { count } = this.state
+    const sats = this.rates.tips.rate * count
+    this.setState({ loading: true }, async () => {
+      let { data: invoice } = await post(`${node}/api/invoice`, {
+        amount: sats,
+        title: `tips for ${title}`,
+        appName: 'Prism',
+      })
+
+      // make sure we have an id as this will be our payment hash
+      assert(invoice && invoice.id, 'Did not get expected data back from node')
+
+      const {
+        data: { payreq },
+      } = await post(`/api/metadata/${_id}/tips/hodl`, {
+        paymentHash: invoice.id,
+      })
+
+      setInvoice({ invoice: payreq, invoiceId: invoice.id })
+      // check our own invoice status at the BOLT_URI to confirm it is held
+      checkInvoiceStatus(50, 750, process.env.BOLTWALL_URI)
+      this.setState({ loading: false })
+    })
   }
 
   render() {
@@ -72,8 +174,17 @@ export default class Post extends PureComponent {
       requestInvoice,
       closeModal,
       initializeModal,
+      likes,
+      dislikes,
     } = this.props
+    const { showDialogue, count, loading, error } = this.state
     const cleanContent = DOMPurify.sanitize(content)
+    const { tips } = this.rates
+
+    // satoshis/btc * rate * tip count + fee
+    const cost = parseFloat(
+      this.satsPerBtc * rate * tips.rate * count + tips.fee * this.satsPerBtc
+    ).toFixed(4)
     return (
       <div>
         <Header as="h2">{title}</Header>
@@ -90,6 +201,79 @@ export default class Post extends PureComponent {
               __html: marked(cleanContent),
             }}
           />
+        </div>
+        <div className="metadata">
+          <div className="tips">
+            <Header as="h4">Show some love!</Header>
+            <Label
+              as="a"
+              color="blue"
+              onClick={() => this.toggleDialogue('likes')}
+            >
+              <Icon name="thumbs up" />
+              {likes}
+            </Label>
+            <Label
+              as="a"
+              color="purple"
+              onClick={() => this.toggleDialogue('dislikes')}
+            >
+              <Icon name="thumbs down" />
+              {dislikes}
+            </Label>
+            {error ? (
+              <Segment color="red">
+                There was a problem processing your payment. This is usually the
+                result of temporary lightning network connectivity issues. If
+                your tips were not added then you should eventually be refunded
+                your payment.
+              </Segment>
+            ) : showDialogue ? (
+              <Segment loading={loading}>
+                {invoice && invoice.length ? (
+                  <React.Fragment>
+                    <Header as="h3">Please pay the invoice to continue:</Header>
+                    <div className="row">
+                      <Input type="text" placeholder="Amount" className="col">
+                        <Label as="a" href={`lightning:${invoice}`}>
+                          <Icon name="lightning" />
+                        </Label>
+                        <input
+                          value={invoice}
+                          style={{
+                            width: 'auto',
+                            textOverflow: 'ellipsis',
+                            borderRightColor: '',
+                          }}
+                        />
+                      </Input>
+                    </div>
+                  </React.Fragment>
+                ) : (
+                  <React.Fragment>
+                    <Header as="h5">
+                      How much would you like to tip? (~$
+                      {parseFloat(this.satsPerBtc * rate * tips.rate).toFixed(
+                        4
+                      )}{' '}
+                      per vote)
+                    </Header>
+                    <input
+                      type="number"
+                      min={0}
+                      max={15}
+                      value={this.state.count}
+                      onChange={e => this.handleCountChange(e)}
+                    />
+                    <p>${cost}</p>
+                    <Button onClick={() => this.getHodlInvoice()}>Ok!</Button>
+                  </React.Fragment>
+                )}
+              </Segment>
+            ) : (
+              ''
+            )}
+          </div>
         </div>
         {locked && requirePayment ? (
           <React.Fragment>

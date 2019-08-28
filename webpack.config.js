@@ -21,7 +21,7 @@ const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
 
 const DefinePluginConfig = new webpack.DefinePlugin({
   'process.env': {
-    LN_URI: JSON.stringify(process.env.LN_URI),
+    BOLTWALL_URI: JSON.stringify(process.env.BOLTWALL_URI),
   },
 })
 

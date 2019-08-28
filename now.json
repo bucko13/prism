@@ -2,6 +2,23 @@
   "version": 2,
   "name": "prism",
   "alias": "prismreader.app",
+  "build": {
+    "env": {
+      "BOLTWALL_URI": "@boltwall-uri"
+    }
+  },
+  "env": {
+    "SESSION_SECRET": "@session-secret",
+    "OPEN_NODE_KEY": "@open-node-key",
+    "CAVEAT_KEY": "@caveat-key",
+    "MONGODB_URI": "@my-mongodb-uri",
+    "APP_PRIVATE_KEY": "@app-private-key",
+    "CHAINPOINT_CORES": "@chainpoint-cores",
+    "BOLTWALL_URI": "@boltwall-uri",
+    "LND_TLS_CERT": "@buck-cert",
+    "LND_MACAROON": "@buck-macaroon",
+    "LND_SOCKET": "@buck-socket"
+  },
   "builds": [
     {
       "src": "api/**/*.js",
@@ -28,6 +45,10 @@
     {
       "src": "/api/proofs(.*)",
       "dest": "/api/proofs"
+    },
+    {
+      "src": "/api/metadata(.*)",
+      "dest": "/api/metadata"
     },
     {
       "handle": "filesystem"
