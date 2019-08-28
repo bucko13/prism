@@ -3,12 +3,14 @@ const express = require('express')
 // const helmet = require('helmet')
 const cookieSession = require('cookie-session')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 
 const app = express()
 app.set('trust proxy', 1)
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+app.use(cors())
 // app.use(helmet())
 
 app.use(

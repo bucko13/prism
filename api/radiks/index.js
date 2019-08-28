@@ -10,7 +10,7 @@ const {
   decryptWithAES,
   getProof,
   getDecryptedContentPreview,
-} = require('./helpers')
+} = require('../helpers')
 
 let RadiksController
 
