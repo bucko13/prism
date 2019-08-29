@@ -13,9 +13,9 @@ const delay = promisify(setTimeout)
 let mongo
 
 // flat processing fee of 10 satoshis
-const PROCESSING_FEE = 10
+const PROCESSING_FEE = 100
 
-const PAYMENT_RATE = 10
+const PAYMENT_RATE = 100
 
 const initMeta = {
   likes: 0,

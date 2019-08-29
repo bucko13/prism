@@ -124,7 +124,13 @@ export default class Post extends PureComponent {
   }
 
   toggleDialogue(type) {
-    this.setState({ showDialogue: !this.state.showDialogue, type, count: 1 })
+    this.props.clearInvoice()
+    this.setState({
+      showDialogue: !this.state.showDialogue,
+      type,
+      count: 1,
+      loading: false,
+    })
   }
 
   handleCountChange(e) {
@@ -176,6 +182,7 @@ export default class Post extends PureComponent {
       initializeModal,
       likes,
       dislikes,
+      node,
     } = this.props
     const { showDialogue, count, loading, error } = this.state
     const cleanContent = DOMPurify.sanitize(content)
@@ -202,78 +209,111 @@ export default class Post extends PureComponent {
             }}
           />
         </div>
-        <div className="metadata">
-          <div className="tips">
-            <Header as="h4">Show some love!</Header>
-            <Label
-              as="a"
-              color="blue"
-              onClick={() => this.toggleDialogue('likes')}
-            >
-              <Icon name="thumbs up" />
-              {likes}
-            </Label>
-            <Label
-              as="a"
-              color="purple"
-              onClick={() => this.toggleDialogue('dislikes')}
-            >
-              <Icon name="thumbs down" />
-              {dislikes}
-            </Label>
-            {error ? (
-              <Segment color="red">
-                There was a problem processing your payment. This is usually the
-                result of temporary lightning network connectivity issues. If
-                your tips were not added then you should eventually be refunded
-                your payment.
-              </Segment>
-            ) : showDialogue ? (
-              <Segment loading={loading}>
-                {invoice && invoice.length ? (
-                  <React.Fragment>
-                    <Header as="h3">Please pay the invoice to continue:</Header>
-                    <div className="row">
-                      <Input type="text" placeholder="Amount" className="col">
-                        <Label as="a" href={`lightning:${invoice}`}>
-                          <Icon name="lightning" />
-                        </Label>
-                        <input
-                          value={invoice}
-                          style={{
-                            width: 'auto',
-                            textOverflow: 'ellipsis',
-                            borderRightColor: '',
-                          }}
-                        />
-                      </Input>
-                    </div>
-                  </React.Fragment>
+        <div className="row justify-content-center metadata">
+          {node && node.length ? (
+            <div className="tips row mb-4 col-lg-8">
+              <Header as="h4" className="col-12">
+                Show some love!
+              </Header>
+              <div className="col-12">
+                <Label
+                  as="a"
+                  color="blue"
+                  onClick={() => this.toggleDialogue('likes')}
+                >
+                  <Icon name="thumbs up" />
+                  {likes}
+                </Label>
+                <Label
+                  as="a"
+                  color="purple"
+                  onClick={() => this.toggleDialogue('dislikes')}
+                >
+                  <Icon name="thumbs down" />
+                  {dislikes}
+                </Label>
+              </div>
+              <div className="row col my-4 justify-content-center">
+                {error ? (
+                  <Segment color="red">
+                    There was a problem processing your payment. This is usually
+                    the result of temporary lightning network connectivity
+                    issues. If your tips were not added then you should
+                    eventually be refunded your payment.
+                  </Segment>
+                ) : showDialogue ? (
+                  <Segment loading={loading} className="col">
+                    {invoice && invoice.length ? (
+                      <React.Fragment>
+                        <Header as="h3">
+                          Please pay the invoice to continue:
+                        </Header>
+                        <div className="row">
+                          <Input
+                            type="text"
+                            placeholder="Amount"
+                            className="col"
+                          >
+                            <Label as="a" href={`lightning:${invoice}`}>
+                              <Icon name="lightning" />
+                            </Label>
+                            <input
+                              value={invoice}
+                              style={{
+                                width: 'auto',
+                                textOverflow: 'ellipsis',
+                                borderRightColor: '',
+                              }}
+                            />
+                          </Input>
+                        </div>
+                      </React.Fragment>
+                    ) : (
+                      <div className="row">
+                        <Header as="h5" className="col-12">
+                          How much would you like to tip? (~$
+                          {parseFloat(
+                            this.satsPerBtc * rate * tips.rate
+                          ).toFixed(4)}{' '}
+                          per vote)
+                        </Header>
+                        <div className="col-12">
+                          <div className="row justify-content-center">
+                            <div className="col col-md-3 pr-0">
+                              <input
+                                type="number"
+                                min={0}
+                                max={15}
+                                value={this.state.count}
+                                onChange={e => this.handleCountChange(e)}
+                                className="col"
+                                style={{ height: '100%' }}
+                              />
+                            </div>
+                            <div className="col col-md-2 mr-1 row align-items-center">
+                              <p className="col">${cost}</p>
+                            </div>
+                            <Button
+                              className="col-12 col-md-3"
+                              onClick={() => this.getHodlInvoice()}
+                            >
+                              Ok!
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </Segment>
                 ) : (
-                  <React.Fragment>
-                    <Header as="h5">
-                      How much would you like to tip? (~$
-                      {parseFloat(this.satsPerBtc * rate * tips.rate).toFixed(
-                        4
-                      )}{' '}
-                      per vote)
-                    </Header>
-                    <input
-                      type="number"
-                      min={0}
-                      max={15}
-                      value={this.state.count}
-                      onChange={e => this.handleCountChange(e)}
-                    />
-                    <p>${cost}</p>
-                    <Button onClick={() => this.getHodlInvoice()}>Ok!</Button>
-                  </React.Fragment>
+                  ''
                 )}
-              </Segment>
-            ) : (
-              ''
-            )}
-          </div>
+              </div>
+            </div>
+          ) : (
+            <p>
+              <small>(Tips not available for this post)</small>
+            </p>
+          )}
         </div>
         {locked && requirePayment ? (
           <React.Fragment>

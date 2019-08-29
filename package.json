@@ -28,7 +28,6 @@
     "node": ">0.10.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.5",
     "@babel/plugin-transform-runtime": "^7.4.4",
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-react": "^7.0.0",
@@ -57,8 +56,9 @@
     "webpack-dev-server": "^3.7.1"
   },
   "dependencies": {
+    "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-class-properties": "^7.4.4",
-    "@babel/runtime": "^7.4.5",
+    "@babel/runtime": "^7.5.5",
     "axios": "^0.19.0",
     "bcrypto": "^4.0.1",
     "blockstack": "^19.1.0",
