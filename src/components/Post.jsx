@@ -124,7 +124,13 @@ export default class Post extends PureComponent {
   }
 
   toggleDialogue(type) {
-    this.setState({ showDialogue: !this.state.showDialogue, type, count: 1 })
+    this.props.clearInvoice()
+    this.setState({
+      showDialogue: !this.state.showDialogue,
+      type,
+      count: 1,
+      loading: false,
+    })
   }
 
   handleCountChange(e) {
@@ -227,7 +233,7 @@ export default class Post extends PureComponent {
                   {dislikes}
                 </Label>
               </div>
-              <div className="row col-lg-8 mb-4 justify-content-center">
+              <div className="row col my-4 justify-content-center">
                 {error ? (
                   <Segment color="red">
                     There was a problem processing your payment. This is usually
@@ -236,7 +242,7 @@ export default class Post extends PureComponent {
                     eventually be refunded your payment.
                   </Segment>
                 ) : showDialogue ? (
-                  <Segment loading={loading}>
+                  <Segment loading={loading} className="col">
                     {invoice && invoice.length ? (
                       <React.Fragment>
                         <Header as="h3">
@@ -272,18 +278,23 @@ export default class Post extends PureComponent {
                           per vote)
                         </Header>
                         <div className="col-12">
-                          <div className="row">
-                            <input
-                              type="number"
-                              min={0}
-                              max={15}
-                              value={this.state.count}
-                              onChange={e => this.handleCountChange(e)}
-                              className="col"
-                            />
-                            <p>${cost}</p>
+                          <div className="row justify-content-center">
+                            <div className="col col-md-3 pr-0">
+                              <input
+                                type="number"
+                                min={0}
+                                max={15}
+                                value={this.state.count}
+                                onChange={e => this.handleCountChange(e)}
+                                className="col"
+                                style={{ height: '100%' }}
+                              />
+                            </div>
+                            <div className="col col-md-2 mr-1 row align-items-center">
+                              <p className="col">${cost}</p>
+                            </div>
                             <Button
-                              className="col"
+                              className="col-12 col-md-3"
                               onClick={() => this.getHodlInvoice()}
                             >
                               Ok!
