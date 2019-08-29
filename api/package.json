@@ -12,7 +12,6 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "helmet": "^3.18.0",
-    "ln-service": "bucko13/ln-service#path",
     "macaroons.js": "^0.3.8",
     "opennode": "^1.1.1",
     "radiks-server": "^0.1.12",
