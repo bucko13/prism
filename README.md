@@ -124,10 +124,10 @@ You will need to save up to 6 environment secrets during the setup process neede
 - `SESSION_SECRET`- for signing authentication macaroons
 - `MONGODB_URI`- connection string for connecting to a mongodb deployment
 - `APP_PRIVATE_KEY`- a private key used to decrypt content encrypted w/ a corresponding public key
-- `LN_URI` - a uri where you are running a payment gateway. Useful to have a fallback
+- `BOLTWALL_URI` - a uri where you are running a payment gateway. Useful to have a fallback
   for paywalled content without its own payment gateway
 - `CAVEAT_KEY` - this is a shared key between Prism and the payment gateway deployed
-  at the `LN_URI` above used for 3rd party authentication
+  at the `BOLTWALL_URI` above used for 3rd party authentication
 - `OPEN_NODE_KEY`- This isn't strictly necessary, but is used for utility endpoints,
   such as getting exchange rates for display
 

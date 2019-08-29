@@ -7,6 +7,8 @@ import {
   SET_CURRENT_CONTENT,
   UPDATE_DOCUMENT,
   SET_DOCS_LOADING,
+  SET_CURRENT_LIKES,
+  SET_CURRENT_DISLIKES,
 } from '../constants'
 
 const init = Map({
@@ -23,6 +25,8 @@ const init = Map({
     proofData: {}, // object of height, merkleRoot, and submittedAt
     requirePayment: false,
     wordCount: 0,
+    likes: 0,
+    dislikes: 0,
   }),
   documentList: List([]),
   loading: true,
@@ -48,6 +52,16 @@ export default (state = init, action) => {
       return state.mergeDeep({
         currentDoc: { content: content, locked: locked },
       })
+    }
+
+    case SET_CURRENT_LIKES: {
+      const { likes } = payload
+      return state.setIn(['currentDoc', 'likes'], likes)
+    }
+
+    case SET_CURRENT_DISLIKES: {
+      const { dislikes } = payload
+      return state.setIn(['currentDoc', 'dislikes'], dislikes)
     }
 
     case UPDATE_DOCUMENT: {

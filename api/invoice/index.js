@@ -2,8 +2,8 @@ const app = require('../index.js')
 const { MacaroonsBuilder } = require('macaroons.js')
 const request = require('request-promise-native')
 
-const { decryptWithAES, getDocument } = require('../radiks/helpers')
-
+const { decryptWithAES, getDocument } = require('../helpers')
+const { INVOICE_TYPES } = require('../constants')
 /**
  * Must compose a root macaroon and retrieve an invoice
  * to send back in the response.
@@ -15,22 +15,25 @@ const { decryptWithAES, getDocument } = require('../radiks/helpers')
  * must include 3rd party caveat
  */
 app.post('/api/invoice', async (req, res) => {
-  let { docId, time, nodeUri, title } = req.body
+  let { docId, amount, nodeUri, title, type, tipCount } = req.body
 
-  if (!nodeUri) nodeUri = process.env.LN_URI
+  // defaults to Prism's own boltwall
+  if (!nodeUri) nodeUri = process.env.BOLTWALL_URI
 
   // if still none set then we need to return an error
   if (!nodeUri) {
     // eslint-disable-next-line no-console
-    console.error('Missing fallback LN_URI for payments')
+    console.error('Missing fallback BOLTWALL_URI for payments')
     return res.status(500).json({ message: 'Problem generating invoice' })
   }
+
+  if (type && type === INVOICE_TYPES.TIP) title = `Tips for "${title}"`
 
   // first need to forward the request to retrieve the invoice
   const invoice = await request({
     method: 'POST',
     uri: `${nodeUri}/api/invoice`,
-    body: { docId, time, title, appName: 'Prism Reader' },
+    body: { docId, amount, title, appName: 'Prism Reader' },
     json: true,
   })
 
@@ -43,6 +46,10 @@ app.post('/api/invoice', async (req, res) => {
     publicIdentifier
   ).add_first_party_caveat(`docId = ${docId}`)
 
+  if (type === INVOICE_TYPES.TIP) {
+    // this will be cumulative number of likes and dislikes
+    builder.add_first_party_caveat(`tipCount = ${tipCount}`)
+  }
   // Need to get the passphrase that is used to verify payments
   // on the lightning node. This is stored on the document, encrypted
   // with the same aes key as the document

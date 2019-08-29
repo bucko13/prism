@@ -10,6 +10,8 @@ import {
   SET_CURRENT_CONTENT,
   UPDATE_DOCUMENT,
   SET_DOCS_LOADING,
+  SET_CURRENT_LIKES,
+  SET_CURRENT_DISLIKES,
 } from '../constants'
 import { clearInvoice } from './invoice'
 import { sleep } from '../../utils'
@@ -307,6 +309,32 @@ export function getProofs() {
         }
       })
     )
+  }
+}
+
+export function getPostMetadata(docId) {
+  return async dispatch => {
+    const { data: metadata } = await get(`/api/metadata/${docId}`)
+    dispatch(setCurrentLikes(metadata.likes))
+    dispatch(setCurrentDislikes(metadata.dislikes))
+  }
+}
+
+export function setCurrentLikes(likes = 0) {
+  return {
+    type: SET_CURRENT_LIKES,
+    payload: {
+      likes: parseInt(likes, 10),
+    },
+  }
+}
+
+export function setCurrentDislikes(dislikes = 0) {
+  return {
+    type: SET_CURRENT_DISLIKES,
+    payload: {
+      dislikes: parseInt(dislikes, 10),
+    },
   }
 }
 

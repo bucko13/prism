@@ -43,12 +43,18 @@ export function closeModal() {
 }
 
 export function initializeModal(modalState) {
-  return async dispatch => {
+  return dispatch => {
     dispatch(clearInvoice())
     dispatch({
       type: INITIALIZE_MODAL,
       payload: { ...modalState, visible: true },
     })
+    dispatch(getRate())
+  }
+}
+
+export function getRate() {
+  return async dispatch => {
     const res = await get('/api/node/exchange')
     const { BTCUSD: rate } = res.data
     dispatch(setRate(rate))
@@ -75,6 +81,7 @@ export function requestInvoice() {
 
     const { data } = await post('/api/invoice', {
       time,
+      amount: time,
       title,
       docId,
       nodeUri,
@@ -93,9 +100,9 @@ export function requestInvoice() {
  * @param {Number} tries - number of times to recursively make the call
  * @param {<Promise>} - will either set status to paid, failed, or call itself recursively
  */
-export function checkInvoiceStatus(tries = 50, timeout = 750) {
+export function checkInvoiceStatus(tries = 50, timeout = 750, node) {
   return async (dispatch, getState) => {
-    let nodeUri = getState().documents.getIn(['currentDoc', 'node'])
+    let nodeUri = node || getState().documents.getIn(['currentDoc', 'node'])
     let invoiceId = getState().invoice.get('invoiceId')
 
     assert(
@@ -103,7 +110,7 @@ export function checkInvoiceStatus(tries = 50, timeout = 750) {
       'Missing invoiceId in state. Must request the invoice before checking status'
     )
 
-    if (!nodeUri) nodeUri = process.env.LN_URI
+    if (!nodeUri) nodeUri = process.env.BOLTWALL_URI
 
     // if we still don't have a nodeUri, we should just return with an error
     if (!nodeUri)
@@ -116,9 +123,11 @@ Contact site admin to create one with ln-builder.'
     if (response.status === 200 && response.data.status === 'paid') {
       dispatch(closeModal())
       dispatch(setStatusPaid(response.data.discharge))
+    } else if (response.data.status === 'held') {
+      dispatch(setStatus('held'))
     } else if (tries > 0) {
       await sleep(timeout)
-      return dispatch(checkInvoiceStatus(tries - 1))
+      return dispatch(checkInvoiceStatus(tries - 1, timeout, node))
     } else {
       return dispatch(setStatus('failed'))
     }

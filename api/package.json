@@ -4,12 +4,15 @@
     "bcrypto": "^4.1.0",
     "blockstack": "^19.2.1",
     "body-parser": "^1.19.0",
+    "boltwall": "^3.0.2",
     "bsert": "^0.0.10",
     "chainpoint-client": "chainpoint/chainpoint-client-js#core-v2-support",
     "cookie-parser": "^1.4.4",
     "cookie-session": "^1.3.3",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "helmet": "^3.18.0",
+    "ln-service": "bucko13/ln-service#path",
     "macaroons.js": "^0.3.8",
     "opennode": "^1.1.1",
     "radiks-server": "^0.1.12",
@@ -24,5 +27,8 @@
   },
   "scripts": {
     "now-build": "cd node_modules/chainpoint-client/ && npm install && npm run build && cd ../../"
+  },
+  "devDependencies": {
+    "dotenv": "^8.1.0"
   }
 }

@@ -226,9 +226,9 @@ class AddOrEditDocContainer extends PureComponent {
       if (node[node.length - 1] === '/') uri = node.slice(0, node.length - 1)
       // now see if it conforms to the api
       const {
-        data: { pubKey, socket },
+        data: { pubKey, uris },
       } = await get(`${uri}/api/node`)
-      if (!pubKey || !socket)
+      if (!pubKey || !uris)
         throw new Error(
           'Target paywall does not conform to boltwall specs. Please visit https://github.com/tierion/now-boltwall for more information on setting up a node to receive payments.'
         )
