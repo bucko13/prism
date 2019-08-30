@@ -4,6 +4,7 @@
   "description": "Sharing ideas, distributed",
   "main": "index.js",
   "scripts": {
+    "start:local": "PORT=3000 nodemon api/server",
     "start": "webpack-dev-server",
     "lint": "eslint src/",
     "pre-build": "cd node_modules/chainpoint-client/ && npm install && npm run build && cd ../../",
@@ -68,6 +69,7 @@
     "dompurify": "^1.0.11",
     "draft-js": "^0.10.5",
     "immutable": "^4.0.0-rc.12",
+    "nodemon": "^1.19.1",
     "prettier": "^1.18.2",
     "prop-types": "^15.7.2",
     "qs": "^6.7.0",

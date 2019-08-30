@@ -19,60 +19,68 @@ const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
   inject: 'body',
 })
 
-const DefinePluginConfig = new webpack.DefinePlugin({
-  'process.env': {
-    BOLTWALL_URI: JSON.stringify(process.env.BOLTWALL_URI),
-  },
-})
-
-module.exports = {
-  mode: 'development',
-  devtool: 'eval-source-map',
-  entry: './src/index.js',
-  target: 'web',
-  output: {
-    path: path.resolve('public'),
-    filename: 'index_bundle.js',
-  },
-  devServer: {
-    historyApiFallback: true,
-    watchOptions: { aggregateTimeout: 300, poll: 1000 },
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-      'Access-Control-Allow-Headers':
-        'X-Requested-With, content-type, Authorization',
+module.exports = (env = {}) => {
+  let BOLTWALL_URI
+  if (process.env && process.env.BOLTWALL_URI)
+    BOLTWALL_URI = process.env.BOLTWALL_URI
+  else BOLTWALL_URI = env.BOLTWALL_URI
+  const DefinePluginConfig = new webpack.DefinePlugin({
+    'process.env': {
+      BOLTWALL_URI: JSON.stringify(BOLTWALL_URI),
     },
-  },
-  module: {
-    rules: [
-      {
-        test: /\.m?jsx?$/,
-        exclude: /(node_modules)/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            plugins: [
-              '@babel/transform-runtime',
-              '@babel/plugin-proposal-class-properties',
-            ],
-            presets: ['@babel/preset-env', '@babel/preset-react'],
+  })
+  return {
+    mode: 'development',
+    devtool: 'inline-source-map',
+    entry: './src/index.js',
+    target: 'web',
+    output: {
+      path: path.resolve(__dirname, 'public'),
+      filename: 'index_bundle.js',
+      publicPath: '/',
+    },
+    devServer: {
+      contentBase: './public',
+      historyApiFallback: true,
+      watchOptions: { aggregateTimeout: 300, poll: 1000 },
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods':
+          'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+        'Access-Control-Allow-Headers':
+          'X-Requested-With, content-type, Authorization',
+      },
+      hot: true,
+    },
+    module: {
+      rules: [
+        {
+          test: /\.m?jsx?$/,
+          exclude: /(node_modules)/,
+          use: {
+            loader: 'babel-loader',
+            options: {
+              plugins: [
+                '@babel/transform-runtime',
+                '@babel/plugin-proposal-class-properties',
+              ],
+              presets: ['@babel/preset-env', '@babel/preset-react'],
+            },
           },
         },
-      },
-      // { test: /\.jsx$/, loader: 'babel-loader', exclude: /node_modules/ },
-      {
-        test: /\.(eot|woff|woff2|ttf|svg|png|jpe?g|gif|ico)(\?\S*)?$/,
-        loader: 'file-loader!url-loader',
-      },
-      { test: /\.css$/, loader: 'style-loader!css-loader' },
+        {
+          test: /\.(eot|woff|woff2|ttf|svg|png|jpe?g|gif|ico)(\?\S*)?$/,
+          loader: 'file-loader!url-loader',
+        },
+        { test: /\.css$/, loader: 'style-loader!css-loader' },
+      ],
+    },
+    plugins: [
+      HtmlWebpackPluginConfig,
+      ManifestAssetPlugin,
+      IconAssetPlugin,
+      DefinePluginConfig,
+      new CleanWebpackPlugin(),
     ],
-  },
-  plugins: [
-    HtmlWebpackPluginConfig,
-    ManifestAssetPlugin,
-    IconAssetPlugin,
-    DefinePluginConfig,
-    new CleanWebpackPlugin(),
-  ],
+  }
 }

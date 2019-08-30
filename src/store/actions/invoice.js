@@ -104,7 +104,6 @@ export function checkInvoiceStatus(tries = 50, timeout = 750, node) {
   return async (dispatch, getState) => {
     let nodeUri = node || getState().documents.getIn(['currentDoc', 'node'])
     let invoiceId = getState().invoice.get('invoiceId')
-
     assert(
       invoiceId,
       'Missing invoiceId in state. Must request the invoice before checking status'
