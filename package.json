@@ -4,7 +4,8 @@
   "description": "Sharing ideas, distributed",
   "main": "index.js",
   "scripts": {
-    "start": "PORT=3000 nodemon api/server",
+    "start:local": "PORT=3000 nodemon api/server",
+    "start": "webpack-dev-server",
     "lint": "eslint src/",
     "pre-build": "cd node_modules/chainpoint-client/ && npm install && npm run build && cd ../../",
     "build": "npm run pre-build && webpack -p",
