@@ -2,7 +2,7 @@ const { Router } = require('express')
 const { MacaroonsBuilder } = require('macaroons.js')
 const request = require('request-promise-native')
 
-const { decryptWithAES, getDocument, getLocation } = require('../helpers')
+const { decryptWithAES, getDocument } = require('../helpers')
 const { INVOICE_TYPES } = require('../constants')
 
 const router = Router()
