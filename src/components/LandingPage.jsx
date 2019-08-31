@@ -53,10 +53,10 @@ const techContent = [
     icon: 'lightning',
   },
   {
-    header: 'ln-builder',
+    header: 'now-boltwall',
     icon: 'th',
     meta: 'Easy-to-deploy, user-controlled paywalls',
-    href: 'https://github.com/bucko13/ln-builder',
+    href: 'https://github.com/tierion/now-boltwall',
   },
 ]
 
