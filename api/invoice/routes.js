@@ -39,7 +39,7 @@ async function createInvoice(req, res) {
     json: true,
   })
 
-  const location = req.headers['x-now-deployment-url']
+  const location = req.headers['x-now-deployment-url'] || req.headers.host
   const secret = process.env.SESSION_SECRET
   const publicIdentifier = 'session secret'
   const builder = new MacaroonsBuilder(
