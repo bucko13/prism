@@ -12,8 +12,6 @@ const path = require('path')
 const dotenv = require('dotenv')
 dotenv.config({ path: `${path.resolve(__dirname, '..')}/.env` })
 
-const config = require('../webpack.config.js')(process.env)
-const compiler = webpack(config)
 const app = express()
 
 const metadata = require('./metadata/routes')
@@ -21,7 +19,7 @@ const radiks = require('./radiks/routes')
 const proofs = require('./proofs/routes')
 const invoice = require('./invoice/routes')
 const node = require('./node/routes')
-const port = process.env.PORT || 5000
+const port = process.env.PORT || 3000
 
 app.set('trust proxy', 1)
 
@@ -50,6 +48,13 @@ app.use(radiks)
 app.use(invoice)
 app.use(proofs)
 app.use(metadata)
+
+let config
+if (process.env.ENVIRONMENT === 'production')
+  config = require('../webpack-prod.config.js')(process.env)
+else config = require('../webpack.config.js')(process.env)
+const compiler = webpack(config)
+console.log(`Starting ${process.env.ENVIRONMENT || 'development'} server`)
 app.use(
   webpackDevMiddleware(compiler, {
     publicPath: '/',
