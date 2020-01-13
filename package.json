@@ -6,8 +6,10 @@
   "scripts": {
     "start": "nodemon api/server",
     "start:dev": "webpack-dev-server",
-    "lint": "eslint src/",
     "build:prod": "webpack --config=webpack-prod.config.js",
+    "clean": "rm -rf public && mkdir public",
+    "start:prod": "npm run clean && npm run build:prod && ENVIRONMENT=prod npm run start -- --max-old-space-size=4096",
+    "lint": "eslint src/",
     "pre-build": "cd node_modules/chainpoint-client/ && npm install && npm run build && cd ../../",
     "build": "npm run pre-build && webpack -p",
     "now-build": "npm run build",
@@ -36,7 +38,7 @@
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.6",
     "clean-webpack-plugin": "^3.0.0",
-    "copy-webpack-plugin": "^5.0.3",
+    "copy-webpack-plugin": "^5.1.1",
     "css-loader": "^2.1.1",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.3.0",
@@ -67,7 +69,7 @@
     "bootstrap": "^4.3.1",
     "bsert": "^0.0.10",
     "chainpoint-client": "chainpoint/chainpoint-client-js#core-v2-support",
-    "dompurify": "^1.0.11",
+    "dompurify": "^2.0.7",
     "draft-js": "^0.10.5",
     "immutable": "^4.0.0-rc.12",
     "nodemon": "^1.19.1",
@@ -85,6 +87,6 @@
     "redux-thunk": "^2.3.0",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.87.1",
-    "showdown": "^1.9.0"
+    "showdown": "^1.9.1"
   }
 }

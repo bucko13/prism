@@ -38,6 +38,12 @@ module.exports = (env = {}) => {
       filename: 'index_bundle.js',
       publicPath: '/',
     },
+    optimization: {
+      splitChunks: {
+        // include all types of chunks
+        chunks: 'all',
+      },
+    },
     module: {
       rules: [
         {

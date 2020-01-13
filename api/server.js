@@ -53,26 +53,32 @@ let config
 if (process.env.ENVIRONMENT === 'production')
   config = require('../webpack-prod.config.js')(process.env)
 else config = require('../webpack.config.js')(process.env)
-const compiler = webpack(config)
-console.log(`Starting ${process.env.ENVIRONMENT || 'development'} server`)
-app.use(
-  webpackDevMiddleware(compiler, {
-    publicPath: '/',
-    hot: true,
-    host: 'localhost',
-  })
-)
 
-app.use('*', function(req, res, next) {
-  var filename = path.join(compiler.outputPath, 'index.html')
-  compiler.outputFileSystem.readFile(filename, function(err, result) {
-    if (err) {
-      return next(err)
-    }
-    res.set('content-type', 'text/html')
-    res.send(result)
-    res.end()
+console.log(`Starting ${process.env.ENVIRONMENT || 'development'} server`)
+
+if (
+  process.env.ENVIRONMENT !== 'production' &&
+  process.env.ENVIRONMENT !== 'prod'
+) {
+  const compiler = webpack(config)
+  app.use(
+    webpackDevMiddleware(compiler, {
+      publicPath: '/',
+      hot: true,
+      host: 'localhost',
+    })
+  )
+  app.use('*', function(req, res, next) {
+    var filename = path.join(compiler.outputPath, 'index.html')
+    compiler.outputFileSystem.readFile(filename, function(err, result) {
+      if (err) {
+        return next(err)
+      }
+      res.set('content-type', 'text/html')
+      res.send(result)
+      res.end()
+    })
   })
-})
+} else app.use(express.static('public'))
 
 app.listen(port, () => console.log(`Prism server listening on port ${port}`))
