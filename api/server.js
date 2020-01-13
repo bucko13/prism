@@ -79,6 +79,11 @@ if (
       res.end()
     })
   })
-} else app.use(express.static('public'))
+} else {
+  app.use(express.static('public'))
+  app.get('*', function(request, response) {
+    response.sendFile(path.resolve(__dirname, '..', 'public', 'index.html'))
+  })
+}
 
 app.listen(port, () => console.log(`Prism server listening on port ${port}`))
