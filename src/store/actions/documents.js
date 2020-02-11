@@ -102,8 +102,9 @@ export function setCurrentDoc(docId) {
           node,
           requirePayment,
           wordCount,
+          boltwall,
         },
-      } = await get(`/api/radiks/document/${docId}?preview=true`)
+      } = await get(`/api/radiks/preview/${docId}`)
 
       dispatch({
         type: SET_CURRENT_DOC,
@@ -115,6 +116,9 @@ export function setCurrentDoc(docId) {
           content: decryptedContent || '',
           node,
           wordCount: wordCount || 0,
+          // previews are used for protected content that will need payment
+          // so they will need the boltwall uri for auth
+          boltwall,
         },
       })
 
@@ -122,7 +126,7 @@ export function setCurrentDoc(docId) {
       if (!requirePayment) {
         const {
           data: { decryptedContent },
-        } = await get(`/api/radiks/document/${docId}?content=true`)
+        } = await get(`/api/radiks/document/${docId}`)
         dispatch({
           type: SET_CURRENT_CONTENT,
           payload: {
@@ -157,7 +161,7 @@ export function getContent() {
       const {
         data: { decryptedContent },
       } = await get(
-        `/api/radiks/document/${docId}?content=true&dischargeMacaroon=${macaroon}`
+        `/api/radiks/document/${docId}?dischargeMacaroon=${macaroon}`
       )
 
       // TODO: cleanup

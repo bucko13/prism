@@ -27,6 +27,7 @@ const init = Map({
     wordCount: 0,
     likes: 0,
     dislikes: 0,
+    boltwall: '',
   }),
   documentList: List([]),
   loading: true,
