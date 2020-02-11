@@ -238,8 +238,8 @@ export default class Post extends PureComponent {
                   <Segment color="red">
                     There was a problem processing your payment. This is usually
                     the result of temporary lightning network connectivity
-                    issues. If your tips were not added then you should
-                    eventually be refunded your payment.
+                    issues. If your tips were not added then you will eventually
+                    be refunded your payment.
                   </Segment>
                 ) : showDialogue ? (
                   <Segment loading={loading} className="col">

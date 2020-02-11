@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import { Person } from 'blockstack'
 import PropTypes from 'prop-types'
-import { Button } from 'semantic-ui-react'
+import { Button, Input, Header } from 'semantic-ui-react'
 
 import { Document, Proof } from '../models'
 import { DocumentList } from '.'
@@ -15,6 +15,7 @@ export default class Profile extends PureComponent {
     super(props)
     props.clearDocumentList()
     this.state = {
+      boltwallUri: '',
       person: {
         name() {
           return 'Anonymous'
@@ -34,13 +35,21 @@ export default class Profile extends PureComponent {
       getOwnDocuments: PropTypes.func.isRequired,
       clearDocumentList: PropTypes.func.isRequired,
       setDocsLoading: PropTypes.func.isRequired,
+      getBoltwallUri: PropTypes.func.isRequired,
+      boltwall: PropTypes.string,
+      saveBoltwallUri: PropTypes.func.isRequired,
     }
   }
 
   async componentDidMount() {
-    const { userSession, getOwnDocuments, clearDocumentList } = this.props
+    const {
+      userSession,
+      getOwnDocuments,
+      clearDocumentList,
+      getBoltwallUri,
+    } = this.props
     clearDocumentList()
-
+    await getBoltwallUri()
     await getOwnDocuments()
 
     this.setState({
@@ -48,8 +57,21 @@ export default class Profile extends PureComponent {
     })
   }
 
+  componentDidUpdate(prevProps) {
+    if (
+      !this.state.boltwallUri &&
+      this.props.boltwall &&
+      prevProps.boltwall !== this.state.boltwallUri
+    )
+      this.setState({ boltwallUri: this.props.boltwall })
+  }
+
   componentWillUnmount() {
     this.props.clearDocumentList()
+  }
+
+  handleUpdateUri(e) {
+    this.setState({ boltwallUri: e.target.value })
   }
 
   // This is a utility method for now for easy cleanup of testing
@@ -73,8 +95,14 @@ export default class Profile extends PureComponent {
   }
 
   render() {
-    const { documents, userSession, loading } = this.props
-    const { person } = this.state
+    const {
+      documents,
+      userSession,
+      loading,
+      boltwall,
+      saveBoltwallUri,
+    } = this.props
+    const { person, boltwallUri } = this.state
 
     return !userSession.isSignInPending() ? (
       <div className="panel-welcome" id="section-2">
@@ -85,14 +113,40 @@ export default class Profile extends PureComponent {
             id="avatar-image"
           />
         </div>
-        <h1>
+        <Header as="h2">
           Hello,{' '}
           <span id="heading-name">
             {person.name() ? person.name() : 'Nameless Person'}
           </span>
           !
-        </h1>
-        <DocumentList documents={documents} loading={loading} edit />
+        </Header>
+        <div className="row justify-content-center mb-4">
+          <div className="col-md-6">
+            <Header as="h3" textAlign="left">
+              Settings
+            </Header>
+            <div className="row">
+              <Input
+                placeholder="Enter valid boltwall uri here..."
+                label="Boltwall URI"
+                onChange={e => this.handleUpdateUri(e)}
+                value={boltwallUri}
+                className="col"
+              />
+              <Button onClick={() => saveBoltwallUri(boltwallUri)}>Save</Button>
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col">
+            <div className="col-md-4 offset-md-3">
+              <Header as="h3" textAlign="left">
+                My Documents
+              </Header>
+            </div>
+            <DocumentList documents={documents} loading={loading} edit />
+          </div>
+        </div>
         {documents && documents.length ? (
           <Button
             color="red"
