@@ -37,7 +37,7 @@ export default class Post extends PureComponent {
       author: PropTypes.string,
       locked: PropTypes.bool,
       requirePayment: PropTypes.bool,
-      node: PropTypes.string,
+      boltwall: PropTypes.string,
       wordCount: PropTypes.number.isRequired,
       seconds: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
         .isRequired,
@@ -61,8 +61,6 @@ export default class Post extends PureComponent {
   }
 
   async componentDidMount() {
-    const { getContent } = this.props
-    await getContent()
     const { data: rates } = await get('/api/metadata/rates')
     this.rates = rates
   }
@@ -138,11 +136,11 @@ export default class Post extends PureComponent {
   }
 
   async getHodlInvoice() {
-    const { node, title, _id, setInvoice, checkInvoiceStatus } = this.props
+    const { boltwall, title, _id, setInvoice, checkInvoiceStatus } = this.props
     const { count } = this.state
     const sats = this.rates.tips.rate * count
     this.setState({ loading: true }, async () => {
-      let { data: invoice } = await post(`${node}/api/invoice`, {
+      let { data: invoice } = await post(`${boltwall}/api/invoice`, {
         amount: sats,
         title: `tips for ${title}`,
         appName: 'Prism',
@@ -182,7 +180,7 @@ export default class Post extends PureComponent {
       initializeModal,
       likes,
       dislikes,
-      node,
+      boltwall,
     } = this.props
     const { showDialogue, count, loading, error } = this.state
     const cleanContent = DOMPurify.sanitize(content)
@@ -192,6 +190,7 @@ export default class Post extends PureComponent {
     const cost = parseFloat(
       this.satsPerBtc * rate * tips.rate * count + tips.fee * this.satsPerBtc
     ).toFixed(4)
+
     return (
       <div>
         <Header as="h2">{title}</Header>
@@ -210,7 +209,7 @@ export default class Post extends PureComponent {
           />
         </div>
         <div className="row justify-content-center metadata">
-          {node && node.length ? (
+          {boltwall && boltwall.length ? (
             <div className="tips row mb-4 col-lg-8">
               <Header as="h4" className="col-12">
                 Show some love!

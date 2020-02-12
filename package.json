@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon api/server",
-    "start:dev": "webpack-dev-server",
     "build:prod": "webpack --config=webpack-prod.config.js",
     "clean": "rm -rf public && mkdir public",
     "start:prod": "npm run clean && npm run build:prod && ENVIRONMENT=prod npm run start -- --max-old-space-size=4096",

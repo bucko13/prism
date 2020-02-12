@@ -10,7 +10,6 @@ const {
   decryptWithAES,
   getProof,
   getDecryptedContentPreview,
-  getAuthUri,
 } = require('../helpers')
 
 const router = Router()
@@ -40,28 +39,15 @@ router.get('/api/radiks/preview/:docId', async (req, res) => {
       .json({ message: `No document found for id ${docId}` })
 
   // if the request is just for a preview then we don't need to check authorization
-  const { encryptedContent, keyId, requirePayment } = document
-  const boltwallUri = await getAuthUri(document.userId)
+  const { encryptedContent, keyId } = document
 
-  const contentPreview = await getDecryptedContentPreview(
-    encryptedContent,
-    keyId
-  )
+  const preview = await getDecryptedContentPreview(encryptedContent, keyId)
   // destructure what we need fromm the document
-  const { title, author, _id, createdAt, updatedAt, node, wordCount } = document
+  // const { title, author, _id, createdAt, updatedAt, node, wordCount } = document
 
   // send relevant information for content preview
   return res.json({
-    title,
-    author,
-    _id,
-    createdAt,
-    updatedAt,
-    requirePayment,
-    node,
-    wordCount,
-    decryptedContent: contentPreview,
-    boltwall: boltwallUri,
+    preview,
   })
 })
 

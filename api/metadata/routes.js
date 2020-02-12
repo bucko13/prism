@@ -10,6 +10,8 @@ const lnService = require('ln-service')
 const { once } = require('events')
 const { promisify } = require('util')
 
+const { getDocument, getAuthUri } = require('../helpers')
+
 const delay = promisify(setTimeout)
 
 let mongo
@@ -67,14 +69,40 @@ async function getMetadata(req, res) {
   const { post } = req.params
 
   const metaDb = mongo.collection('metadata')
-  let metadata = await metaDb.findOne({ post })
+  let [metadata, document] = await Promise.all([
+    metaDb.findOne({ post }),
+    getDocument(post),
+  ])
+
+  const boltwall = await getAuthUri(document.userId)
 
   if (!metadata) {
     metadata = { ...initMeta, post }
     await metaDb.insertOne(metadata)
   }
+  const {
+    title,
+    author,
+    _id,
+    createdAt,
+    updatedAt,
+    wordCount,
+    requirePayment,
+  } = document
 
-  return res.status(200).json(metadata)
+  const body = {
+    ...metadata,
+    title,
+    author,
+    _id,
+    createdAt,
+    updatedAt,
+    requirePayment,
+    wordCount,
+    boltwall,
+  }
+
+  return res.status(200).json(body)
 }
 
 async function verifyInvoice(req, res, next) {

@@ -14,7 +14,7 @@ import {
   SET_CURRENT_DISLIKES,
 } from '../constants'
 import { clearInvoice } from './invoice'
-import { sleep } from '../../utils'
+
 /*
  * Gets a list of document models from Radiks server
  * @param {Number} [count=10] - number of documents to populate state with
@@ -90,51 +90,19 @@ export function setDocumentList(documents) {
  * @param {String} docId - id of document to retrieve
  * @returns {void} will dispatch an action to populate the state
  */
-export function setCurrentDoc(docId) {
+export function getDocPreview(docId) {
   return async dispatch => {
     try {
       const {
-        data: {
-          author,
-          _id,
-          title,
-          decryptedContent,
-          node,
-          requirePayment,
-          wordCount,
-          boltwall,
-        },
+        data: { preview },
       } = await get(`/api/radiks/preview/${docId}`)
 
       dispatch({
         type: SET_CURRENT_DOC,
         payload: {
-          _id,
-          author,
-          title,
-          requirePayment,
-          content: decryptedContent || '',
-          node,
-          wordCount: wordCount || 0,
-          // previews are used for protected content that will need payment
-          // so they will need the boltwall uri for auth
-          boltwall,
+          content: preview || '',
         },
       })
-
-      // check if we need to get or can get the decrypted content
-      if (!requirePayment) {
-        const {
-          data: { decryptedContent },
-        } = await get(`/api/radiks/document/${docId}`)
-        dispatch({
-          type: SET_CURRENT_CONTENT,
-          payload: {
-            content: decryptedContent,
-            locked: false,
-          },
-        })
-      }
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error('Problem setting document:', e.message)
@@ -147,22 +115,16 @@ export function setCurrentDoc(docId) {
  * @returns {void} dispatch action to set doc content
  */
 
-export function getContent() {
+export function getContent(docId) {
   return async (dispatch, getState) => {
     try {
-      const docId = getState().documents.getIn(['currentDoc', '_id'])
-      const macaroon = getState().invoice.get('macaroon')
-
-      // can't set content without a macaroon
-      if (!macaroon) return dispatch(setCurrentDoc(docId))
+      if (!docId) docId = getState().documents.getIn(['currentDoc', '_id'])
 
       // if request is successful then we should have the cookie
       // and can request the document content
       const {
         data: { decryptedContent },
-      } = await get(
-        `/api/radiks/document/${docId}?dischargeMacaroon=${macaroon}`
-      )
+      } = await get(`/api/radiks/document/${docId}`)
 
       // TODO: cleanup
       if (!decryptedContent) throw new Error('expected to not get this far')
@@ -174,8 +136,6 @@ export function getContent() {
           locked: false,
         },
       })
-      await sleep(750)
-      dispatch(getContent())
     } catch (e) {
       if (e.response && e.response.status === 402) {
         // eslint-disable-next-line no-console
@@ -318,9 +278,32 @@ export function getProofs() {
 
 export function getPostMetadata(docId) {
   return async dispatch => {
-    const { data: metadata } = await get(`/api/metadata/${docId}`)
-    dispatch(setCurrentLikes(metadata.likes))
-    dispatch(setCurrentDislikes(metadata.dislikes))
+    const {
+      data: {
+        author,
+        title,
+        requirePayment,
+        wordCount,
+        boltwall,
+        likes,
+        dislikes,
+      },
+    } = await get(`/api/metadata/${docId}`)
+
+    dispatch({
+      type: SET_CURRENT_DOC,
+      payload: {
+        author,
+        _id: docId,
+        title,
+        requirePayment,
+        wordCount,
+        boltwall,
+      },
+    })
+
+    dispatch(setCurrentLikes(likes))
+    dispatch(setCurrentDislikes(dislikes))
   }
 }
 
