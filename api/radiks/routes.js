@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const { setup } = require('radiks-server')
-const { boltwall, TIME_CAVEAT_CONFIG } = require('boltwall')
+const { boltwall, TIME_CAVEAT_CONFIGS } = require('boltwall')
 
 const {
   getPublicKey,
@@ -70,6 +70,31 @@ router.get('/api/radiks/users', async (req, res) => {
   res.json({ users })
 })
 
+/**
+ * @describe a config for the boltwall that protects post content.
+ * Current iteration is based on time caveat configs however
+ * adds special getter and satisfier for making sure the LSAT is only for
+ * the requested document
+ */
+const boltwallConfig = {
+  ...TIME_CAVEAT_CONFIGS,
+  oauth: true,
+  getCaveats: [
+    TIME_CAVEAT_CONFIGS.getCaveats,
+    req => `documentId=${req.params.docId}`,
+  ],
+  caveatSatisfiers: [
+    TIME_CAVEAT_CONFIGS.caveatSatisfiers,
+    {
+      condition: 'documentId',
+      satisfyFinal: (caveat, req) => {
+        if (req.params.docId === caveat.value) return true
+        return false
+      },
+    },
+  ],
+}
+
 router.get('/api/radiks/document/:docId', async (req, res, next) => {
   const { docId } = req.params
   const document = await getDocument(docId)
@@ -101,7 +126,7 @@ router.get('/api/radiks/document/:docId', async (req, res, next) => {
       .json({ message: 'no encrypted content for requested document' })
 
   // if the post does require payment, then we need to pass it through boltwall
-  boltwall({ ...TIME_CAVEAT_CONFIG, oauth: true })(req, res, next)
+  boltwall(boltwallConfig)(req, res, next)
 
   // if we've gotten this far we know that we have a valid LSAT
   // and can
