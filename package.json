@@ -71,6 +71,7 @@
     "dompurify": "^2.0.8",
     "draft-js": "^0.10.5",
     "immutable": "^4.0.0-rc.12",
+    "lsat-js": "^1.0.7",
     "nodemon": "^1.19.4",
     "prettier": "^1.19.1",
     "prop-types": "^15.7.2",

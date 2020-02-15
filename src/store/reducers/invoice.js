@@ -23,11 +23,6 @@ let init = Map({
   macaroon: '',
 })
 
-if (window && localStorage) {
-  const invoiceMacaroon = localStorage.getItem('invoiceMacaroon')
-  if (invoiceMacaroon) init = init.set('macaroon', invoiceMacaroon)
-}
-
 export default (state = init, action) => {
   const { type, payload } = action
 

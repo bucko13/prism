@@ -1,7 +1,8 @@
 import assert from 'bsert'
 import { get } from 'axios'
-
 import { getConfig } from 'radiks'
+import { Lsat } from 'lsat-js'
+
 import { Document, Proof } from '../../models'
 import {
   SET_CURRENT_DOC,
@@ -119,15 +120,20 @@ export function getContent(docId) {
   return async (dispatch, getState) => {
     try {
       if (!docId) docId = getState().documents.getIn(['currentDoc', '_id'])
+      const macaroon = getState().invoice.get('macaroon')
+      let lsat, headers
+      if (macaroon) {
+        lsat = Lsat.fromMacaroon(macaroon)
+        headers = {
+          authorization: lsat.toToken(),
+        }
+      }
 
-      // if request is successful then we should have the cookie
-      // and can request the document content
       const {
         data: { decryptedContent },
-      } = await get(`/api/radiks/document/${docId}`)
-
-      // TODO: cleanup
-      if (!decryptedContent) throw new Error('expected to not get this far')
+      } = await get(`/api/radiks/document/${docId}`, {
+        headers,
+      })
 
       dispatch({
         type: SET_CURRENT_CONTENT,
@@ -137,7 +143,7 @@ export function getContent(docId) {
         },
       })
     } catch (e) {
-      if (e.response && e.response.status === 402) {
+      if (e.response && e.response.status >= 400 && e.response.status < 500) {
         // eslint-disable-next-line no-console
         console.warn('Attempted to retrieve document that requires payment')
         // want to make sure to clear the macaroon if we get a 402
