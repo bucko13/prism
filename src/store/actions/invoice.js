@@ -89,7 +89,7 @@ export function requestInvoice() {
     let amount = getState().invoice.get('seconds')
     const docId = getState().documents.getIn(['currentDoc', '_id'])
     const boltwallUri = getState().documents.getIn(['currentDoc', 'boltwall'])
-    if (typeof seconds !== 'number') amount = parseInt(amount, 10)
+    if (typeof amount !== 'number') amount = parseInt(amount, 10)
     assert(typeof amount === 'number' && amount > 0)
 
     try {
@@ -147,11 +147,9 @@ Contact site admin to create one with ln-builder.'
         return dispatch(setStatus('failed'))
       }
     } catch (e) {
-      if (
-        e.response &&
-        (e.response.status === 402 || e.response.status === 401) &&
-        tries > 0
-      ) {
+      // if the call for the token is returned with a 402 that means the invoice
+      // hasn't been paid yet and we should keep polling for an update.
+      if (e.response && e.response.status === 402 && tries > 0) {
         await sleep(timeout)
         return dispatch(checkInvoiceStatus(tries - 1, timeout, boltwallUri))
       } else {

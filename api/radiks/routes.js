@@ -100,6 +100,8 @@ router.get('/api/radiks/document/:docId', async (req, res, next) => {
       .status(404)
       .json({ message: 'no encrypted content for requested document' })
 
+  // make these available on the request object so if boltwall is satisfied,
+  // we can send the decrypted content in a final middleware
   req.encryptedContent = encryptedContent
   req.keyId = keyId
 
