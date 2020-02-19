@@ -2,7 +2,7 @@
   "name": "prism",
   "version": "1.0.0",
   "description": "Sharing ideas, distributed",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "nodemon api/server",
     "build:prod": "webpack --config=webpack-prod.config.js",

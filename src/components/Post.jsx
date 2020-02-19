@@ -1,6 +1,14 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { Header, Button, Label, Icon, Segment, Input } from 'semantic-ui-react'
+import {
+  Header,
+  Button,
+  Label,
+  Icon,
+  Segment,
+  Input,
+  Loader,
+} from 'semantic-ui-react'
 import marked from 'marked'
 import DOMPurify from 'dompurify'
 import { post, put, get } from 'axios'
@@ -200,13 +208,18 @@ export default class Post extends PureComponent {
             locked && requirePayment ? ' preview' : ''
           }`}
         >
-          <div
-            className="container mb-5 p-2"
-            style={{ textAlign: 'justify' }}
-            dangerouslySetInnerHTML={{
-              __html: marked(cleanContent),
-            }}
-          />
+          {' '}
+          {cleanContent && cleanContent.length ? (
+            <div
+              className="container mb-5 p-2"
+              style={{ textAlign: 'justify' }}
+              dangerouslySetInnerHTML={{
+                __html: marked(cleanContent),
+              }}
+            />
+          ) : (
+            <Loader size="large" />
+          )}
         </div>
         <div className="row justify-content-center metadata">
           {boltwall && boltwall.length ? (

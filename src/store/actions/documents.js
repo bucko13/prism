@@ -15,6 +15,7 @@ import {
   SET_CURRENT_DISLIKES,
 } from '../constants'
 import { clearInvoice } from './invoice'
+import { sleep } from '../../utils'
 
 /*
  * Gets a list of document models from Radiks server
@@ -142,8 +143,15 @@ export function getContent(docId) {
           locked: false,
         },
       })
+
+      await sleep(2000)
+      dispatch(getContent(docId))
     } catch (e) {
-      if (e.response && e.response.status >= 400 && e.response.status < 500) {
+      // if payment is required or the LSAT is expired/invalid
+      if (
+        (e.response && e.response.status === 402) ||
+        e.response.status === 401
+      ) {
         // eslint-disable-next-line no-console
         console.warn('Attempted to retrieve document that requires payment')
         // want to make sure to clear the macaroon if we get a 402
