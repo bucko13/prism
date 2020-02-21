@@ -11,6 +11,9 @@ import { documentActions, invoiceActions } from '../store/actions'
 class PostContainer extends PureComponent {
   constructor(props) {
     super(props)
+    this.state = {
+      loadingContent: false,
+    }
   }
 
   static get propTypes() {
@@ -74,11 +77,15 @@ class PostContainer extends PureComponent {
     const { id } = qs.parse(search, { ignoreQueryPrefix: true })
 
     // if there is no content yet, then we need to fetch it
-    if (!document.content || !document.content.length) {
+    if (
+      (!document.content || !document.content.length) &&
+      !this.state.loadingContent
+    ) {
+      this.setState({ loadingContent: true })
       // if the post does not require payment, then fetch the full post
-      if (document && !document.requirePayment) getContent(id)
+      if (document && !document.requirePayment) await getContent(id)
       // if payment is required then fetch the preview
-      else if (document && document.requirePayment) getDocPreview(id)
+      else if (document && document.requirePayment) await getDocPreview(id)
     }
   }
 

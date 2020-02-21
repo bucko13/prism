@@ -144,8 +144,10 @@ export function getContent(docId) {
         },
       })
 
-      await sleep(2000)
-      dispatch(getContent(docId))
+      if (getState().documents.getIn(['currentDoc', 'requirePayment'])) {
+        await sleep(2000)
+        await dispatch(getContent(docId))
+      }
     } catch (e) {
       // if payment is required or the LSAT is expired/invalid
       if (
