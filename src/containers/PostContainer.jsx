@@ -63,8 +63,10 @@ class PostContainer extends PureComponent {
       location: { search },
     } = this.props
     const { id } = qs.parse(search, { ignoreQueryPrefix: true })
-    getPostMetadata(id)
-    getRate()
+    this.setState({ loadingContent: true }, async () => {
+      await Promise.all([getPostMetadata(id), getRate()])
+      this.setState({ loadingContent: false })
+    })
   }
 
   async componentDidUpdate() {
@@ -79,7 +81,9 @@ class PostContainer extends PureComponent {
     // if there is no content yet, then we need to fetch it
     if (
       (!document.content || !document.content.length) &&
-      !this.state.loadingContent
+      !this.state.loadingContent &&
+      document.title &&
+      document.title.length
     ) {
       this.setState({ loadingContent: true })
       // if the post does not require payment, then fetch the full post
