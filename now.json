@@ -10,7 +10,6 @@
   "env": {
     "SESSION_SECRET": "@session-secret",
     "OPEN_NODE_KEY": "@open-node-key",
-    "CAVEAT_KEY": "@caveat-key",
     "MONGODB_URI": "@my-mongodb-uri",
     "APP_PRIVATE_KEY": "@app-private-key",
     "CHAINPOINT_CORES": "@chainpoint-cores",

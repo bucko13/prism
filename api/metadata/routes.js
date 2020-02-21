@@ -53,11 +53,11 @@ async function verifyPost(req, res, next) {
       return res
         .status(404)
         .json({ message: `No post with the id ${post} found.` })
-    if (!doc.node || !doc.caveatKey)
-      return res.status(204).json({
-        message:
-          'Requested post does not support payments because it has no lightning node.',
-      })
+    if (!doc.boltwall || !doc.boltwall.length)
+      // eslint-disable-next-line no-console
+      console.error(
+        'Requested post does not support payments because it has no lightning node.'
+      )
 
     // if we do have it, let's save it for other middleware to reference
     req.doc = doc

@@ -63,12 +63,6 @@ export default class Document extends Model {
     // by looking up the keyId and decrypting
     aesKey: String,
 
-    // this is the endpoint where the app can request invoices from
-    node: {
-      type: String,
-      decrypted: true,
-    },
-
     requirePayment: {
       type: Boolean,
       decrypted: true,
@@ -78,24 +72,14 @@ export default class Document extends Model {
       type: Number,
       decrypted: true,
     },
-
-    // this is used for managing third party macaroons
-    // between the remote lightning node that protects
-    // this document and the app server that checks auth.
-    // Similar to the content, this is saved in a decrypted state
-    // but is similarly encrypted with the app pub key.
-    caveatKey: {
-      type: String,
-      decrypted: true,
-    },
   }
 
   async afterFetch() {
     await this.setupKey()
   }
 
-  // this will encrypt the content as well as the caveat key
-  // both of which need to be secretly shared with the app server
+  // this will encrypt the content
+  // which needs to be secretly shared with the app server
   async encryptContent() {
     const { content } = this.attrs
     await this.setupKey()
@@ -105,15 +89,6 @@ export default class Document extends Model {
     )
     const encryptedContent = encryptWithKey(this.attrs.aesKey, content)
     this.update({ encryptedContent })
-
-    // lets confirm that there is also a caveat key
-    // (the ln node server passphrase) saved if we have a node
-    const { node, caveatKey } = this.attrs
-    if (node) {
-      assert(caveatKey, 'Must have a caveat key when setting a node.')
-      const encryptedCaveat = encryptWithKey(this.attrs.aesKey, caveatKey)
-      this.update({ caveatKey: encryptedCaveat })
-    }
   }
 
   async beforeSave() {
