@@ -125,8 +125,8 @@ export function checkInvoiceStatus(tries = 50, timeout = 750, boltwall, mac) {
   return async (dispatch, getState) => {
     let boltwallUri =
       boltwall || getState().documents.getIn(['currentDoc', 'boltwall'])
+    let docId = getState().documents.getIn(['currentDoc', '_id'])
     let macaroon = mac || getState().invoice.get('macaroon')
-
     if (!boltwallUri) boltwallUri = process.env.BOLTWALL_URI
 
     // if we still don't have a boltwallUri, we should just return with an error
@@ -140,7 +140,8 @@ Contact site admin to create one with ln-builder.'
       const response = await post(uri.href, { macaroon })
       if (response.status === 200 && response.data.macaroon) {
         dispatch(closeModal())
-        dispatch(setStatusPaid(response.data.macaroon))
+        dispatch(setMacaroon(response.data.macaroon, docId))
+        dispatch(setStatusPaid())
       } else if (response.data.status === 'held') {
         dispatch(setStatus('held'))
       } else {
@@ -153,18 +154,17 @@ Contact site admin to create one with ln-builder.'
         await sleep(timeout)
         return dispatch(checkInvoiceStatus(tries - 1, timeout, boltwallUri))
       } else {
+        // eslint-disable-next-line no-console
+        console.error('Invoice status check failed:', e)
         return dispatch(setStatus('failed'))
       }
     }
   }
 }
 
-function setStatusPaid(macaroon) {
-  assert(macaroon, 'need a macaroon to update status to paid')
-
+function setStatusPaid() {
   return {
     type: SET_STATUS_PAID,
-    payload: macaroon,
   }
 }
 
@@ -173,8 +173,12 @@ export function clearMacaroon(docId) {
     typeof docId === 'string',
     'Need docId to clear macaroon from session storage'
   )
+  if (window && sessionStorage) sessionStorage.removeItem(docId)
   return dispatch => {
-    dispatch(setMacaroon('', docId))
+    dispatch({
+      type: SET_MACAROON,
+      payload: '',
+    })
   }
 }
 

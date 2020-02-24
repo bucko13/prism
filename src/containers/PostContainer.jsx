@@ -73,23 +73,23 @@ class PostContainer extends PureComponent {
     const {
       getDocPreview,
       getContent,
-      document,
+      document: { content, title, requirePayment },
       location: { search },
     } = this.props
     const { id } = qs.parse(search, { ignoreQueryPrefix: true })
 
     // if there is no content yet, then we need to fetch it
     if (
-      (!document.content || !document.content.length) &&
+      (!content || !content.length) &&
       !this.state.loadingContent &&
-      document.title &&
-      document.title.length
+      title &&
+      title.length
     ) {
       this.setState({ loadingContent: true })
       // if the post does not require payment, then fetch the full post
-      if (document && !document.requirePayment) await getContent(id)
+      if (document && !requirePayment) await getContent(id)
       // if payment is required then fetch the preview
-      else if (document && document.requirePayment) await getDocPreview(id)
+      else if (document && requirePayment) await getDocPreview(id)
     }
   }
 

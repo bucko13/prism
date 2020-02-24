@@ -144,6 +144,8 @@ export function getContent(docId) {
         },
       })
 
+      // if the current doc requires payment then we want to start the
+      // recursive loop which will eventually fail once the LSAT is expired
       if (getState().documents.getIn(['currentDoc', 'requirePayment'])) {
         await sleep(2000)
         await dispatch(getContent(docId))
@@ -155,7 +157,9 @@ export function getContent(docId) {
         e.response.status === 401
       ) {
         // eslint-disable-next-line no-console
-        console.warn('Attempted to retrieve document that requires payment')
+        console.warn(
+          'Attempted to retrieve document that requires payment without LSAT or invalid LSAT'
+        )
         // want to make sure to clear the macaroon if we get a 402
         // since this only would have been returned if we had
         // one set but it was expired
@@ -167,6 +171,7 @@ export function getContent(docId) {
             locked: true,
           },
         })
+        dispatch(getDocPreview(docId))
       }
       // eslint-disable-next-line no-console
       else console.error('Problem unlocking content: ', e.message)
