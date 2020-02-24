@@ -133,7 +133,7 @@ export function checkInvoiceStatus(tries = 50, timeout = 750, boltwall, mac) {
     if (!boltwallUri)
       throw new Error(
         'No boltwall uri associated with the post and no default payment gateway set. \
-Contact site admin to create one with ln-builder.'
+Contact site admin to create one with now-boltwall.'
       )
     try {
       const uri = new URL('/api/token', boltwallUri)

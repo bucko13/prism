@@ -6,6 +6,11 @@ import { User } from '../../models'
 
 import { SET_BOLTWALL_URI } from '../constants'
 
+/**
+ * @description This sets the boltwall uri for the currently logged in user. This URI
+ * will be associated with posts by this user that require payment.
+ * @param {string} uri
+ */
 export function saveBoltwallUri(uri) {
   return async dispatch => {
     try {
@@ -28,6 +33,10 @@ export function saveBoltwallUri(uri) {
   }
 }
 
+/**
+ * @description Gets the boltwall URI for the currently logged in User.
+ * Useful for preparing the profile view
+ */
 export function getBoltwallUri() {
   return async dispatch => {
     const { userSession } = getConfig()

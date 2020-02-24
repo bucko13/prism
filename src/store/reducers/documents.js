@@ -18,7 +18,6 @@ const init = Map({
     author: '',
     _id: '',
     locked: true,
-    node: '', // uri of payment node
     // the following will also be saved on the document list items
     proofId: '', // id of associated proof
     rawProof: '', // raw proof data, saved as reference for evaluating
