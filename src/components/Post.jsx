@@ -218,7 +218,7 @@ export default class Post extends PureComponent {
               }}
             />
           ) : (
-            <Loader size="large" />
+            <Loader size="large" active inline />
           )}
         </div>
         <div className="row justify-content-center metadata">
