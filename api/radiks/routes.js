@@ -42,8 +42,6 @@ router.get('/api/radiks/preview/:docId', async (req, res) => {
   const { encryptedContent, keyId } = document
 
   const preview = await getDecryptedContentPreview(encryptedContent, keyId)
-  // destructure what we need fromm the document
-  // const { title, author, _id, createdAt, updatedAt, node, wordCount } = document
 
   // send relevant information for content preview
   return res.json({
@@ -133,8 +131,17 @@ const boltwallConfig = {
   ],
 }
 
+/**
+ * @description GET /radiks/document:docId
+ * Boltwall middleware on the route for requesting protecting document content.
+ * Will determine if request has a valid LSAT or not, sending payment info if not
+ */
 router.get('/api/radiks/document/:docId', boltwall(boltwallConfig))
 
+/**
+ * @description GET /radiks/document/:docId for getting decrypted content
+ * once boltwall checks are satisfied.
+ */
 router.get('/api/radiks/document/:docId', async (req, res) => {
   // if we've gotten this far we know that we have a valid LSAT
   // and can

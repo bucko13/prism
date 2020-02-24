@@ -49,6 +49,7 @@ async function verifyPost(req, res, next) {
       radiksType: 'Document',
       _id: post,
     })
+
     if (!doc)
       return res
         .status(404)
@@ -65,21 +66,23 @@ async function verifyPost(req, res, next) {
   next()
 }
 
-async function getMetadata(req, res) {
+async function getMetadata(req, res, next) {
   const { post } = req.params
 
   const metaDb = mongo.collection('metadata')
-  let [metadata, document] = await Promise.all([
-    metaDb.findOne({ post }),
-    getDocument(post),
-  ])
+  let metadata = await metaDb.findOne({ post })
 
-  const boltwall = await getAuthUri(document.userId)
+  if (!req.doc) {
+    res.status(404)
+    return next({ message: `Could not find document: ${post}` })
+  }
+  const boltwall = await getAuthUri(req.doc.userId)
 
   if (!metadata) {
     metadata = { ...initMeta, post }
     await metaDb.insertOne(metadata)
   }
+
   const {
     title,
     author,
@@ -88,7 +91,7 @@ async function getMetadata(req, res) {
     updatedAt,
     wordCount,
     requirePayment,
-  } = document
+  } = req.doc
 
   const body = {
     ...metadata,
