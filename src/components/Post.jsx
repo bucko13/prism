@@ -1,6 +1,14 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { Header, Button, Label, Icon, Segment, Input } from 'semantic-ui-react'
+import {
+  Header,
+  Button,
+  Label,
+  Icon,
+  Segment,
+  Input,
+  Loader,
+} from 'semantic-ui-react'
 import marked from 'marked'
 import DOMPurify from 'dompurify'
 import { post, put, get } from 'axios'
@@ -37,7 +45,7 @@ export default class Post extends PureComponent {
       author: PropTypes.string,
       locked: PropTypes.bool,
       requirePayment: PropTypes.bool,
-      node: PropTypes.string,
+      boltwall: PropTypes.string,
       wordCount: PropTypes.number.isRequired,
       seconds: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
         .isRequired,
@@ -61,8 +69,6 @@ export default class Post extends PureComponent {
   }
 
   async componentDidMount() {
-    const { getContent } = this.props
-    await getContent()
     const { data: rates } = await get('/api/metadata/rates')
     this.rates = rates
   }
@@ -138,11 +144,11 @@ export default class Post extends PureComponent {
   }
 
   async getHodlInvoice() {
-    const { node, title, _id, setInvoice, checkInvoiceStatus } = this.props
+    const { boltwall, title, _id, setInvoice, checkInvoiceStatus } = this.props
     const { count } = this.state
     const sats = this.rates.tips.rate * count
     this.setState({ loading: true }, async () => {
-      let { data: invoice } = await post(`${node}/api/invoice`, {
+      let { data: invoice } = await post(`${boltwall}/api/invoice`, {
         amount: sats,
         title: `tips for ${title}`,
         appName: 'Prism',
@@ -182,7 +188,7 @@ export default class Post extends PureComponent {
       initializeModal,
       likes,
       dislikes,
-      node,
+      boltwall,
     } = this.props
     const { showDialogue, count, loading, error } = this.state
     const cleanContent = DOMPurify.sanitize(content)
@@ -192,6 +198,7 @@ export default class Post extends PureComponent {
     const cost = parseFloat(
       this.satsPerBtc * rate * tips.rate * count + tips.fee * this.satsPerBtc
     ).toFixed(4)
+
     return (
       <div>
         <Header as="h2">{title}</Header>
@@ -201,16 +208,21 @@ export default class Post extends PureComponent {
             locked && requirePayment ? ' preview' : ''
           }`}
         >
-          <div
-            className="container mb-5 p-2"
-            style={{ textAlign: 'justify' }}
-            dangerouslySetInnerHTML={{
-              __html: marked(cleanContent),
-            }}
-          />
+          {' '}
+          {cleanContent && cleanContent.length ? (
+            <div
+              className="container mb-5 p-2"
+              style={{ textAlign: 'justify' }}
+              dangerouslySetInnerHTML={{
+                __html: marked(cleanContent),
+              }}
+            />
+          ) : (
+            <Loader size="large" active inline />
+          )}
         </div>
         <div className="row justify-content-center metadata">
-          {node && node.length ? (
+          {boltwall && boltwall.length ? (
             <div className="tips row mb-4 col-lg-8">
               <Header as="h4" className="col-12">
                 Show some love!
@@ -238,8 +250,8 @@ export default class Post extends PureComponent {
                   <Segment color="red">
                     There was a problem processing your payment. This is usually
                     the result of temporary lightning network connectivity
-                    issues. If your tips were not added then you should
-                    eventually be refunded your payment.
+                    issues. If your tips were not added then you will eventually
+                    be refunded your payment.
                   </Segment>
                 ) : showDialogue ? (
                   <Segment loading={loading} className="col">

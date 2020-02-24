@@ -10,6 +10,8 @@ const lnService = require('ln-service')
 const { once } = require('events')
 const { promisify } = require('util')
 
+const { getDocument, getAuthUri } = require('../helpers')
+
 const delay = promisify(setTimeout)
 
 let mongo
@@ -47,15 +49,16 @@ async function verifyPost(req, res, next) {
       radiksType: 'Document',
       _id: post,
     })
+
     if (!doc)
       return res
         .status(404)
         .json({ message: `No post with the id ${post} found.` })
-    if (!doc.node || !doc.caveatKey)
-      return res.status(204).json({
-        message:
-          'Requested post does not support payments because it has no lightning node.',
-      })
+    if (!doc.boltwall || !doc.boltwall.length)
+      // eslint-disable-next-line no-console
+      console.error(
+        'Requested post does not support payments because it has no lightning node.'
+      )
 
     // if we do have it, let's save it for other middleware to reference
     req.doc = doc
@@ -63,18 +66,46 @@ async function verifyPost(req, res, next) {
   next()
 }
 
-async function getMetadata(req, res) {
+async function getMetadata(req, res, next) {
   const { post } = req.params
 
   const metaDb = mongo.collection('metadata')
   let metadata = await metaDb.findOne({ post })
+
+  if (!req.doc) {
+    res.status(404)
+    return next({ message: `Could not find document: ${post}` })
+  }
+  const boltwall = await getAuthUri(req.doc.userId)
 
   if (!metadata) {
     metadata = { ...initMeta, post }
     await metaDb.insertOne(metadata)
   }
 
-  return res.status(200).json(metadata)
+  const {
+    title,
+    author,
+    _id,
+    createdAt,
+    updatedAt,
+    wordCount,
+    requirePayment,
+  } = req.doc
+
+  const body = {
+    ...metadata,
+    title,
+    author,
+    _id,
+    createdAt,
+    updatedAt,
+    requirePayment,
+    wordCount,
+    boltwall,
+  }
+
+  return res.status(200).json(body)
 }
 
 async function verifyInvoice(req, res, next) {

@@ -23,11 +23,6 @@ let init = Map({
   macaroon: '',
 })
 
-if (window && localStorage) {
-  const invoiceMacaroon = localStorage.getItem('invoiceMacaroon')
-  if (invoiceMacaroon) init = init.set('macaroon', invoiceMacaroon)
-}
-
 export default (state = init, action) => {
   const { type, payload } = action
 
@@ -51,7 +46,7 @@ export default (state = init, action) => {
       return state.set('macaroon', payload)
 
     case SET_STATUS_PAID:
-      return state.merge({ status: 'paid', macaroon: payload })
+      return state.merge({ status: 'paid' })
 
     case SET_RATE:
       return state.set('rate', payload)

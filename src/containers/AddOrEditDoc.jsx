@@ -7,7 +7,6 @@ import { evaluateProofs } from 'chainpoint-client/dist/bundle.web'
 import ReactMde from 'react-mde'
 import { Header, Loader, Dimmer, Modal } from 'semantic-ui-react'
 import * as Showdown from 'showdown'
-import { get } from 'axios'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 
 import { Document, Proof } from '../models'
@@ -25,8 +24,6 @@ class AddOrEditDocContainer extends PureComponent {
       author: '',
       title: '',
       tab: 'write',
-      caveatKey: '',
-      node: '',
       requirePayment: true,
       loading: true,
       proofData: {},
@@ -87,8 +84,6 @@ class AddOrEditDocContainer extends PureComponent {
         content,
         title,
         author,
-        node,
-        caveatKey,
         requirePayment = false,
         wordCount,
       } = this.document.attrs
@@ -104,8 +99,6 @@ class AddOrEditDocContainer extends PureComponent {
         text: content,
         title,
         author,
-        node,
-        caveatKey,
         requirePayment,
         loading: false,
         proofData,
@@ -214,37 +207,6 @@ class AddOrEditDocContainer extends PureComponent {
     this.setState({ loading: !this.state.loading })
   }
 
-  async validatePaymentFields() {
-    const { requirePayment, node, caveatKey } = this.state
-    if (requirePayment) {
-      // first test it is a valid URL
-      new URL(node)
-
-      let uri = node
-
-      // trim trailing slash
-      if (node[node.length - 1] === '/') uri = node.slice(0, node.length - 1)
-      // now see if it conforms to the api
-      const {
-        data: { pubKey, uris },
-      } = await get(`${uri}/api/node`)
-      if (!pubKey || !uris)
-        throw new Error(
-          'Target paywall does not conform to boltwall specs. Please visit https://github.com/tierion/now-boltwall for more information on setting up a node to receive payments.'
-        )
-    }
-
-    // if payment is required and we are mising either the nodeUri
-    // or the caveat key password, then throw an error
-    if (
-      requirePayment &&
-      (!node || !node.length || (!caveatKey || !caveatKey.length))
-    )
-      throw new Error(
-        'Must provide valid paywall URI and password when requiring payment.'
-      )
-  }
-
   getWordCount(content) {
     if (!content)
       // this lets us use the method before we've full mounted the component from the doc attrs
@@ -254,15 +216,7 @@ class AddOrEditDocContainer extends PureComponent {
   }
 
   async handleSubmit() {
-    let {
-      title,
-      text,
-      author,
-      node,
-      caveatKey = false,
-      requirePayment,
-      wordCount,
-    } = this.state
+    let { title, text, author, requirePayment, wordCount } = this.state
     const { name, userId, edit } = this.props
 
     if (!author) author = name || 'Anonymous'
@@ -273,24 +227,8 @@ class AddOrEditDocContainer extends PureComponent {
       content: text,
       author,
       userId,
-      node,
-      caveatKey,
       requirePayment,
       wordCount,
-    }
-
-    try {
-      await this.validatePaymentFields()
-    } catch (e) {
-      if (e.message.indexOf('Invalid URL') !== -1)
-        return this.setState({
-          errorMessage:
-            'Paywall URI is invalid. Must be of the form http://example.com or https://example.com',
-        })
-      else
-        return this.setState({
-          errorMessage: `Problem with payment details: ${e.message}`,
-        })
     }
 
     // if we are in an edit screen then we want to update the current document
@@ -322,8 +260,6 @@ class AddOrEditDocContainer extends PureComponent {
       loading,
       title,
       author,
-      node,
-      caveatKey,
       requirePayment,
       error,
       loadingMessage = null,
@@ -368,8 +304,6 @@ class AddOrEditDocContainer extends PureComponent {
           author={author}
           userId={userId}
           requirePayment={requirePayment}
-          caveatKey={caveatKey}
-          node={node}
           handleValueChange={(name, value) =>
             this.handleValueChange(name, value)
           }

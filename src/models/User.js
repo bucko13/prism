@@ -19,6 +19,12 @@ export default class User extends Model {
       decrypted: true,
     },
 
+    // boltwall uri for the user to receive payments
+    boltwall: {
+      type: String,
+      decrypted: true,
+    },
+
     name: String,
   }
 

@@ -11,18 +11,24 @@ import { documentActions, invoiceActions } from '../store/actions'
 class PostContainer extends PureComponent {
   constructor(props) {
     super(props)
+    this.state = {
+      loadingContent: false,
+    }
   }
 
   static get propTypes() {
     return {
       document: PropTypes.shape({
-        title: PropTypes.string.isRequired,
-        content: PropTypes.string.isRequired,
-        author: PropTypes.string.isRequired,
-        _id: PropTypes.string.isRequired,
-        wordCount: PropTypes.number.isRequired,
-        likes: PropTypes.number.isRequired,
-        dislikes: PropTypes.number.isRequired,
+        title: PropTypes.string,
+        content: PropTypes.string,
+        author: PropTypes.string,
+        _id: PropTypes.string,
+        wordCount: PropTypes.number,
+        likes: PropTypes.number,
+        dislikes: PropTypes.number,
+        boltwall: PropTypes.string,
+        locked: PropTypes.bool,
+        requirePayment: PropTypes.bool,
       }),
       location: PropTypes.shape({
         search: PropTypes.string.isRequired,
@@ -35,7 +41,7 @@ class PostContainer extends PureComponent {
       invoiceStatus: PropTypes.string,
       initializeModal: PropTypes.func.isRequired,
       closeModal: PropTypes.func.isRequired,
-      setCurrentDoc: PropTypes.func.isRequired,
+      getDocPreview: PropTypes.func.isRequired,
       clearCurrentDoc: PropTypes.func.isRequired,
       getContent: PropTypes.func.isRequired,
       requestInvoice: PropTypes.func.isRequired,
@@ -52,15 +58,39 @@ class PostContainer extends PureComponent {
 
   componentDidMount() {
     const {
-      setCurrentDoc,
       getPostMetadata,
       getRate,
       location: { search },
     } = this.props
     const { id } = qs.parse(search, { ignoreQueryPrefix: true })
-    setCurrentDoc(id)
-    getPostMetadata(id)
-    getRate()
+    this.setState({ loadingContent: true }, async () => {
+      await Promise.all([getPostMetadata(id), getRate()])
+      this.setState({ loadingContent: false })
+    })
+  }
+
+  async componentDidUpdate() {
+    const {
+      getDocPreview,
+      getContent,
+      document: { content, title, requirePayment },
+      location: { search },
+    } = this.props
+    const { id } = qs.parse(search, { ignoreQueryPrefix: true })
+
+    // if there is no content yet, then we need to fetch it
+    if (
+      (!content || !content.length) &&
+      !this.state.loadingContent &&
+      title &&
+      title.length
+    ) {
+      this.setState({ loadingContent: true })
+      // if the post does not require payment, then fetch the full post
+      if (document && !requirePayment) await getContent(id)
+      // if payment is required then fetch the preview
+      else if (document && requirePayment) await getDocPreview(id)
+    }
   }
 
   componentWillUnmount() {
@@ -89,7 +119,7 @@ class PostContainer extends PureComponent {
     } = this.props
     // if still retrieving the document information
     // return the loader
-    if (!document || !document.title.length)
+    if (!document || !document.title || !document.title.length)
       return (
         <Dimmer active inverted>
           <Header as="h4">Getting post...</Header>
@@ -106,7 +136,7 @@ class PostContainer extends PureComponent {
     return (
       <Post
         {...document}
-        getContent={() => getContent()}
+        getContent={id => getContent(id)}
         seconds={seconds}
         modalOpen={modalOpen}
         rate={rate}
@@ -139,8 +169,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    setCurrentDoc: docId => {
-      dispatch(documentActions.setCurrentDoc(docId))
+    getDocPreview: docId => {
+      dispatch(documentActions.getDocPreview(docId))
     },
     clearCurrentDoc: () => {
       dispatch(documentActions.clearCurrentDoc())
@@ -148,8 +178,8 @@ function mapDispatchToProps(dispatch) {
     getPostMetadata: docId => {
       dispatch(documentActions.getPostMetadata(docId))
     },
-    getContent: () => {
-      dispatch(documentActions.getContent())
+    getContent: id => {
+      dispatch(documentActions.getContent(id))
     },
     setCurrentLikes: likes => {
       dispatch(documentActions.setCurrentLikes(likes))
@@ -184,7 +214,4 @@ function mapDispatchToProps(dispatch) {
   }
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(PostContainer)
+export default connect(mapStateToProps, mapDispatchToProps)(PostContainer)

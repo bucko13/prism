@@ -1,5 +1,6 @@
 import assert from 'bsert'
 import { get, post } from 'axios'
+import { Lsat } from 'lsat-js'
 
 import {
   SET_MODAL_VISIBILITY,
@@ -69,26 +70,46 @@ function setRate(rate) {
   }
 }
 
+/**
+ * Check session storage for macaroon and set it in state
+ * if found
+ * @param {String} docId
+ */
+export function getMacaroon(docId) {
+  return dispatch => {
+    assert(typeof docId === 'string')
+    let macaroon
+    if (window && sessionStorage) macaroon = sessionStorage.getItem(docId)
+    if (macaroon) return dispatch(setMacaroon(macaroon, docId))
+  }
+}
+
 export function requestInvoice() {
   return async (dispatch, getState) => {
-    let time = getState().invoice.get('seconds')
-    const title = getState().documents.getIn(['currentDoc', 'title'])
+    let amount = getState().invoice.get('seconds')
     const docId = getState().documents.getIn(['currentDoc', '_id'])
-    const nodeUri = getState().documents.getIn(['currentDoc', 'node'])
+    const boltwallUri = getState().documents.getIn(['currentDoc', 'boltwall'])
+    if (typeof amount !== 'number') amount = parseInt(amount, 10)
+    assert(typeof amount === 'number' && amount > 0)
 
-    if (typeof seconds !== 'number') time = parseInt(time, 10)
-    assert(typeof time === 'number' && time > 0)
-
-    const { data } = await post('/api/invoice', {
-      time,
-      amount: time,
-      title,
-      docId,
-      nodeUri,
-    })
-    const { payreq, id, status } = data
-    dispatch(setInvoice({ invoice: payreq, invoiceId: id, status }))
-    dispatch(checkInvoiceStatus())
+    try {
+      await get(
+        `/api/radiks/document/${docId}?auth_uri=${boltwallUri}&amount=${amount}`
+      )
+    } catch (e) {
+      if (e.response && e.response.status === 402) {
+        const lsat = Lsat.fromHeader(e.response.headers['www-authenticate'])
+        dispatch(setMacaroon(lsat.baseMacaroon, docId))
+        dispatch(
+          setInvoice({
+            invoice: lsat.invoice,
+            invoiceId: lsat.paymentHash,
+            status: 'unpaid',
+          })
+        )
+        dispatch(checkInvoiceStatus(50, 750, boltwallUri, lsat.baseMacaroon))
+      }
+    }
   }
 }
 
@@ -98,58 +119,73 @@ export function requestInvoice() {
  * This means that currently a client can only support one
  * payment request at a time
  * @param {Number} tries - number of times to recursively make the call
- * @param {<Promise>} - will either set status to paid, failed, or call itself recursively
+ * @returns {<Promise>} - will either set status to paid, failed, or call itself recursively
  */
-export function checkInvoiceStatus(tries = 50, timeout = 750, node) {
+export function checkInvoiceStatus(tries = 50, timeout = 750, boltwall, mac) {
   return async (dispatch, getState) => {
-    let nodeUri = node || getState().documents.getIn(['currentDoc', 'node'])
-    let invoiceId = getState().invoice.get('invoiceId')
-    assert(
-      invoiceId,
-      'Missing invoiceId in state. Must request the invoice before checking status'
-    )
+    let boltwallUri =
+      boltwall || getState().documents.getIn(['currentDoc', 'boltwall'])
+    let docId = getState().documents.getIn(['currentDoc', '_id'])
+    let macaroon = mac || getState().invoice.get('macaroon')
+    if (!boltwallUri) boltwallUri = process.env.BOLTWALL_URI
 
-    if (!nodeUri) nodeUri = process.env.BOLTWALL_URI
-
-    // if we still don't have a nodeUri, we should just return with an error
-    if (!nodeUri)
+    // if we still don't have a boltwallUri, we should just return with an error
+    if (!boltwallUri)
       throw new Error(
-        'No node uri associated with the post and no default payment gateway set. \
-Contact site admin to create one with ln-builder.'
+        'No boltwall uri associated with the post and no default payment gateway set. \
+Contact site admin to create one with now-boltwall.'
       )
-
-    const response = await get(`${nodeUri}/api/invoice?id=${invoiceId}`)
-    if (response.status === 200 && response.data.status === 'paid') {
-      dispatch(closeModal())
-      dispatch(setStatusPaid(response.data.discharge))
-    } else if (response.data.status === 'held') {
-      dispatch(setStatus('held'))
-    } else if (tries > 0) {
-      await sleep(timeout)
-      return dispatch(checkInvoiceStatus(tries - 1, timeout, node))
-    } else {
-      return dispatch(setStatus('failed'))
+    try {
+      const uri = new URL('/api/token', boltwallUri)
+      const response = await post(uri.href, { macaroon })
+      if (response.status === 200 && response.data.macaroon) {
+        dispatch(closeModal())
+        dispatch(setMacaroon(response.data.macaroon, docId))
+        dispatch(setStatusPaid())
+      } else if (response.data.status === 'held') {
+        dispatch(setStatus('held'))
+      } else {
+        return dispatch(setStatus('failed'))
+      }
+    } catch (e) {
+      // if the call for the token is returned with a 402 that means the invoice
+      // hasn't been paid yet and we should keep polling for an update.
+      if (e.response && e.response.status === 402 && tries > 0) {
+        await sleep(timeout)
+        return dispatch(checkInvoiceStatus(tries - 1, timeout, boltwallUri))
+      } else {
+        // eslint-disable-next-line no-console
+        console.error('Invoice status check failed:', e)
+        return dispatch(setStatus('failed'))
+      }
     }
   }
 }
 
-function setStatusPaid(macaroon) {
-  assert(macaroon, 'need a macaroon to update status to paid')
-  if (window && localStorage) localStorage.setItem('invoiceMacaroon', macaroon)
+function setStatusPaid() {
   return {
     type: SET_STATUS_PAID,
-    payload: macaroon,
   }
 }
 
-export function clearMacaroon() {
+export function clearMacaroon(docId) {
+  assert(
+    typeof docId === 'string',
+    'Need docId to clear macaroon from session storage'
+  )
+  if (window && sessionStorage) sessionStorage.removeItem(docId)
   return dispatch => {
-    if (window && localStorage) localStorage.removeItem('invoiceMacaroon')
-    dispatch(setMacaroon(''))
+    dispatch({
+      type: SET_MACAROON,
+      payload: '',
+    })
   }
 }
 
-export function setMacaroon(macaroon) {
+export function setMacaroon(macaroon, docId) {
+  assert(typeof macaroon === 'string', 'Missing macaroon')
+  assert(typeof docId === 'string', 'Missing docId')
+  if (window && sessionStorage) sessionStorage.setItem(docId, macaroon)
   return {
     type: SET_MACAROON,
     payload: macaroon,
@@ -164,8 +200,9 @@ export function setStatus(status) {
 }
 
 export function clearInvoice() {
-  return dispatch => {
-    dispatch(clearMacaroon())
+  return (dispatch, getState) => {
+    const docId = getState().documents.getIn(['currentDoc', '_id'])
+    dispatch(clearMacaroon(docId))
     dispatch({
       type: SET_INVOICE,
       payload: {

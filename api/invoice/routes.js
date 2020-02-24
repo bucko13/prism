@@ -2,7 +2,6 @@ const { Router } = require('express')
 const { MacaroonsBuilder } = require('macaroons.js')
 const request = require('request-promise-native')
 
-const { decryptWithAES, getDocument } = require('../helpers')
 const { INVOICE_TYPES } = require('../constants')
 
 const router = Router()
@@ -14,7 +13,6 @@ const router = Router()
  * @param {String} req.body.nodeUri - location of node endpoint for retrieving invoice
  * @param {String} req.body.title - title of document being requested
  * @returns {String} res.session.macaroon - serialized macaroon for client to satisfy
- * must include 3rd party caveat
  */
 async function createInvoice(req, res) {
   let { docId, amount, nodeUri, title, type, tipCount } = req.body
@@ -52,22 +50,8 @@ async function createInvoice(req, res) {
     // this will be cumulative number of likes and dislikes
     builder.add_first_party_caveat(`tipCount = ${tipCount}`)
   }
-  // Need to get the passphrase that is used to verify payments
-  // on the lightning node. This is stored on the document, encrypted
-  // with the same aes key as the document
-  // document is stored with the node information including encrypted
-  // caveat key used to verify macaroons
-  let caveatKey = process.env.CAVEAT_KEY
 
-  const document = await getDocument(docId)
-  const { caveatKey: encryptedCaveat, keyId, node } = document
-  if (encryptedCaveat) caveatKey = await decryptWithAES(encryptedCaveat, keyId)
-
-  if (node) nodeUri = node
-
-  const macaroon = builder
-    .add_third_party_caveat(nodeUri, caveatKey, invoice.id)
-    .getMacaroon()
+  const macaroon = builder.getMacaroon()
 
   req.session.macaroon = macaroon.serialize()
   res.json(invoice)
