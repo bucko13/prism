@@ -18,6 +18,7 @@ const radiks = require('./radiks/routes')
 const proofs = require('./proofs/routes')
 const invoice = require('./invoice/routes')
 const node = require('./node/routes')
+const tips = require('./tips')
 const port = process.env.PORT || 3000
 
 app.set('trust proxy', 1)
@@ -47,6 +48,7 @@ app.use(radiks)
 app.use(invoice)
 app.use(proofs)
 app.use(metadata)
+app.use(tips)
 
 let config
 if (process.env.ENVIRONMENT === 'production')

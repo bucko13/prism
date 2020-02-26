@@ -27,16 +27,6 @@ const initMeta = {
   dislikes: 0,
 }
 
-function getRates(req, res) {
-  res.status(200).json({
-    tips: {
-      rate: PAYMENT_RATE,
-      units: 'satoshis/tip',
-      fee: PROCESSING_FEE,
-    },
-  })
-}
-
 async function verifyPost(req, res, next) {
   if (!mongo) mongo = await getDB(process.env.MONGODB_URI)
 
@@ -55,7 +45,10 @@ async function verifyPost(req, res, next) {
       return res
         .status(404)
         .json({ message: `No post with the id ${post} found.` })
-    if (!doc.boltwall || !doc.boltwall.length)
+
+    doc.boltwallUri = await getAuthUri(doc.userId)
+
+    if (!doc.boltwallUri || !doc.boltwallUri.length)
       // eslint-disable-next-line no-console
       console.error(
         'Requested post does not support payments because it has no lightning node.'
@@ -65,48 +58,6 @@ async function verifyPost(req, res, next) {
     req.doc = doc
   }
   next()
-}
-
-async function getMetadata(req, res, next) {
-  const { post } = req.params
-
-  const metaDb = mongo.collection('metadata')
-  let metadata = await metaDb.findOne({ post })
-
-  if (!req.doc) {
-    res.status(404)
-    return next({ message: `Could not find document: ${post}` })
-  }
-  const boltwall = await getAuthUri(req.doc.userId)
-
-  if (!metadata) {
-    metadata = { ...initMeta, post }
-    await metaDb.insertOne(metadata)
-  }
-
-  const {
-    title,
-    author,
-    _id,
-    createdAt,
-    updatedAt,
-    wordCount,
-    requirePayment,
-  } = req.doc
-
-  const body = {
-    ...metadata,
-    title,
-    author,
-    _id,
-    createdAt,
-    updatedAt,
-    requirePayment,
-    wordCount,
-    boltwall,
-  }
-
-  return res.status(200).json(body)
 }
 
 /**
@@ -137,13 +88,9 @@ Must be associated with an invoice belonging to the post owner.',
   try {
     const { paymentHash } = req.body
 
-    // find the boltwall uri for checking that the invoice exists
-    const boltwall = await getAuthUri(req.doc.userId)
-
-    //
     const { payreq, amount, status } = await request({
       method: 'GET',
-      uri: `${boltwall}/api/invoice?id=${paymentHash}`,
+      uri: `${req.doc.boltwallUri}/api/invoice?id=${paymentHash}`,
       json: true,
     })
 
@@ -169,10 +116,10 @@ Must be associated with an invoice belonging to the post owner.',
     // fee is a flat processing fee for now
     req.body.amount = amount + PROCESSING_FEE
   } catch (e) {
+    console.error(e)
     // this is in the event of an lnservice based error which comes as an array
     if (Array.isArray(e))
       return res.status(e[0]).json({ message: e[1], details: e[2].err.details })
-
     return res
       .status(500)
       .json({ message: 'Problem processing new hodl invoice' })
@@ -193,35 +140,35 @@ async function manageHodlInvoice(req, res, next) {
     } catch (e) {
       res.status(400)
       // eslint-disable-next-line no-console
-      console.error('Problem getting LSAT from request header %s', e)
+      throw new Error('Problem getting LSAT from request header %s', e.message)
     }
 
     const hodlInvoiceId = lsat.paymentHash
+
+    // need to get the information for the hodl invoice to Prism
+    // so we can confirm the payment amount compared to the amount
+    // Prism will pay to the author.
+    // TODO: Can this just be done with a caveat to ensure the ids match?
+    try {
+      const invoice = await lnService.getInvoice({
+        lnd: req.lnd,
+        id: hodlInvoiceId,
+      })
+      lsat.addInvoice(invoice.request)
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e)
+      throw new Error('Problem getting hodl invoice from node')
+    }
+
     const hodlAmount = lsat.invoiceAmount
-
-    // let { is_confirmed, tokens } = await lnService.getInvoice({
-    //   lnd: req.lnd,
-    //   id: hodlInvoiceId,
-    // })
-
-    // // if the hodl invoice is already confirmed, then an old macaroon was used
-    // // and we should send them back with a 402
-    // if (is_confirmed) {
-    //   req.session = null
-    //   return res
-    //     .status(402)
-    //     .json({ message: 'Expired payment. Please send a new request.' })
-    // }
-
-    // find the boltwall uri for checking that the invoice exists
-    const boltwallUri = await getAuthUri(req.doc.userId)
 
     // need to get the invoice information for payment to author
     // including if it is paid and if the fee/hodl invoice amount
     // covers processing fee.
     const { payreq, status, amount } = await request({
       method: 'GET',
-      uri: `${boltwallUri}/api/invoice?id=${hodlInvoiceId}`,
+      uri: `${req.doc.boltwallUri}/api/invoice?id=${hodlInvoiceId}`,
       json: true,
     })
 
@@ -241,7 +188,7 @@ async function manageHodlInvoice(req, res, next) {
     if (hodlAmount - amount < PROCESSING_FEE)
       return res.status(400).json({
         message: `Insufficient fee. Expected payment of at least ${amount +
-          PROCESSING_FEE}`,
+          PROCESSING_FEE} but only received ${hodlAmount}`,
       })
 
     // eslint-disable-next-line no-console
@@ -304,10 +251,6 @@ async function manageHodlInvoice(req, res, next) {
 async function updateTips(req, res) {
   const { post } = req.params
 
-  const myboltwall = process.env.BOLTWALL_URI
-
-  if (!myboltwall) throw new Error('No payment uri for Prism')
-
   const metaDb = mongo.collection('metadata')
   const metadata = await metaDb.findOne({ post: post })
 
@@ -353,22 +296,20 @@ const boltwallConfig = {
   },
 }
 
-router.get('/api/metadata/rates', getRates)
-router.use('/api/metadata/:post', verifyPost)
-router.get('/api/metadata/:post', getMetadata)
+router.use('/api/tips/:post', verifyPost)
 
 // verify invoice for boltwall
-router.use('/api/metadata/:post/tips', verifyInvoice)
+router.use('/api/tips/:post', verifyInvoice)
 
 // run boltwall protections and checks
 // this will generate a hodl invoice for requests made with an LSAT
-router.use('/api/metadata/:post/tips', boltwall(boltwallConfig))
+router.use('/api/tips/:post', boltwall(boltwallConfig))
 
 // if we got this far then that means we expect a hodl invoice
 // to be held but not settled. We want to settle that before moving to the next route
-router.use('/api/metadata/:post/tips', manageHodlInvoice)
+router.use('/api/tips/:post', manageHodlInvoice)
 
 // all boltwall checks have passed, invoices paid, now we can allow updating of tips
-router.put('/api/metadata/:post/tips', updateTips)
+router.put('/api/tips/:post', updateTips)
 
 module.exports = router
