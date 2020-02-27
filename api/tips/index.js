@@ -116,7 +116,6 @@ Must be associated with an invoice belonging to the post owner.',
     // fee is a flat processing fee for now
     req.body.amount = amount + PROCESSING_FEE
   } catch (e) {
-    console.error(e)
     // this is in the event of an lnservice based error which comes as an array
     if (Array.isArray(e))
       return res.status(e[0]).json({ message: e[1], details: e[2].err.details })
