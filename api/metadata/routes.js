@@ -1,32 +1,15 @@
 const { Router } = require('express')
-
-const router = Router()
-
 const { getDB } = require('radiks-server')
 const { COLLECTION } = require('radiks-server/app/lib/constants')
 
 const { getAuthUri } = require('../helpers')
 
+const router = Router()
 let mongo
-
-// flat processing fee of 10 satoshis
-const PROCESSING_FEE = 10
-
-const PAYMENT_RATE = 10
 
 const initMeta = {
   likes: 0,
   dislikes: 0,
-}
-
-function getRates(req, res) {
-  res.status(200).json({
-    tips: {
-      rate: PAYMENT_RATE,
-      units: 'satoshis/tip',
-      fee: PROCESSING_FEE,
-    },
-  })
 }
 
 async function verifyPost(req, res, next) {
@@ -47,11 +30,6 @@ async function verifyPost(req, res, next) {
       return res
         .status(404)
         .json({ message: `No post with the id ${post} found.` })
-    if (!doc.boltwall || !doc.boltwall.length)
-      // eslint-disable-next-line no-console
-      console.error(
-        'Requested post does not support payments because it has no lightning node.'
-      )
 
     // if we do have it, let's save it for other middleware to reference
     req.doc = doc
@@ -65,10 +43,28 @@ async function getMetadata(req, res, next) {
   const metaDb = mongo.collection('metadata')
   let metadata = await metaDb.findOne({ post })
 
-  if (!req.doc) {
-    res.status(404)
-    return next({ message: `Could not find document: ${post}` })
+  // if there is an id in the request
+  // then we want to make sure that document exists before continuing in the request
+  if (post) {
+    const radiksData = mongo.collection(COLLECTION)
+    const doc = await radiksData.findOne({
+      radiksType: 'Document',
+      _id: post,
+    })
+
+    if (!doc) {
+      res.status(404)
+      return next({
+        message: `No post with the id ${post} found.`,
+      })
+    }
+  } else {
+    res.status(400)
+    return next({
+      message: 'Malformed request. Missing post id.',
+    })
   }
+
   const boltwall = await getAuthUri(req.doc.userId)
 
   if (!metadata) {
@@ -101,7 +97,6 @@ async function getMetadata(req, res, next) {
   return res.status(200).json(body)
 }
 
-router.get('/api/metadata/rates', getRates)
 router.use('/api/metadata/:post', verifyPost)
 router.get('/api/metadata/:post', getMetadata)
 

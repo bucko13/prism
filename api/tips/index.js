@@ -12,19 +12,24 @@ const { promisify } = require('util')
 const { Lsat } = require('lsat-js')
 
 const { getAuthUri } = require('../helpers')
-
+const { TIPS_PAYMENT_RATE, PROCESSING_FEE } = require('../constants')
 const delay = promisify(setTimeout)
 
 let mongo
 
-// flat processing fee of 10 satoshis
-const PROCESSING_FEE = 10
-
-const PAYMENT_RATE = 10
-
 const initMeta = {
   likes: 0,
   dislikes: 0,
+}
+
+function getRates(_req, res) {
+  res.status(200).json({
+    tips: {
+      rate: TIPS_PAYMENT_RATE,
+      units: 'satoshis/tip',
+      fee: PROCESSING_FEE,
+    },
+  })
 }
 
 async function verifyPost(req, res, next) {
@@ -174,10 +179,10 @@ async function manageHodlInvoice(req, res, next) {
     // let's make sure the payment amount matches the tips
     const likes = parseInt(req.body.likes, 10) || 0
     const dislikes = parseInt(req.body.dislikes, 10) || 0
-    if (likes + dislikes !== amount / PAYMENT_RATE)
+    if (likes + dislikes !== amount / TIPS_PAYMENT_RATE)
       return res.status(400).json({
         message: `Problem with payment. Amount paid did not match tips given. Payment is for ${amount /
-          PAYMENT_RATE} tips.`,
+          TIPS_PAYMENT_RATE} tips.`,
       })
 
     // if the hodl invoice paid by client to prism is less than the
@@ -295,6 +300,7 @@ const boltwallConfig = {
   },
 }
 
+router.get('/api/tips/rates', getRates)
 router.use('/api/tips/:post', verifyPost)
 
 // verify invoice for boltwall

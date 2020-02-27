@@ -69,7 +69,7 @@ export default class Post extends PureComponent {
   }
 
   async componentDidMount() {
-    const { data: rates } = await get('/api/metadata/rates')
+    const { data: rates } = await get('/api/tips/rates')
     this.rates = rates
   }
 
