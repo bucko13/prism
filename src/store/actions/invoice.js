@@ -127,7 +127,6 @@ export function checkInvoiceStatus(tries = 50, timeout = 750, boltwall, mac) {
       boltwall || getState().documents.getIn(['currentDoc', 'boltwall'])
     let docId = getState().documents.getIn(['currentDoc', '_id'])
     let macaroon = mac || getState().invoice.get('macaroon')
-    if (!boltwallUri) boltwallUri = process.env.BOLTWALL_URI
 
     // if we still don't have a boltwallUri, we should just return with an error
     if (!boltwallUri)
