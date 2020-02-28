@@ -66,11 +66,11 @@ async function verifyPost(req, res, next) {
 }
 
 /**
- * @description This is a middleware run if the request does not have an LSAT
- * associated with it yet and should be run before boltwall. If it doesnt have an LSAT,
- * then we need to validate the request and prepare it for the hodl invoice check.
- * If it does then we can just pass it to the next middleware, which will be boltwall
- * to verify the LSAT
+ * @description This is a middleware that runs before boltwall and if the
+ * request does not have an LSAT associated with it yet. If it doesn't have an LSAT,
+ * then we need to validate the request by checking that the 3rd party's node has a matching
+ * invoice by the same ID that we will use for the hodl invoice.
+ * If it does have an LSAT then we can just pass it to boltwall to run verifications
  * @param {*} req
  * @param {*} res
  * @param {*} next
@@ -131,6 +131,16 @@ Must be associated with an invoice belonging to the post owner.',
   next()
 }
 
+/**
+ * @description manageHodlInvoice runs after boltwall has validated a request.
+ * It will verify that the invoice paid matches the amount of tips sent plus fees
+ * and that the hodl invoice associated with the LSAT exists on our node. Once everything
+ * has been validated, then we pay the author, get the preimage, and settle the hodl
+ * invoice with it.
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
 async function manageHodlInvoice(req, res, next) {
   // eslint-disable-next-line no-console
   console.log('Payment authorized to submit tips...')
@@ -152,7 +162,8 @@ async function manageHodlInvoice(req, res, next) {
     // need to get the information for the hodl invoice to Prism
     // so we can confirm the payment amount compared to the amount
     // Prism will pay to the author.
-    // TODO: Can this just be done with a caveat to ensure the ids match?
+    // TODO/OPTIMIZATION: Can this just be done with a caveat to
+    // ensure the ids match?
     try {
       const invoice = await lnService.getInvoice({
         lnd: req.lnd,
@@ -203,6 +214,7 @@ async function manageHodlInvoice(req, res, next) {
       lnd: req.lnd,
       request: payreq,
     })
+
     if (!secret) throw new Error('No secret returned by node for payment')
 
     // not awaiting since we want to catch its state changes
@@ -247,7 +259,7 @@ async function manageHodlInvoice(req, res, next) {
 
 /**
  * This route is protected by boltwall and will only pass if
- * payment has been successfully made. Afterwhich it will
+ * payment has been successfully made. After which it will
  * update the metadata accordingly
  * @params { Number } req.body.likes - number to increment likes by
  * @params { Number } req.body.dislikes - number to decrement likes by
@@ -300,9 +312,11 @@ const boltwallConfig = {
   },
 }
 
+// get rates charged by Prism for tips
 router.get('/api/tips/rates', getRates)
-router.use('/api/tips/:post', verifyPost)
 
+// verifies post exists and attaches information onto request object
+router.use('/api/tips/:post', verifyPost)
 // verify invoice for boltwall
 router.use('/api/tips/:post', verifyInvoice)
 
