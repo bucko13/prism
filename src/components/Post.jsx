@@ -11,7 +11,7 @@ import {
 } from 'semantic-ui-react'
 import marked from 'marked'
 import DOMPurify from 'dompurify'
-import { post, put, get } from 'axios'
+import { post, get } from 'axios'
 import assert from 'bsert'
 
 import { estimateReadingTime } from '../utils'
@@ -64,6 +64,7 @@ export default class Post extends PureComponent {
       setInvoice: PropTypes.func.isRequired,
       setCurrentLikes: PropTypes.func.isRequired,
       setCurrentDislikes: PropTypes.func.isRequired,
+      updateTips: PropTypes.func.isRequired,
       clearInvoice: PropTypes.func.isRequired,
     }
   }
@@ -74,19 +75,26 @@ export default class Post extends PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    const { invoiceStatus, getContent, locked, requirePayment } = this.props
-    const { count, type } = this.state
-    // if the invoice status changes to "held"
-    // we want to submit our tips. This should only happen for tip submission
-    if (
-      prevProps.invoiceStatus !== invoiceStatus &&
-      invoiceStatus === 'held' &&
-      count &&
-      type
-    ) {
-      this.submitTips()
+    const {
+      invoiceStatus,
+      getContent,
+      locked,
+      requirePayment,
+      invoice,
+      dislikes,
+      likes,
+    } = this.props
+    const { loading } = this.state
+
+    // if the tips have updated then we can assume this is the
+    // this is the invoice that has changed state and can just continue
+    if (likes !== prevProps.likes || dislikes !== prevProps.dislikes) {
+      return this.toggleDialogue()
+    }
+    // if the post does not require payment then there's nothing to update
+    else if (!requirePayment) {
       return
-    } else if (!requirePayment) return
+    }
     // if the invoice status updates to 'paid' or it's not locked
     // then we want to do a request to get the post content which will loop until
     // status changes
@@ -95,59 +103,36 @@ export default class Post extends PureComponent {
       !locked
     ) {
       getContent()
-    }
-  }
-
-  async submitTips() {
-    const {
-      _id,
-      setCurrentDislikes,
-      setCurrentLikes,
-      clearInvoice,
-    } = this.props
-    const { type, count } = this.state
-    try {
-      const { data: metadata } = await put(`/api/metadata/${_id}/tips`, {
-        [type]: count,
-      })
-      this.setState({ showDialogue: false, type: null, count: 0 }, () => {
-        clearInvoice()
-        setCurrentDislikes(metadata.dislikes)
-        setCurrentLikes(metadata.likes)
-      })
-    } catch (e) {
-      const message =
-        e.response && e.response.data ? e.response.data.message : e.message
-      // eslint-disable-next-line no-console
-      console.error('Problem submitting the tips to the server', message)
-      clearInvoice()
-      this.setState({ showDialogue: false, error: true }, () => {
-        setTimeout(() => {
-          this.setState({ error: false })
-        }, 4000)
+    } else if (loading && prevProps.invoice !== invoice) {
+      this.setState({
+        loading: false,
       })
     }
   }
 
   toggleDialogue(type) {
     this.props.clearInvoice()
-    this.setState({
-      showDialogue: !this.state.showDialogue,
-      type,
-      count: 1,
-      loading: false,
-    })
+    if (!type) this.setState({ showDialogue: false, type: null, count: 0 })
+    else
+      this.setState({
+        showDialogue: !this.state.showDialogue,
+        type,
+        count: 1,
+        loading: false,
+      })
   }
 
   handleCountChange(e) {
     this.setState({ count: e.target.value })
   }
 
-  async getHodlInvoice() {
-    const { boltwall, title, _id, setInvoice, checkInvoiceStatus } = this.props
-    const { count } = this.state
+  async payForTips() {
+    const { boltwall, title, updateTips } = this.props
+    const { count, type } = this.state
     const sats = this.rates.tips.rate * count
+
     this.setState({ loading: true }, async () => {
+      // first get the invoice for paying the author
       let { data: invoice } = await post(`${boltwall}/api/invoice`, {
         amount: sats,
         title: `tips for ${title}`,
@@ -157,16 +142,7 @@ export default class Post extends PureComponent {
       // make sure we have an id as this will be our payment hash
       assert(invoice && invoice.id, 'Did not get expected data back from node')
 
-      const {
-        data: { payreq },
-      } = await post(`/api/metadata/${_id}/tips/hodl`, {
-        paymentHash: invoice.id,
-      })
-
-      setInvoice({ invoice: payreq, invoiceId: invoice.id })
-      // check our own invoice status at the BOLT_URI to confirm it is held
-      checkInvoiceStatus(50, 750, process.env.BOLTWALL_URI)
-      this.setState({ loading: false })
+      await updateTips(invoice.id, type, +count)
     })
   }
 
@@ -307,7 +283,7 @@ export default class Post extends PureComponent {
                             </div>
                             <Button
                               className="col-12 col-md-3"
-                              onClick={() => this.getHodlInvoice()}
+                              onClick={() => this.payForTips()}
                             >
                               Ok!
                             </Button>

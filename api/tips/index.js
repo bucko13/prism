@@ -1,7 +1,4 @@
 const { Router } = require('express')
-
-const router = Router()
-
 const { boltwall } = require('boltwall')
 const { getDB } = require('radiks-server')
 const { COLLECTION } = require('radiks-server/app/lib/constants')
@@ -15,6 +12,7 @@ const { getAuthUri } = require('../helpers')
 const { TIPS_PAYMENT_RATE, PROCESSING_FEE } = require('../constants')
 const delay = promisify(setTimeout)
 
+const router = Router()
 let mongo
 
 const initMeta = {
@@ -190,10 +188,10 @@ async function manageHodlInvoice(req, res, next) {
     // let's make sure the payment amount matches the tips
     const likes = parseInt(req.body.likes, 10) || 0
     const dislikes = parseInt(req.body.dislikes, 10) || 0
-    if (likes + dislikes !== amount / TIPS_PAYMENT_RATE)
+    const expected = amount / TIPS_PAYMENT_RATE
+    if (likes + dislikes !== expected)
       return res.status(400).json({
-        message: `Problem with payment. Amount paid did not match tips given. Payment is for ${amount /
-          TIPS_PAYMENT_RATE} tips.`,
+        message: `Problem with payment. Amount paid did not match tips given. Payment is for ${expected} tips.`,
       })
 
     // if the hodl invoice paid by client to prism is less than the
