@@ -397,9 +397,9 @@ export function updateTips(paymentHash, type, count) {
       }
     }
     const likes = response?.data.likes
-    const dislikes = response?.data.likes
-    if (likes > 0) dispatch(setCurrentLikes(likes))
-    else if (dislikes > 0) dispatch(setCurrentDislikes(dislikes))
+    const dislikes = response?.data.dislikes
+    dispatch(setCurrentLikes(likes))
+    dispatch(setCurrentDislikes(dislikes))
   }
 }
 

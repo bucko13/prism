@@ -1,6 +1,5 @@
 const path = require('path')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-const webpack = require('webpack')
 
 // copy manifest.json to the path: 'public'
 // this will allow for the authRequest to see the file at www.example.com/manifest.json
@@ -19,16 +18,7 @@ const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
   inject: 'body',
 })
 
-module.exports = (env = {}) => {
-  let BOLTWALL_URI
-  if (process.env && process.env.BOLTWALL_URI)
-    BOLTWALL_URI = process.env.BOLTWALL_URI
-  else BOLTWALL_URI = env.BOLTWALL_URI
-  const DefinePluginConfig = new webpack.DefinePlugin({
-    'process.env': {
-      BOLTWALL_URI: JSON.stringify(BOLTWALL_URI),
-    },
-  })
+module.exports = () => {
   return {
     mode: 'production',
     entry: './src/index.js',
@@ -71,7 +61,6 @@ module.exports = (env = {}) => {
       HtmlWebpackPluginConfig,
       ManifestAssetPlugin,
       IconAssetPlugin,
-      DefinePluginConfig,
       new CleanWebpackPlugin(),
     ],
   }
