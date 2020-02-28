@@ -8,7 +8,7 @@
     "build:prod": "webpack --config=webpack-prod.config.js",
     "clean": "rm -rf public && mkdir public",
     "start:prod": "npm run clean && npm run build:prod && ENVIRONMENT=prod npm run start -- --max-old-space-size=4096",
-    "lint": "eslint src/",
+    "lint": "eslint --ignore-pattern=node_modules src/ api/",
     "pre-build": "cd node_modules/chainpoint-client/ && npm install && npm run build && cd ../../",
     "build": "npm run pre-build && webpack -p",
     "now-build": "npm run build",

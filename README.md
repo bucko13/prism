@@ -124,10 +124,15 @@ You will need to save up to 6 environment secrets during the setup process neede
 - `SESSION_SECRET`- for signing authentication macaroons
 - `MONGODB_URI`- connection string for connecting to a mongodb deployment
 - `APP_PRIVATE_KEY`- a private key used to decrypt content encrypted w/ a corresponding public key
-- `BOLTWALL_URI` - a uri where you are running a payment gateway. Useful to have a fallback
-  for paywalled content without its own payment gateway
 - `OPEN_NODE_KEY`- This isn't strictly necessary, but is used for utility endpoints,
   such as getting exchange rates for display
+
+LND Credentials for the backend's [boltwall](https://github.com/Tierion/) connection.
+Required for payment processing.
+
+- `LND_SOCKET`
+- `LND_TLS_CERT`
+- `LND_MACAROON`
 
 #### Zeit and Mongodb
 
@@ -151,19 +156,12 @@ but it makes the system more predictable and easier to manage
    for the user associated with this app. (this is just one way to get your app private key. Any way is fine)
 6. Save the APP_PRIVATE_KEY for later
 
-#### Session keys and Now Boltwall
-
-7. Generate a session key (using a crypto library for a 256 bit random number should work and is secure).
-8. Deploy a [boltwall service](https://github.com/tierion/now-boltwall) to run
-   as a backup payment gateway.
-9. Take note of the session key and uri of the boltwall service
-
 #### Open Node (optional)
 
 This is used in the app only for utilities like getting exchange rate
 
-10. Create a developer account on open node
-11. Create and save an API key
+7. Create a developer account on open node
+8. Create and save an API key
 
 #### Install and Deploy Prism w/ Now
 

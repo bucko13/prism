@@ -1,5 +1,5 @@
 import assert from 'bsert'
-import { get } from 'axios'
+import axios, { get } from 'axios'
 import { getConfig } from 'radiks'
 import { Lsat } from 'lsat-js'
 
@@ -14,7 +14,7 @@ import {
   SET_CURRENT_LIKES,
   SET_CURRENT_DISLIKES,
 } from '../constants'
-import { clearInvoice } from './invoice'
+import { clearInvoice, setInvoice } from './invoice'
 import { sleep } from '../../utils'
 
 /*
@@ -323,6 +323,87 @@ export function getPostMetadata(docId) {
       },
     })
 
+    dispatch(setCurrentLikes(likes))
+    dispatch(setCurrentDislikes(dislikes))
+  }
+}
+
+/**
+ * @description Tipping action creator which takes a payment hash and likes/dislike count
+ * This will make a request to update the tips count that it expects to fail with a 402.
+ * The returned LSAT is used to set the invoice information so the user can pay it. The action
+ * creator will keep on sending the request with the LSAT until successful after which
+ * it will update the likes/dislikes accordingly.
+ * @param {string} paymentHash - payment hash used to generate the hodl invoice
+ * @param {string} type - One of "like" or "dislike"
+ * @param {number} count - How much to update the like/dislike count by
+ */
+
+export function updateTips(paymentHash, type, count) {
+  assert(typeof paymentHash === 'string' && paymentHash.length === 64)
+  assert(
+    type === 'likes' || type === 'dislikes',
+    'Type must be either "likes" or "dislikes"'
+  )
+  assert(count >= 0 && typeof count === 'number')
+
+  return async (dispatch, getState) => {
+    let lsat, docId
+    // first call to PUT tips will throw a 402 returning an LSAT
+    try {
+      docId = getState().documents.getIn(['currentDoc', '_id'])
+      await axios.put(`/api/tips/${docId}`, {
+        [type]: count,
+        paymentHash,
+      })
+    } catch (e) {
+      // make sure we got the 402 in response
+      if (!e.response && e.response.status !== 402)
+        throw new Error('PUT /tips should have returned a 402 response')
+
+      // get the token from the response header
+      lsat = Lsat.fromHeader(e.response.headers['www-authenticate'])
+
+      // set state's invoice from the lsat so user can pay
+      dispatch(
+        setInvoice({
+          invoice: lsat.invoice,
+          invoiceId: lsat.paymentHash,
+        })
+      )
+    }
+
+    // next we will poll the PUT /tips endpoint with our LSAT
+    // in the header until it succeeds or the timer is up.
+    // When it does we update tips.
+    let timer = 0,
+      success = false,
+      response
+    while (timer < 15 && !success) {
+      try {
+        const options = {
+          method: 'put',
+          url: `/api/tips/${docId}`,
+          data: {
+            [type]: count,
+          },
+          headers: {
+            authorization: lsat.toToken(),
+          },
+        }
+        response = await axios(options)
+        success = true
+      } catch (e) {
+        // keep looping unless we did not receive a 402 response
+        if (e.response.status !== 402) {
+          throw new Error(`Unexpected response from server.`)
+        }
+        await sleep(1000)
+        timer++
+      }
+    }
+    const likes = response?.data.likes
+    const dislikes = response?.data.dislikes
     dispatch(setCurrentLikes(likes))
     dispatch(setCurrentDislikes(dislikes))
   }

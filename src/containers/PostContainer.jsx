@@ -52,6 +52,7 @@ class PostContainer extends PureComponent {
       setInvoice: PropTypes.func.isRequired,
       setCurrentLikes: PropTypes.func.isRequired,
       setCurrentDislikes: PropTypes.func.isRequired,
+      updateTips: PropTypes.func.isRequired,
       clearInvoice: PropTypes.func.isRequired,
     }
   }
@@ -113,6 +114,7 @@ class PostContainer extends PureComponent {
       checkInvoiceStatus,
       invoiceStatus,
       setInvoice,
+      updateTips,
       setCurrentLikes,
       setCurrentDislikes,
       clearInvoice,
@@ -151,6 +153,7 @@ class PostContainer extends PureComponent {
         setCurrentLikes={setCurrentLikes}
         setCurrentDislikes={setCurrentDislikes}
         clearInvoice={clearInvoice}
+        updateTips={updateTips}
       />
     )
   }
@@ -180,6 +183,9 @@ function mapDispatchToProps(dispatch) {
     },
     getContent: id => {
       dispatch(documentActions.getContent(id))
+    },
+    updateTips: (paymentHash, type, count) => {
+      dispatch(documentActions.updateTips(paymentHash, type, count))
     },
     setCurrentLikes: likes => {
       dispatch(documentActions.setCurrentLikes(likes))
