@@ -68,6 +68,7 @@ async function verifyPost(req, res, next) {
  * request does not have an LSAT associated with it yet. If it doesn't have an LSAT,
  * then we need to validate the request by checking that the 3rd party's node has a matching
  * invoice by the same ID that we will use for the hodl invoice.
+ * When ever thing is validated we pass the request on to the boltwall middleware.
  * If it does have an LSAT then we can just pass it to boltwall to run verifications
  * @param {*} req
  * @param {*} res
@@ -91,6 +92,13 @@ Must be associated with an invoice belonging to the post owner.',
   try {
     const { paymentHash } = req.body
 
+    if (!req.doc.boltwall) {
+      res.status(400)
+      return next({
+        message:
+          'No boltwall uri associated with this post. Cannot submit tips.',
+      })
+    }
     const { payreq, amount, status } = await request({
       method: 'GET',
       uri: `${req.doc.boltwallUri}/api/invoice?id=${paymentHash}`,
@@ -105,8 +113,9 @@ Must be associated with an invoice belonging to the post owner.',
       })
     }
 
-    // if the invoice was paid then we wont' be able to pay and retrieve preimage to redeem
-    // hodl invoice, so continue
+    // if the invoice was paid then we won't be able to pay and retrieve
+    // preimage to redeem hodl invoice. This technically means the request
+    // is invalid/expired since the tips have been paid for.
     if (status === 'paid') {
       res.status(400)
       return next({
@@ -121,11 +130,16 @@ Must be associated with an invoice belonging to the post owner.',
   } catch (e) {
     // this is in the event of an lnservice based error which comes as an array
     if (Array.isArray(e))
-      return res.status(e[0]).json({ message: e[1], details: e[2].err.details })
-    return res
-      .status(500)
-      .json({ message: 'Problem processing new hodl invoice' })
+      return res.status(e[0]).json({
+        message: e[1],
+        details: e[2].err.details,
+      })
+    return res.status(500).json({
+      message: 'Problem processing new hodl invoice',
+    })
   }
+  // If we get here then the request is ready to go through boltwall
+  // which will setup a hodl invoice LSAT for payment
   next()
 }
 
@@ -161,7 +175,8 @@ async function manageHodlInvoice(req, res, next) {
     // so we can confirm the payment amount compared to the amount
     // Prism will pay to the author.
     // TODO/OPTIMIZATION: Can this just be done with a caveat to
-    // ensure the ids match?
+    // ensure the ids match? All we need is to commit the amount.
+    // Satisfier could do the amount checking too
     try {
       const invoice = await lnService.getInvoice({
         lnd: req.lnd,
@@ -185,7 +200,8 @@ async function manageHodlInvoice(req, res, next) {
       json: true,
     })
 
-    // let's make sure the payment amount matches the tips
+    // let's make sure the payment amount matches the tips. One will
+    // always be zero.
     const likes = parseInt(req.body.likes, 10) || 0
     const dislikes = parseInt(req.body.dislikes, 10) || 0
     const expected = amount / TIPS_PAYMENT_RATE
@@ -241,7 +257,7 @@ async function manageHodlInvoice(req, res, next) {
     // so we can be sure that payment corresponds to the amount paid
     req.amount = amount
 
-    // otherwise, if it was successful, we can go to the next route
+    // otherwise, if it was successful, we can go to the next route being protected
     return next()
   } catch (e) {
     // eslint-disable-next-line no-console

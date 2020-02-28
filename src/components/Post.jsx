@@ -86,8 +86,8 @@ export default class Post extends PureComponent {
     } = this.props
     const { loading } = this.state
 
-    // if the tips have updated then we can assume this is the
-    // this is the invoice that has changed state and can just continue
+    // if the tips have updated then we can assume the tips invoice updated
+    // and we should toggle the dialogue _off_
     if (likes !== prevProps.likes || dislikes !== prevProps.dislikes) {
       return this.toggleDialogue()
     }
@@ -126,6 +126,9 @@ export default class Post extends PureComponent {
     this.setState({ count: e.target.value })
   }
 
+  // first gets a "base" invoice from the post owner
+  // this is used as the payment hash for the hodl invoice generation
+  // which is handled by Prism's backend for paying for tips
   async payForTips() {
     const { boltwall, title, updateTips } = this.props
     const { count, type } = this.state

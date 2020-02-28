@@ -329,10 +329,11 @@ export function getPostMetadata(docId) {
 }
 
 /**
- * @description Tipping action creator which takes a payment hash and likes/dislike counts
- * The first request made won't have an LSAT and will return a 402, which we can use
- * to get the payment info. Once invoice is set, we need to poll the PUT /tips endpoint w/
- * the LSAT until it returns as paid and gives us the updated tips count.
+ * @description Tipping action creator which takes a payment hash and likes/dislike count
+ * This will make a request to update the tips count that it expects to fail with a 402.
+ * The returned LSAT is used to set the invoice information so the user can pay it. The action
+ * creator will keep on sending the request with the LSAT until successful after which
+ * it will update the likes/dislikes accordingly.
  * @param {string} paymentHash - payment hash used to generate the hodl invoice
  * @param {string} type - One of "like" or "dislike"
  * @param {number} count - How much to update the like/dislike count by
@@ -356,8 +357,11 @@ export function updateTips(paymentHash, type, count) {
         paymentHash,
       })
     } catch (e) {
+      // make sure we got the 402 in response
       if (!e.response && e.response.status !== 402)
         throw new Error('PUT /tips should have returned a 402 response')
+
+      // get the token from the response header
       lsat = Lsat.fromHeader(e.response.headers['www-authenticate'])
 
       // set state's invoice from the lsat so user can pay
@@ -370,7 +374,8 @@ export function updateTips(paymentHash, type, count) {
     }
 
     // next we will poll the PUT /tips endpoint with our LSAT
-    // in the header until it succeeds. When it does we update likes.
+    // in the header until it succeeds or the timer is up.
+    // When it does we update tips.
     let timer = 0,
       success = false,
       response
@@ -389,6 +394,7 @@ export function updateTips(paymentHash, type, count) {
         response = await axios(options)
         success = true
       } catch (e) {
+        // keep looping unless we did not receive a 402 response
         if (e.response.status !== 402) {
           throw new Error(`Unexpected response from server.`)
         }
