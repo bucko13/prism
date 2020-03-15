@@ -216,7 +216,7 @@ export function updateDocumentProofs() {
               proof.attrs.proofHandles.length
             )
               await proof.getProofs()
-
+              
             // evaluate the raw proof to extract the relevant data
             const proofData = proof.evaluateProof()
 

@@ -147,9 +147,7 @@ export default class Proof extends Model {
 
     // return null if no proof to evaluate
     if (!proof) return null
-
     const proofs = evaluateProofs([proof])
-
     const btcProof = proofs.find(
       ({ type }) => type === 'tbtc' || type === 'btc'
     )
@@ -158,14 +156,14 @@ export default class Proof extends Model {
     // we'll return the data from that proof (e.g. cal or tcal)
     if (!btcProof && proofs.length) {
       return {
-        submittedAt: proofs[0].hash_submitted_core_at,
+        submittedAt: proofs[0].hash_received,
         type: proofs[0].type,
       }
     } else if (btcProof) {
       return {
         height: btcProof.anchor_id,
         merkleRoot: btcProof.expected_value,
-        submittedAt: btcProof.hash_submitted_core_at,
+        submittedAt: btcProof.hash_received,
         type: btcProof.type,
       }
     } else {

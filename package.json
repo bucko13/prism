@@ -67,7 +67,7 @@
     "blockstack": "^19.1.0",
     "bootstrap": "^4.4.1",
     "bsert": "^0.0.10",
-    "chainpoint-client": "github:chainpoint/chainpoint-client-js#core-v2-support",
+    "chainpoint-client": "^0.4.5",
     "dompurify": "^2.0.8",
     "draft-js": "^0.10.5",
     "immutable": "^4.0.0-rc.12",

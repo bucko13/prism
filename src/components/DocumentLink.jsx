@@ -99,7 +99,6 @@ function ProofIcon({ proofId, proofData }) {
     const timeSince = Math.floor(
       (Date.now() - new Date(proofData.submittedAt)) / 1000
     )
-
     // assuming around 2 hours for a proof to be anchored to bitcoin
     const timeLeft = Math.floor((60 * 60 * 2 - timeSince) / 60)
     if (timeLeft === 0)

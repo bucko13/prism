@@ -1,9 +1,13 @@
 const { Router } = require('express')
 
-const { submitHashes, getProofs } = require('chainpoint-client/dist/bundle')
+const { submitHashes, getProofs } = require('chainpoint-client')
 
 const router = Router()
-
+const CHAINPOINT_GATEWAYS = [
+  'http://3.136.178.15',
+  // 'http://3.133.131.59',
+  'http://18.222.108.78',
+]
 async function submitHash(req, res) {
   let { hashes } = req.body
   if (
@@ -21,7 +25,7 @@ async function submitHash(req, res) {
   }
 
   try {
-    const proofHandles = await submitHashes(hashes)
+    const proofHandles = await submitHashes(hashes, CHAINPOINT_GATEWAYS)
     res.status(200).json({ proofHandles })
   } catch (e) {
     res.status(500).json({ message: e.message })

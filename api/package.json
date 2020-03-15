@@ -6,7 +6,7 @@
     "body-parser": "^1.19.0",
     "boltwall": "^5.2.0",
     "bsert": "^0.0.10",
-    "chainpoint-client": "chainpoint/chainpoint-client-js#core-v2-support",
+    "chainpoint-client": "github:chainpoint/chainpoint-js",
     "cookie-parser": "^1.4.4",
     "cookie-session": "^1.4.0",
     "cors": "^2.8.5",
@@ -25,9 +25,6 @@
   },
   "engines": {
     "node": ">0.10.0"
-  },
-  "scripts": {
-    "now-build": "cd node_modules/chainpoint-client/ && npm install && npm run build && cd ../../"
   },
   "devDependencies": {
     "dotenv": "^8.1.0"
