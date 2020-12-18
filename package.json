@@ -68,7 +68,7 @@
     "bootstrap": "^4.4.1",
     "bsert": "^0.0.10",
     "chainpoint-client": "github:chainpoint/chainpoint-client-js#core-v2-support",
-    "dompurify": "^2.0.8",
+    "dompurify": "^2.0.17",
     "draft-js": "^0.10.5",
     "immutable": "^4.0.0-rc.12",
     "lsat-js": "^1.0.7",
